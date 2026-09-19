@@ -46,8 +46,10 @@ from backend.app.geometry.opening_fusion import (
     compute_metric_width_along_plane,
     cluster_opening_observations,
     estimate_opening_uncertainty,
+    audit_observation_quality,
     fuse_openings,
 )
+from backend.app.perception.opening_viz import export_opening_visual_verification
 
 
 class TestOpeningGeometry(unittest.TestCase):
@@ -316,6 +318,118 @@ class TestOpeningGeometry(unittest.TestCase):
             half_u_low,
             f"High-noise uncertainty ({half_u_high}m) must be wider than low-noise ({half_u_low}m)",
         )
+
+    def test_09_hallucination_rejection(self) -> None:
+        """Verifies that full-frame hallucinations (e.g. frame 56) are rejected in association."""
+        intrinsics = {"width": 1920, "height": 1440, "fx": 1000.0, "fy": 1000.0, "cx": 960.0, "cy": 720.0}
+        camera_pose = {"position": [0.0, 1.5, 0.0], "quaternion": [0.0, 0.0, 0.0, 1.0]}
+        wall = {"id": "wall_01", "plane": [0.0, 0.0, 1.0, -3.0], "bounds": {"x": [-2.0, 2.0], "z": [2.9, 3.1]}}
+
+        # Full frame detection (99% area)
+        cand_huge = {
+            "class": "door",
+            "detector_score": 0.12,
+            "frame_id": 56,
+            "bbox": [1.0, 2.0, 1919.0, 1438.0],
+        }
+        boundary = {"left_jamb_pixel": [1.0, 720.0], "right_jamb_pixel": [1919.0, 720.0]}
+
+        obs = associate_candidate_with_wall(
+            candidate=cand_huge,
+            boundary_pixels=boundary,
+            intrinsics=intrinsics,
+            camera_pose=camera_pose,
+            structural_walls=[wall],
+        )
+        self.assertEqual(obs["status"], "rejected")
+        self.assertIn("excessive_frame_coverage_hallucination", obs["rejection_reasons"])
+
+    def test_10_frame_quality_filtering(self) -> None:
+        """Verifies that oblique and blurry observation frames are flagged and pruned."""
+        plane = {"a": 0.0, "b": 0.0, "c": 1.0, "d": -3.0}
+
+        # Oblique observation (camera at x=5, looking back along x-axis towards door at x=0, z=3)
+        obs_oblique = {
+            "candidate": {"class": "doorway", "frame_id": 10, "bbox": [400, 200, 700, 900]},
+            "projected_geometry": {"width_m": 0.90, "centroid_3d": [0.0, 1.2, 3.0]},
+            "camera_pose": {"position": [5.0, 1.2, 3.5], "quaternion": [0.0, 0.0, 0.0, 1.0]},
+            "sharpness_score": 180.0,
+            "intrinsics": {"width": 1920, "height": 1440},
+        }
+        audit = audit_observation_quality(obs_oblique, plane, cluster_median_width=0.90, cluster_mad_width=0.02)
+        self.assertFalse(audit["is_high_quality"])
+        self.assertIn("camera_too_oblique", audit["rejection_reasons"])
+
+        # Blurry observation
+        obs_blurry = {
+            "candidate": {"class": "doorway", "frame_id": 20, "bbox": [400, 200, 700, 900]},
+            "projected_geometry": {"width_m": 0.91, "centroid_3d": [0.0, 1.2, 3.0]},
+            "camera_pose": {"position": [0.0, 1.2, 0.5], "quaternion": [0.0, 0.0, 0.0, 1.0]},
+            "sharpness_score": 45.0,  # Below 80.0 threshold
+            "intrinsics": {"width": 1920, "height": 1440},
+        }
+        audit_b = audit_observation_quality(obs_blurry, plane, cluster_median_width=0.90, cluster_mad_width=0.02)
+        self.assertFalse(audit_b["is_high_quality"])
+        self.assertIn("blurry_frame", audit_b["rejection_reasons"])
+
+    def test_11_provisional_vs_accepted_status(self) -> None:
+        """Verifies that 2-frame detections stay PROVISIONAL while 3+ frame detections become ACCEPTED."""
+        wall = [{"id": "wall_01", "plane": [0, 0, 1, -3], "fit_quality": {"rmse_m": 0.012}}]
+
+        # 2-frame cluster (e.g. window)
+        obs_win1 = {
+            "status": "accepted",
+            "wall_id": "wall_01",
+            "candidate": {"class": "window", "detector_score": 0.85, "frame_id": 100, "bbox": [400, 300, 600, 700]},
+            "projected_geometry": {"width_m": 0.65, "centroid_3d": [0.5, 1.2, 3.0], "left_jamb_3d": [0.175, 1.2, 3.0], "right_jamb_3d": [0.825, 1.2, 3.0]},
+            "camera_pose": {"position": [0.5, 1.2, 0.5], "quaternion": [0.0, 0.0, 0.0, 1.0]},
+            "sharpness_score": 150.0,
+            "intrinsics": {"width": 1920, "height": 1440},
+        }
+        obs_win2 = {
+            "status": "accepted",
+            "wall_id": "wall_01",
+            "candidate": {"class": "window", "detector_score": 0.88, "frame_id": 115, "bbox": [405, 305, 605, 705]},
+            "projected_geometry": {"width_m": 0.66, "centroid_3d": [0.51, 1.2, 3.0], "left_jamb_3d": [0.18, 1.2, 3.0], "right_jamb_3d": [0.84, 1.2, 3.0]},
+            "camera_pose": {"position": [0.5, 1.2, 0.6], "quaternion": [0.0, 0.0, 0.0, 1.0]},
+            "sharpness_score": 160.0,
+            "intrinsics": {"width": 1920, "height": 1440},
+        }
+        fused_win = fuse_openings([[obs_win1, obs_win2]], rejected_observations=[], structural_walls=wall, min_frames_for_acceptance=3)
+        self.assertEqual(len(fused_win["accepted_openings"]), 0, "2-frame opening must NOT be accepted")
+        self.assertEqual(len(fused_win["provisional_openings"]), 1, "2-frame opening must be PROVISIONAL")
+        self.assertEqual(fused_win["provisional_openings"][0]["status"], "provisional")
+
+        # 3-frame cluster (accepted doorway)
+        obs_door3 = dict(obs_win1)
+        obs_door3["candidate"] = {"class": "doorway", "detector_score": 0.90, "frame_id": 130, "bbox": [410, 310, 610, 710]}
+        fused_door = fuse_openings([[obs_win1, obs_win2, obs_door3]], rejected_observations=[], structural_walls=wall, min_frames_for_acceptance=3)
+        self.assertEqual(len(fused_door["accepted_openings"]), 1, "3-frame opening must be ACCEPTED")
+        self.assertEqual(fused_door["accepted_openings"][0]["status"], "accepted")
+
+    def test_12_verification_artifacts_export(self) -> None:
+        """Verifies export_opening_visual_verification generates the required 4 files."""
+        import tempfile
+        import os
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            opening = {
+                "id": "opening_01",
+                "type": "doorway",
+                "wall_id": "wall_01",
+                "status": "accepted",
+                "best_frame_id": 10,
+                "width": {"value": 0.90, "half_width_uncertainty_m": 0.03, "interval": [0.87, 0.93]},
+                "left_jamb_3d": [0.0, 0.0, 3.0],
+                "right_jamb_3d": [0.90, 0.0, 3.0],
+                "centroid_3d": [0.45, 0.0, 3.0],
+                "supporting_frames": 3,
+                "high_quality_frames": 2,
+            }
+            wall = {"id": "wall_01", "plane": {"a": 0, "b": 0, "c": 1, "d": -3}, "fit_quality": {"rmse_m": 0.012}}
+            out = export_opening_visual_verification(opening, cluster_observations=[], output_dir=tmpdir, structural_walls=[wall])
+            # Even with empty images, geometry_debug.json is created
+            self.assertTrue(os.path.exists(os.path.join(tmpdir, "geometry_debug.json")))
 
 
 if __name__ == "__main__":

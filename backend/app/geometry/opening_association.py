@@ -33,6 +33,7 @@ import math
 from typing import Dict, Any, List, Optional, Tuple
 import numpy as np
 
+from scipy.spatial.transform import Rotation
 from .opening_projection import project_ray_to_wall_plane, project_opening_to_wall
 
 
@@ -133,6 +134,67 @@ def associate_candidate_with_wall(
     best_proj_geo: Optional[Dict[str, Any]] = None
     best_score: float = -1.0
     rejection_reasons: List[str] = []
+
+    # 0. Candidate Pre-filtering: Hallucinations, excessive coverage, and implausible geometry
+    img_w = float(intrinsics.get("image_width", intrinsics.get("width", 1920)))
+    img_h = float(intrinsics.get("image_height", intrinsics.get("height", 1440)))
+    bbox = candidate.get("bbox", [])
+
+    if len(bbox) == 4:
+        x1, y1, x2, y2 = [float(v) for v in bbox]
+        bw = max(0.0, x2 - x1)
+        bh = max(0.0, y2 - y1)
+        area_ratio = (bw * bh) / max(1.0, img_w * img_h)
+
+        # Rejection: Detection fills almost the whole frame (e.g. frames 56, 273, 294, 420)
+        if area_ratio > 0.65 or (bw / img_w > 0.88 and bh / img_h > 0.85):
+            return {
+                "status": "rejected",
+                "rejection_reasons": ["excessive_frame_coverage_hallucination"],
+                "candidate": candidate,
+                "wall_id": None,
+                "projected_geometry": None,
+            }
+
+        # Orientation check for physical aspect ratio
+        quat = camera_pose.get("orientation_quaternion") or camera_pose.get("quaternion")
+        rot = Rotation.from_quat(quat)
+        R = rot.as_matrix()
+        is_portrait = bool(abs(R[1, 0]) > abs(R[1, 1]))
+
+        # In portrait: x is vertical in world, y is horizontal in world
+        # In landscape: y is vertical in world, x is horizontal in world
+        phys_w_px = bh if is_portrait else bw
+        phys_h_px = bw if is_portrait else bh
+
+        cls_name = candidate.get("class", "").lower()
+        if cls_name in {"door", "doorway", "interior door", "open doorway"}:
+            # Doors are taller than they are wide. Reject if physical width exceeds 1.5x height
+            if phys_h_px > 0 and (phys_w_px / phys_h_px) > 1.50:
+                return {
+                    "status": "rejected",
+                    "rejection_reasons": ["implausible_aspect_ratio_too_wide_for_door"],
+                    "candidate": candidate,
+                    "wall_id": None,
+                    "projected_geometry": None,
+                }
+
+        # Check if both jambs touch image boundaries without confirmed depth step
+        depth_confirmed = boundary_pixels.get("depth_step_detected", False)
+        if not depth_confirmed:
+            if is_portrait:
+                both_clipped = (y1 <= 15.0 and y2 >= img_h - 15.0)
+            else:
+                both_clipped = (x1 <= 15.0 and x2 >= img_w - 15.0)
+
+            if both_clipped:
+                return {
+                    "status": "rejected",
+                    "rejection_reasons": ["both_jambs_clipped_at_frame_boundary"],
+                    "candidate": candidate,
+                    "wall_id": None,
+                    "projected_geometry": None,
+                }
 
     for wall in structural_walls:
         wid = wall["id"]

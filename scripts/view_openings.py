@@ -73,11 +73,12 @@ def display_openings_summary(scan_id: str, outputs_root: str = "outputs", headle
             stats = json.load(f)
 
     openings = openings_data.get("openings", [])
+    provisional = openings_data.get("provisional_openings", [])
     uncertain = openings_data.get("uncertain_openings", [])
     refinements = openings_data.get("polygon_refinement_candidates", [])
 
     print("=" * 75)
-    print(f"STAGE 5 OPENINGS VIEWER — SCAN: {scan_id}")
+    print(f"STAGE 5.1 OPENINGS VIEWER — SCAN: {scan_id}")
     print("=" * 75)
 
     if stats:
@@ -85,6 +86,8 @@ def display_openings_summary(scan_id: str, outputs_root: str = "outputs", headle
         print(f"Raw Candidate Detections: {stats.get('raw_candidate_detections', 'N/A')}")
         print(f"Accepted Observations:    {stats.get('accepted_observations', 'N/A')}")
         print(f"Rejected Candidates:      {stats.get('rejected_observations', 'N/A')}")
+        print(f"Accepted Openings:        {stats.get('accepted_openings', len(openings))}")
+        print(f"Provisional Openings:     {stats.get('provisional_openings', len(provisional))}")
         print(f"Processing Time:          {stats.get('processing_time_sec', 'N/A')}s")
         print("-" * 75)
 
@@ -100,22 +103,35 @@ def display_openings_summary(scan_id: str, outputs_root: str = "outputs", headle
         w_int = op.get("width", {}).get("interval", [0.0, 0.0])
         half_u = op.get("width", {}).get("half_width_uncertainty_m", 0.0)
         frames_cnt = op.get("supporting_frames", 0)
+        hq_cnt = op.get("high_quality_frames", 1)
         frames_ids = op.get("supporting_frame_ids", [])
         c3d = op.get("centroid_3d", [0.0, 0.0, 0.0])
+        op_dir = os.path.join(openings_dir, op_id)
 
         print(f"  * {op_id.upper()}: [{op_type.upper()}] on host {wid}")
         print(f"    Clearance Width:     {w_val:.3f} m ±{half_u:.3f} m")
         print(f"    Estimated 95% CI:    [{w_int[0]:.3f} m, {w_int[1]:.3f} m] (calibrated: false)")
         print(f"    3D Centroid (m):     ({c3d[0]:.3f}, {c3d[1]:.3f}, {c3d[2]:.3f})")
-        print(f"    Supporting Frames:   {frames_cnt} {frames_ids[:8]}")
+        print(f"    Supporting Frames:   {frames_cnt} (high-quality: {hq_cnt}) {frames_ids[:8]}")
+        print(f"    Verification Bundle: {op_dir}/")
         if op.get("affects_polygon"):
             print(f"    Corridor Note:       {op.get('corridor_refinement_note')}")
         print()
 
+    if provisional:
+        print(f"\nPROVISIONAL OPENINGS ({len(provisional)}):")
+        for prop in provisional:
+            p_id = prop["id"]
+            p_type = prop.get("type", "opening")
+            p_wid = prop.get("wall_id", "unknown")
+            p_w = prop.get("width", {}).get("value", 0.0)
+            p_frames = prop.get("supporting_frames", 0)
+            print(f"  * {p_id.upper()} ({p_type.upper()}) on host {p_wid}: width={p_w:.3f}m, supporting_frames={p_frames} (status: PROVISIONAL)")
+
     if uncertain:
-        print(f"\nUNCERTAIN / PROVISIONAL OPENINGS ({len(uncertain)}):")
+        print(f"\nUNCERTAIN / SINGLE-FRAME CANDIDATES ({len(uncertain)}):")
         for uop in uncertain:
-            print(f"  * {uop['id']} ({uop.get('type')}) on {uop.get('wall_id')}: width={uop['width']['value']:.3f}m")
+            print(f"  * {uop['id']} ({uop.get('type')}) on {uop.get('wall_id')}: width={uop['width']['value']:.3f}m (frames: {uop.get('supporting_frames', 1)})")
 
     if refinements:
         print(f"\nPOLYGON REFINEMENT RECOMMENDATIONS ({len(refinements)}):")

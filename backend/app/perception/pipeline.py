@@ -47,9 +47,24 @@ import numpy as np
 from .keyframes import extract_keyframes
 from .detector import OpeningDetector
 from .segmentation import refine_opening_boundaries_with_depth
-from .opening_viz import save_annotated_frame, render_openings_floorplan_svg
+from .opening_viz import save_annotated_frame, render_openings_floorplan_svg, export_opening_visual_verification
 from ..geometry.opening_association import associate_candidate_with_wall
 from ..geometry.opening_fusion import cluster_opening_observations, fuse_openings
+
+
+def _json_default(obj: Any) -> Any:
+    """Robust JSON serializer fallback for NumPy scalar types and arrays."""
+    if isinstance(obj, (np.bool_, bool)):
+        return bool(obj)
+    if isinstance(obj, (np.floating, float)):
+        return float(obj)
+    if isinstance(obj, (np.integer, int)):
+        return int(obj)
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    if hasattr(obj, "item"):
+        return obj.item()
+    return str(obj)
 
 
 def run_opening_pipeline(
@@ -201,8 +216,8 @@ def run_opening_pipeline(
         frame_annotated_dets: List[Dict[str, Any]] = []
 
         for det in dets:
-            # Depth boundary refinement
-            refined_boundary = refine_opening_boundaries_with_depth(det, depth_map)
+            # Depth boundary refinement with camera orientation awareness
+            refined_boundary = refine_opening_boundaries_with_depth(det, depth_map, camera_pose=camera_pose)
             det["boundary_pixels"] = refined_boundary
 
             # Structural wall association & 3D projection
@@ -216,6 +231,13 @@ def run_opening_pipeline(
             )
 
             if obs["status"] == "accepted":
+                # Attach frame metadata for subsequent quality auditing
+                obs["camera_pose"] = camera_pose
+                obs["intrinsics"] = intrinsics
+                obs["sharpness_score"] = kf.get("sharpness_score", 100.0)
+                obs["image_path"] = kf.get("image_path")
+                obs["depth_path"] = kf.get("depth_path")
+
                 accepted_observations.append(obs)
                 # Attach projected geometry to candidate for annotation
                 det_copy = dict(det)
@@ -229,26 +251,31 @@ def run_opening_pipeline(
 
     print(f"[{scan_id}] Wall association: {len(accepted_observations)} accepted observations, {len(rejected_observations)} rejected candidates.")
 
-    # 6. Multi-frame Observation Fusion
-    print(f"[{scan_id}] Step 4/6: Multi-frame spatial clustering & metric width fusion...")
+    # 6. Multi-frame Observation Fusion & Quality Filtering
+    print(f"[{scan_id}] Step 4/6: Multi-frame spatial clustering & quality-filtered width fusion...")
     clusters = cluster_opening_observations(accepted_observations)
     fusion_result = fuse_openings(
         clusters=clusters,
         rejected_observations=rejected_observations,
         structural_walls=structural_walls,
         polygon_edges=polygon_edges,
+        min_frames_for_acceptance=3,
     )
 
     openings = fusion_result["accepted_openings"]
+    provisional = fusion_result.get("provisional_openings", [])
     uncertain = fusion_result["uncertain_openings"]
     polygon_refinements = fusion_result["polygon_refinement_candidates"]
 
     doors_count = sum(1 for op in openings if op.get("type") in {"door", "doorway"})
     windows_count = sum(1 for op in openings if op.get("type") == "window")
+    prov_doors = sum(1 for op in provisional if op.get("type") in {"door", "doorway"})
+    prov_windows = sum(1 for op in provisional if op.get("type") == "window")
 
-    print(f"[{scan_id}] Fused into {len(openings)} distinct openings ({doors_count} doors/doorways, {windows_count} windows).")
+    print(f"[{scan_id}] Fused into {len(openings)} accepted openings ({doors_count} doors, {windows_count} windows) "
+          f"and {len(provisional)} provisional candidates ({prov_doors} doors, {prov_windows} windows).")
 
-    # 7. Generate Debug Visualizations
+    # 7. Generate Visual Verification Artifacts
     print(f"[{scan_id}] Step 5/6: Generating visual verification artifacts...")
     # Render floor plan SVG
     svg_path = os.path.join(openings_output_dir, "opening_debug.svg")
@@ -257,8 +284,23 @@ def run_opening_pipeline(
         room_polygon_vertices=polygon_vertices,
         openings=openings,
         structural_walls=structural_walls,
-        uncertain_openings=uncertain,
+        uncertain_openings=provisional + uncertain,
     )
+
+    # Save dedicated verification folder for each final accepted opening
+    for op in openings:
+        op_id = op["id"]
+        op_dir = os.path.join(openings_output_dir, op_id)
+        cluster_obs = [
+            o for o in accepted_observations
+            if o.get("wall_id") == op.get("wall_id") and o.get("candidate", {}).get("frame_id") in op.get("supporting_frame_ids", [])
+        ]
+        export_opening_visual_verification(
+            opening=op,
+            cluster_observations=cluster_obs,
+            output_dir=op_dir,
+            structural_walls=structural_walls,
+        )
 
     # Save up to 8 representative annotated debug keyframes
     annotated_count = 0
@@ -282,7 +324,7 @@ def run_opening_pipeline(
             "keyframes_count": len(keyframes),
             "raw_detections_count": len(all_raw_detections),
             "detections": all_raw_detections,
-        }, f, indent=2)
+        }, f, indent=2, default=_json_default)
 
     obs_json_path = os.path.join(openings_output_dir, "opening_observations.json")
     with open(obs_json_path, "w", encoding="utf-8") as f:
@@ -292,7 +334,7 @@ def run_opening_pipeline(
             "rejected_observations_count": len(rejected_observations),
             "accepted_observations": accepted_observations,
             "rejected_observations": rejected_observations,
-        }, f, indent=2)
+        }, f, indent=2, default=_json_default)
 
     openings_json_path = os.path.join(openings_output_dir, "openings.json")
     with open(openings_json_path, "w", encoding="utf-8") as f:
@@ -300,15 +342,18 @@ def run_opening_pipeline(
             "scan_id": scan_id,
             "openings_count": len(openings),
             "openings": openings,
+            "provisional_openings_count": len(provisional),
+            "provisional_openings": provisional,
+            "uncertain_openings_count": len(uncertain),
             "uncertain_openings": uncertain,
             "polygon_refinement_candidates": polygon_refinements,
             "calibration_status": "awaiting_ground_truth_benchmark",
-        }, f, indent=2)
+        }, f, indent=2, default=_json_default)
 
     elapsed_sec = round(time.time() - start_time, 2)
     stats_data: Dict[str, Any] = {
         "scan_id": scan_id,
-        "pipeline_stage": "Stage 5 - Door/Window Detection & Metric Opening Measurement",
+        "pipeline_stage": "Stage 5.1 - Hardened Door/Window Detection & Metric Opening Measurement",
         "processing_time_sec": elapsed_sec,
         "keyframes_inspected": len(keyframes),
         "raw_candidate_detections": len(all_raw_detections),
@@ -317,6 +362,9 @@ def run_opening_pipeline(
         "accepted_openings": len(openings),
         "doors_count": doors_count,
         "windows_count": windows_count,
+        "provisional_openings": len(provisional),
+        "provisional_doors": prov_doors,
+        "provisional_windows": prov_windows,
         "uncertain_openings": len(uncertain),
         "polygon_refinements_count": len(polygon_refinements),
         "calibration_status": "awaiting_ground_truth_benchmark",
@@ -325,6 +373,6 @@ def run_opening_pipeline(
 
     stats_json_path = os.path.join(openings_output_dir, "opening_stats.json")
     with open(stats_json_path, "w", encoding="utf-8") as f:
-        json.dump(stats_data, f, indent=2)
+        json.dump(stats_data, f, indent=2, default=_json_default)
 
     return stats_data
