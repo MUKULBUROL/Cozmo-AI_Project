@@ -1,10 +1,10 @@
 """Master Stage 4 orchestrator: Metric measurements, room area, and honest uncertainty propagation.
 
 1. Why this file exists:
-   Transforms Stage 3 2D room polygons and Stage 2 structural planes into certified,
+   Transforms Stage 3 2D room polygons and Stage 2 structural planes into estimated,
    machine-readable metric dimensions (wall lengths, room perimeter, polygon floor area,
-   and optional clear ceiling height) accompanied by physically derived 95% confidence intervals,
-   evidence-based confidence scores, and an automated measurement validity gate.
+   and optional clear ceiling height) accompanied by physically derived 95% engineering
+   uncertainty intervals, evidence-based confidence scores, and an automated measurement validity gate.
 
 2. Pipeline stage:
    Stage 4 (Metric Measurements, Room Area & Uncertainty) - Core Measurement Engine.
@@ -437,7 +437,9 @@ def compute_room_measurements(
         "inferred_corner_count": inferred_corner_count,
         "mean_wall_confidence": round(mean_w_conf, 3),
         "ground_truth_available": False,
-        "disclaimer": "Engineering estimates derived from 3D point cloud reconstruction. Calibrated physical ground truth required.",
+        "uncertainty_calibrated": False,
+        "calibration_status": "awaiting_ground_truth_benchmark",
+        "disclaimer": "Engineering estimates derived from 3D point cloud reconstruction. Awaiting ground truth benchmark calibration.",
     }
 
     stats_file = output_dir / "measurement_stats.json"
@@ -459,6 +461,8 @@ def compute_room_measurements(
         "metadata": {
             "coordinate_system": {"vertical": "Y", "floor_plane": "XZ", "units": "meters"},
             "uncertainty_coverage": "95% (k=1.96)",
+            "uncertainty_calibrated": False,
+            "calibration_status": "awaiting_ground_truth_benchmark",
             "monte_carlo_samples": mc_samples,
             "random_seed": random_seed,
             "ground_truth_verified": False,

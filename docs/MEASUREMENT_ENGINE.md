@@ -2,7 +2,7 @@
 
 ## 1. Overview & Architecture
 
-Stage 4 transitions reconstructed geometric models (Stage 2 planar point clouds and Stage 3 2D room polygons) into certified, user-facing metric dimensions: wall lengths, room perimeter, polygon floor area, and clear ceiling height.
+Stage 4 transitions reconstructed geometric models (Stage 2 planar point clouds and Stage 3 2D room polygons) into estimated, user-facing metric dimensions: wall lengths, room perimeter, polygon floor area, and clear ceiling height.
 
 Crucially, Stage 4 introduces an **honest uncertainty propagation model** and an **automated measurement validity gate**. Rather than reporting arbitrary or heuristic margins (e.g. $\pm 2\,\text{cm}$), every measurement is derived from physical sensor residuals, intersection conditioning, and deterministic Monte Carlo simulations.
 
@@ -59,7 +59,7 @@ Ceiling height is determined strictly from Stage 2 structural planes:
 Under no circumstances does the engine hallucinate, guess, or assign nominal default ceiling heights (e.g. $2.4\,\text{m}$).
 
 ### 5. Difference Between Confidence and Uncertainty
-* **Uncertainty** is a dimensional metric of precision and dispersion expressed in measurement units ($\text{meters}$ or $\text{m}^2$). It specifies the calibrated range $[L_{\text{lower}}, L_{\text{upper}}]$ within which the true physical dimension is expected to lie with $95\%$ probability ($k = 1.96$).
+* **Uncertainty** is a dimensional metric of precision and dispersion expressed in measurement units ($\text{meters}$ or $\text{m}^2$). It specifies the estimated engineering range $[L_{\text{lower}}, L_{\text{upper}}]$ within which the true physical dimension is expected to lie with $95\%$ probability ($k = 1.96$).
 * **Confidence** is a dimensionless score in $[0.0, 1.0]$ representing evidence quality and belief. A high confidence score ($0.90$) indicates dense point support, low sensor noise, and fully observed intersections, whereas low confidence indicates heavy extrapolation or noisy point clouds.
 
 ### 6. Where Uncertainty Comes From

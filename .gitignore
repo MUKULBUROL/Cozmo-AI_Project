@@ -59,8 +59,8 @@ sample_data/
 *.pcd
 *.obj
 
-# OS files
-.DS_Store
-Thumbs.db
-desktop.ini
-*Zone.Identifier
+# Large model weights
+*.pt
+weights/
+weights/*
+
