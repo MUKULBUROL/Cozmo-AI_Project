@@ -1,0 +1,261 @@
+{
+  "dataset": "CosmoAI-iPhone-Scan-Benchmark",
+  "version": "1.0.0",
+  "format_source": "Stray Scanner / Apple ARKit",
+  "coordinate_system": {
+    "world": "ARKit Right-Handed (Y-Up, X-Right, Z-Back; Gravity along -Y)",
+    "camera": "ARKit Optical / OpenCV compatible (+X right, +Y down, +Z forward for pinhole unprojection)",
+    "units": "meters (poses/geometry), millimeters (depth PNGs)"
+  },
+  "properties": [
+    {
+      "id": "property_001",
+      "description": "Multi-room residential apartment scanned with handheld iPhone LiDAR",
+      "estimated_bounds_meters": {
+        "width_x": 8.51,
+        "height_y": 2.50,
+        "depth_z": 9.13
+      },
+      "scans": [
+        {
+          "id": "c7d28f72c6",
+          "archive": "sample data/single_scan_with_ceiling.zip",
+          "type": "whole_property_with_ceiling",
+          "tier": "lidar",
+          "frames_count": 9745,
+          "duration_seconds": 214.92,
+          "nominal_fps": 60.0,
+          "average_fps": 45.34,
+          "files": [
+            "c7d28f72c6/rgb.mp4",
+            "c7d28f72c6/camera_matrix.csv",
+            "c7d28f72c6/odometry.csv",
+            "c7d28f72c6/imu.csv",
+            "c7d28f72c6/depth/*.png",
+            "c7d28f72c6/confidence/*.png"
+          ],
+          "metadata": {
+            "video": {
+              "codec": "hevc",
+              "width": 1920,
+              "height": 1440,
+              "aspect_ratio": "4:3",
+              "color_space": "bt709",
+              "file_size_bytes": 252331542
+            },
+            "depth": {
+              "format": "PNG uint16 (I;16)",
+              "width": 256,
+              "height": 192,
+              "units": "millimeters",
+              "min_depth_m": 0.75,
+              "max_depth_m": 4.48,
+              "total_frames": 9745
+            },
+            "confidence": {
+              "format": "PNG uint8 (L)",
+              "width": 256,
+              "height": 192,
+              "levels": [0, 1, 2],
+              "total_frames": 9745
+            },
+            "odometry": {
+              "entries": 9745,
+              "fields": ["timestamp", "frame", "x", "y", "z", "qx", "qy", "qz", "qw", "fx", "fy", "cx", "cy", "distortion_center_x", "distortion_center_y"],
+              "trajectory_bounds_m": {
+                "x": [-2.187, 6.107],
+                "y": [-0.165, 0.255],
+                "z": [-0.239, 8.890]
+              },
+              "loop_closure_drift_m": 0.389
+            },
+            "imu": {
+              "entries": 21339,
+              "fields": ["timestamp", "a_x", "a_y", "a_z", "alpha_x", "alpha_y", "alpha_z"],
+              "mean_accel_g": 1.007,
+              "mean_gravity_vector": [-0.01, -0.92, -0.11]
+            },
+            "intrinsics": {
+              "rgb_1920x1440": {
+                "fx": 1601.0514,
+                "fy": 1601.0514,
+                "cx": 955.82275,
+                "cy": 717.7025
+              },
+              "depth_256x192_scaled": {
+                "fx": 213.4735,
+                "fy": 213.4735,
+                "cx": 127.4430,
+                "cy": 95.6937
+              }
+            }
+          }
+        },
+        {
+          "id": "1a8384c3f6",
+          "archive": "sample data/single_scan_floor_only.zip",
+          "type": "whole_property_floor_only",
+          "tier": "lidar",
+          "frames_count": 5251,
+          "duration_seconds": 114.78,
+          "nominal_fps": 60.0,
+          "average_fps": 45.75,
+          "files": [
+            "1a8384c3f6/rgb.mp4",
+            "1a8384c3f6/camera_matrix.csv",
+            "1a8384c3f6/odometry.csv",
+            "1a8384c3f6/imu.csv",
+            "1a8384c3f6/depth/*.png",
+            "1a8384c3f6/confidence/*.png"
+          ],
+          "metadata": {
+            "video": {
+              "codec": "hevc",
+              "width": 1920,
+              "height": 1440,
+              "aspect_ratio": "4:3",
+              "file_size_bytes": 134726501
+            },
+            "depth": {
+              "format": "PNG uint16 (I;16)",
+              "width": 256,
+              "height": 192,
+              "units": "millimeters",
+              "min_depth_m": 0.24,
+              "max_depth_m": 1.93,
+              "total_frames": 5251
+            },
+            "confidence": {
+              "format": "PNG uint8 (L)",
+              "width": 256,
+              "height": 192,
+              "levels": [0, 1, 2],
+              "total_frames": 5251
+            },
+            "odometry": {
+              "entries": 5251,
+              "trajectory_bounds_m": {
+                "x": [-6.084, 2.425],
+                "y": [-0.079, 0.169],
+                "z": [-0.126, 8.543]
+              },
+              "loop_closure_drift_m": 0.172
+            },
+            "imu": {
+              "entries": 11397,
+              "mean_accel_g": 1.006,
+              "mean_gravity_vector": [0.06, -0.88, -0.46]
+            },
+            "intrinsics": {
+              "rgb_1920x1440": {
+                "fx": 1598.7919,
+                "fy": 1598.7919,
+                "cx": 955.38934,
+                "cy": 717.7579
+              },
+              "depth_256x192_scaled": {
+                "fx": 213.1723,
+                "fy": 213.1723,
+                "cx": 127.3852,
+                "cy": 95.7011
+              }
+            }
+          }
+        }
+      ],
+      "rooms": [
+        {
+          "id": "room_001",
+          "name": "Single Room Scan",
+          "captures": [
+            {
+              "id": "c00a170fe1",
+              "archive": "sample data/single_room.zip",
+              "tier": "lidar",
+              "frames_count": 1715,
+              "duration_seconds": 37.17,
+              "files": [
+                "c00a170fe1/rgb.mp4",
+                "c00a170fe1/camera_matrix.csv",
+                "c00a170fe1/odometry.csv",
+                "c00a170fe1/imu.csv",
+                "c00a170fe1/depth/*.png",
+                "c00a170fe1/confidence/*.png"
+              ],
+              "metadata": {
+                "video": {
+                  "codec": "hevc",
+                  "width": 1920,
+                  "height": 1440,
+                  "aspect_ratio": "4:3",
+                  "file_size_bytes": 43716638
+                },
+                "depth": {
+                  "format": "PNG uint16 (I;16)",
+                  "width": 256,
+                  "height": 192,
+                  "units": "millimeters",
+                  "min_depth_m": 0.51,
+                  "max_depth_m": 1.69,
+                  "total_frames": 1715
+                },
+                "confidence": {
+                  "format": "PNG uint8 (L)",
+                  "width": 256,
+                  "height": 192,
+                  "levels": [0, 1, 2],
+                  "total_frames": 1715
+                },
+                "odometry": {
+                  "entries": 1715,
+                  "trajectory_bounds_m": {
+                    "x": [-2.554, 1.063],
+                    "y": [-0.193, 0.090],
+                    "z": [-0.737, 4.042]
+                  },
+                  "loop_closure_drift_m": 3.179
+                },
+                "imu": {
+                  "entries": 3689,
+                  "mean_accel_g": 1.004,
+                  "mean_gravity_vector": [0.06, -0.85, -0.51]
+                },
+                "intrinsics": {
+                  "rgb_1920x1440": {
+                    "fx": 1599.6957,
+                    "fy": 1599.6957,
+                    "cx": 955.5105,
+                    "cy": 717.8084
+                  },
+                  "depth_256x192_scaled": {
+                    "fx": 213.2928,
+                    "fy": 213.2928,
+                    "cx": 127.4014,
+                    "cy": 95.7078
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "ground_truth": {
+    "wall_measurements": false,
+    "room_dimensions": false,
+    "opening_measurements": false,
+    "ceiling_height": false,
+    "floor_area": false,
+    "room_adjacency": false,
+    "floor_plan_drawings": false,
+    "point_clouds": false,
+    "meshes": false,
+    "damage_annotations": false
+  },
+  "tier_readiness": {
+    "lidar": "READY (full raw depth, confidence, poses, intrinsics, imu available)",
+    "video": "DERIVABLE (rgb.mp4 1920x1440 available across all 3 scans; poses/depth to be withheld during pipeline evaluation)",
+    "photo": "SYNTHESIZABLE (keyframe extraction from rgb.mp4 with 2-8 wide-baseline stills per room; standalone photo sets missing)"
+  }
+}

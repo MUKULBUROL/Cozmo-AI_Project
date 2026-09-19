@@ -1,0 +1,41 @@
+{
+  "dataset_dir": "sample data",
+  "scans": [
+    {
+      "id": "c00a170fe1",
+      "archive": "single_room.zip",
+      "type": "single_room",
+      "tier": "lidar",
+      "video_file": "rgb.mp4",
+      "depth_dir": "depth",
+      "confidence_dir": "confidence",
+      "odometry_file": "odometry.csv",
+      "imu_file": "imu.csv",
+      "camera_matrix_file": "camera_matrix.csv"
+    },
+    {
+      "id": "1a8384c3f6",
+      "archive": "single_scan_floor_only.zip",
+      "type": "whole_property_floor_only",
+      "tier": "lidar",
+      "video_file": "rgb.mp4",
+      "depth_dir": "depth",
+      "confidence_dir": "confidence",
+      "odometry_file": "odometry.csv",
+      "imu_file": "imu.csv",
+      "camera_matrix_file": "camera_matrix.csv"
+    },
+    {
+      "id": "c7d28f72c6",
+      "archive": "single_scan_with_ceiling.zip",
+      "type": "whole_property_with_ceiling",
+      "tier": "lidar",
+      "video_file": "rgb.mp4",
+      "depth_dir": "depth",
+      "confidence_dir": "confidence",
+      "odometry_file": "odometry.csv",
+      "imu_file": "imu.csv",
+      "camera_matrix_file": "camera_matrix.csv"
+    }
+  ]
+}
