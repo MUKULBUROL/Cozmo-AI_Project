@@ -1,8 +1,34 @@
-"""Data models defining the exact Challenge Output Contract with honest confidence intervals."""
+"""Data models defining the exact Challenge Output Contract with honest confidence intervals.
+
+1. Why this file exists:
+   Defines standardized Pydantic data schemas representing reconstructed physical spaces,
+   metric measurements, uncertainty intervals, walls, rooms, damages, and full property outputs.
+
+2. Pipeline stage:
+   Cross-stage contract (Stages 0, 1, 2, 3, 4, 5) - Core Challenge Deliverable Schema.
+
+3. Inputs:
+   Downstream metric measurements, detected planes, segmented openings, and damage regions.
+
+4. Outputs:
+   Validated, machine-readable Pydantic models for JSON serialization.
+
+5. Coordinate/Unit assumptions:
+   Metric units (meters 'm', square meters 'm2', degrees 'deg').
+   Y-axis upward vertical, XZ horizontal ground plane.
+
+6. Dependencies:
+   enum, typing, pydantic.
+
+7. Most likely failure/debugging points:
+   - Negative lower_bound / inverted intervals (lower_bound > upper_bound).
+   - Confidence out of [0.0, 1.0] bounds.
+   - NoneType on mandatory geometric fields when measurements fail.
+"""
 
 from enum import Enum
 from typing import List, Optional, Generic, TypeVar, Dict, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from .capture import CaptureTier
 from .floorplan import Point2D, RoomAdjacencyEdge
 from .geometry import OpeningType
@@ -16,8 +42,33 @@ class Measurement(BaseModel, Generic[T]):
     unit: str = Field(..., description="Measurement unit (e.g. 'm', 'm2', 'deg')")
     lower_bound: T = Field(..., description="Lower bound of uncertainty interval")
     upper_bound: T = Field(..., description="Upper bound of uncertainty interval")
+    interval: Optional[List[T]] = Field(default=None, description="[lower_bound, upper_bound] interval")
     confidence: float = Field(..., ge=0.0, le=1.0, description="Calibrated confidence level (e.g. 0.95 for 95% interval)")
     method: str = Field(..., description="Source/method: e.g. lidar_plane_fit, visual_sfm, monocular_depth_edge")
+
+    def model_post_init(self, __context: Any) -> None:
+        """Synchronizes interval and bound attributes.
+
+        Purpose:
+            Ensures interval is populated as [lower_bound, upper_bound] if not passed.
+
+        Parameters:
+            __context: Pydantic internal context object.
+
+        Returns:
+            None.
+
+        Assumptions:
+            lower_bound and upper_bound are of compatible type T.
+
+        Failure conditions:
+            None.
+
+        Debugging:
+            Inspect self.interval when serializing to JSON.
+        """
+        if self.interval is None and self.lower_bound is not None and self.upper_bound is not None:
+            self.interval = [self.lower_bound, self.upper_bound]
 
 
 class DamageClass(str, Enum):
@@ -71,7 +122,7 @@ class DimensionedRoom(BaseModel):
     name: str
     floor_area: Measurement[float]
     perimeter: Measurement[float]
-    ceiling_height: Measurement[float]
+    ceiling_height: Optional[Measurement[float]] = Field(default=None, description="Measured clear ceiling height, null if unobserved")
     walls: List[DimensionedWall] = Field(default_factory=list)
     openings: List[DimensionedOpening] = Field(default_factory=list)
     damage_regions: List[DamageRegion] = Field(default_factory=list)
