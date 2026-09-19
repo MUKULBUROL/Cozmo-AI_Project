@@ -39,6 +39,13 @@ from .output import (
     DimensionedRoom,
     PropertyPlanOutput,
 )
+from .room_polygon import (
+    CoordinateSystemInfo,
+    WallExtent2D,
+    CandidateCornerRecord,
+    RoomPolygonData,
+    Stage3PolygonResult,
+)
 
 __all__ = [
     "CaptureTier",
@@ -70,4 +77,9 @@ __all__ = [
     "DimensionedWall",
     "DimensionedRoom",
     "PropertyPlanOutput",
+    "CoordinateSystemInfo",
+    "WallExtent2D",
+    "CandidateCornerRecord",
+    "RoomPolygonData",
+    "Stage3PolygonResult",
 ]

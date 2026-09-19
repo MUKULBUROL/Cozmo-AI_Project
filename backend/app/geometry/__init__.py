@@ -11,6 +11,23 @@ from .plane_classification import (
 )
 from .metrics import compute_plane_residuals, compute_plane_bounds_and_spans, compute_plane_confidence
 from .structural_extraction import StructuralConfig, extract_structure, write_ply
+from .wall_quality import evaluate_wall_quality
+from .projection_2d import (
+    project_plane_to_2d_line,
+    compute_finite_extents,
+    project_walls_to_2d,
+    merge_near_duplicate_2d_lines,
+)
+from .line_geometry import (
+    intersect_2d_lines,
+    compute_segment_extension_distance,
+    point_to_segment_distance,
+    angle_between_lines_deg,
+)
+from .corner_detection import detect_candidate_corners
+from .polygon_builder import build_connectivity_graph, find_simple_cycles, extract_room_polygon
+from .polygon_validation import validate_room_polygon, compute_polygon_quality_metrics
+from .room_footprint import run_stage3_pipeline, render_floorplan_debug_svg
 
 __all__ = [
     "load_and_validate_point_cloud",
@@ -29,4 +46,21 @@ __all__ = [
     "StructuralConfig",
     "extract_structure",
     "write_ply",
+    "evaluate_wall_quality",
+    "project_plane_to_2d_line",
+    "compute_finite_extents",
+    "project_walls_to_2d",
+    "merge_near_duplicate_2d_lines",
+    "intersect_2d_lines",
+    "compute_segment_extension_distance",
+    "point_to_segment_distance",
+    "angle_between_lines_deg",
+    "detect_candidate_corners",
+    "build_connectivity_graph",
+    "find_simple_cycles",
+    "extract_room_polygon",
+    "validate_room_polygon",
+    "compute_polygon_quality_metrics",
+    "run_stage3_pipeline",
+    "render_floorplan_debug_svg",
 ]
