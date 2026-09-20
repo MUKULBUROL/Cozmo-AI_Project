@@ -36,6 +36,7 @@ import math
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 import numpy as np
+from shapely.geometry import Polygon
 
 from backend.app.models.floorplan import Room2D, RoomAdjacencyEdge, Point2D
 
@@ -157,9 +158,10 @@ def render_property_debug_svg(
         pts_str = " ".join(f"{to_svg(p.x, p.y)[0]:.1f},{to_svg(p.x, p.y)[1]:.1f}" for p in r.polygon)
         svg_lines.append(f'  <polygon points="{pts_str}" fill="{color["fill"]}" fill-opacity="0.6" stroke="{color["stroke"]}" stroke-width="2.5"/>')
 
-        # Centroid calculation
-        cx = sum(p.x for p in r.polygon) / len(r.polygon)
-        cy = sum(p.y for p in r.polygon) / len(r.polygon)
+        # Centroid calculation using Shapely representative point for irregular/corridor polygons
+        poly_geom = Polygon([(p.x, p.y) for p in r.polygon])
+        rep_pt = poly_geom.representative_point() if poly_geom.is_valid else poly_geom.centroid
+        cx, cy = float(rep_pt.x), float(rep_pt.y)
         scx, scy = to_svg(cx, cy)
         room_centroids[r.room_id] = (scx, scy)
 

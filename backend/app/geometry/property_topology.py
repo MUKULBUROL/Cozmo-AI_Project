@@ -69,7 +69,8 @@ class TopologyValidationReport:
 
 def validate_room_topology(
     rooms: List[Room2D],
-    max_allowable_overlap_ratio: float = 0.08,
+    max_allowable_overlap_ratio: float = 0.05,
+    max_allowable_overlap_area_sqm: float = 0.10,
 ) -> TopologyValidationReport:
     """Verifies that room polygons are geometrically valid and do not occupy identical space.
 
@@ -79,6 +80,7 @@ def validate_room_topology(
     Parameters:
         rooms: List of Room2D objects in global coordinate space.
         max_allowable_overlap_ratio: Maximum allowable intersection fraction of smaller room.
+        max_allowable_overlap_area_sqm: Maximum allowable overlap area in square meters.
 
     Returns:
         TopologyValidationReport detailing validation outcomes.
@@ -130,7 +132,8 @@ def validate_room_topology(
                 min_area = min(poly_a.area, poly_b.area)
                 ratio = inter_area / max(min_area, 1e-4)
 
-                if ratio > max_allowable_overlap_ratio:
+                # Strict physical check: flag if 2D overlap exceeds allowable bounds
+                if inter_area > max_allowable_overlap_area_sqm or ratio > max_allowable_overlap_ratio:
                     report.is_valid = False
                     report.overlap_violations.append({
                         "room_a": id_a,
@@ -215,18 +218,27 @@ def build_room_adjacency_graph(
             poly_j = Polygon([(p.x, p.y) for p in rooms[j].polygon])
             dist = poly_i.distance(poly_j)
 
-            # If rooms are within 0.35m of each other, they share a dividing wall
+            # If rooms are in physical contact or separated only by a standard partition wall (<= 0.35m)
             if dist <= 0.35:
-                connected_pairs.add(pair)
-                connections.append(
-                    RoomAdjacencyEdge(
-                        room_a_id=pair[0],
-                        room_b_id=pair[1],
-                        connecting_opening_id=None,
-                        is_shared_wall=True,
-                        shared_wall_length_meters=1.5,
+                # Measure shared wall contact length
+                b_i = poly_i.buffer(0.12)
+                b_j = poly_j.buffer(0.12)
+                contact_geom = b_i.intersection(b_j)
+                contact_len = float(contact_geom.length / 2.0) if not contact_geom.is_empty else 0.0
+
+                # Must share a boundary of meaningful length (>= 0.40m) to avoid diagonal corner contacts
+                if contact_len >= 0.40 or (dist <= 0.05 and poly_i.intersects(poly_j)):
+                    shared_len = max(round(contact_len, 2), 1.0)
+                    connected_pairs.add(pair)
+                    connections.append(
+                        RoomAdjacencyEdge(
+                            room_a_id=pair[0],
+                            room_b_id=pair[1],
+                            connecting_opening_id=None,
+                            is_shared_wall=True,
+                            shared_wall_length_meters=shared_len,
+                        )
                     )
-                )
 
     return connections
 

@@ -33,10 +33,13 @@
 import unittest
 from shapely.geometry import Polygon
 
+from backend.app.models.capture import Pose6D
 from backend.app.models.floorplan import Room2D, Point2D, Wall2D, RoomAdjacencyEdge
 from backend.app.geometry.multiroom_segmentation import (
     SegmentedRoomCandidate,
     build_room_polygon_in_global_frame,
+    cluster_trajectory_into_room_regions,
+    extract_dominant_orientation,
 )
 from backend.app.geometry.property_topology import (
     validate_room_topology,
@@ -189,6 +192,85 @@ class TestMultiRoomReconstruction(unittest.TestCase):
         self.assertEqual(len(output.rooms), 2)
         self.assertEqual(len(output.connections), 0)
         self.assertAlmostEqual(output.total_floor_area.value, 25.0)
+
+    def test_manhattan_orientation_extraction(self):
+        """Verifies dominant orientation theta is correctly extracted from orthogonal wall planes."""
+        # Walls rotated at 30 degrees (0.5236 rad)
+        theta_true = 0.5236
+        cos_t = 0.8660
+        sin_t = 0.5000
+        # Wall 1 normal along rotated X: [cos, 0, sin]
+        # Wall 2 normal along rotated Z: [-sin, 0, cos]
+        wall_planes = [
+            {"normal": [cos_t, 0.0, sin_t], "centroid": [0.0, 0.0, 0.0]},
+            {"normal": [-sin_t, 0.0, cos_t], "centroid": [2.0, 0.0, 2.0]},
+            {"normal": [-cos_t, 0.0, -sin_t], "centroid": [4.0, 0.0, 4.0]},
+        ]
+        theta_est = extract_dominant_orientation(poses=[], wall_planes=wall_planes)
+        self.assertAlmostEqual(theta_est, theta_true, delta=0.05)
+
+    def test_structural_free_space_partitioning_zero_overlap(self):
+        """Verifies that multi-room spatial partitioning guarantees strict zero interior overlap."""
+        # Create a synthetic trajectory visiting 3 rooms and a hallway
+        poses = []
+        frame_idx = 0
+        # Room 1 cluster (north-west: X in [0..3], Z in [5..8])
+        for x in [1.0, 1.5, 2.0, 2.5]:
+            for z in [6.0, 6.5, 7.0]:
+                poses.append(Pose6D(frame_index=frame_idx, timestamp=float(frame_idx), x=x, y=0.0, z=z, qx=0, qy=0, qz=0, qw=1))
+                frame_idx += 1
+        # Hallway cluster (central: X in [0..7], Z in [3.5..4.5])
+        for x in [1.0, 2.5, 4.0, 5.5]:
+            for z in [3.8, 4.0, 4.2]:
+                poses.append(Pose6D(frame_index=frame_idx, timestamp=float(frame_idx), x=x, y=0.0, z=z, qx=0, qy=0, qz=0, qw=1))
+                frame_idx += 1
+        # Room 2 cluster (north-east: X in [5..8], Z in [5..8])
+        for x in [5.5, 6.0, 6.5, 7.0]:
+            for z in [6.0, 6.5, 7.0]:
+                poses.append(Pose6D(frame_index=frame_idx, timestamp=float(frame_idx), x=x, y=0.0, z=z, qx=0, qy=0, qz=0, qw=1))
+                frame_idx += 1
+        # Room 3 cluster (south-east: X in [5..8], Z in [0..3])
+        for x in [5.5, 6.0, 6.5, 7.0]:
+            for z in [1.0, 1.5, 2.0]:
+                poses.append(Pose6D(frame_index=frame_idx, timestamp=float(frame_idx), x=x, y=0.0, z=z, qx=0, qy=0, qz=0, qw=1))
+                frame_idx += 1
+
+        wall_planes = [
+            {"normal": [1.0, 0.0, 0.0], "centroid": [0.0, 0.0, 4.0]},
+            {"normal": [1.0, 0.0, 0.0], "centroid": [4.5, 0.0, 4.0]},
+            {"normal": [1.0, 0.0, 0.0], "centroid": [8.5, 0.0, 4.0]},
+            {"normal": [0.0, 0.0, 1.0], "centroid": [4.0, 0.0, 3.2]},
+            {"normal": [0.0, 0.0, 1.0], "centroid": [4.0, 0.0, 4.8]},
+        ]
+
+        candidates = cluster_trajectory_into_room_regions(poses, wall_planes=wall_planes)
+        self.assertGreaterEqual(len(candidates), 3)
+
+        rooms: List[Room2D] = []
+        for c in candidates:
+            r = build_room_polygon_in_global_frame(
+                room_id=c.room_id,
+                name="Hallway" if c.is_connector else f"Room {c.room_id}",
+                associated_wall_planes=[],
+                centroid_xz=c.centroid_xz,
+                cell_polygon=c.cell_polygon,
+            )
+            rooms.append(r)
+
+        # Validate topological consistency: ZERO overlap violations
+        report = validate_room_topology(rooms)
+        self.assertTrue(report.is_valid)
+        self.assertEqual(len(report.overlap_violations), 0)
+
+        # Confirm pairwise polygon intersection area is strictly zero
+        for i in range(len(rooms)):
+            poly_i = Polygon([(p.x, p.y) for p in rooms[i].polygon])
+            for j in range(i + 1, len(rooms)):
+                poly_j = Polygon([(p.x, p.y) for p in rooms[j].polygon])
+                if poly_i.intersects(poly_j):
+                    inter_area = float(poly_i.intersection(poly_j).area)
+                    self.assertAlmostEqual(inter_area, 0.0, delta=0.05,
+                                           msg=f"Overlap between {rooms[i].room_id} and {rooms[j].room_id}: {inter_area}")
 
 
 if __name__ == "__main__":

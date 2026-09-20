@@ -313,15 +313,22 @@ def run_property_reconstruction(
     )
     try:
         struct_res = extract_structure(struct_config)
-        wall_planes = struct_res.get("planes", {}).get("walls", [])
-        ceiling_height = struct_res.get("metrics", {}).get("ceiling_height_meters")
+        struct_json_path = out_dir / "structure" / "structure.json"
+        if struct_json_path.exists():
+            with open(struct_json_path, "r", encoding="utf-8") as f:
+                struct_data = json.load(f)
+            wall_planes = struct_data.get("walls", [])
+            ceiling_height = struct_data.get("ceiling", {}).get("estimated_clear_height_m") or struct_res.get("estimated_ceiling_height_m")
+        else:
+            wall_planes = []
+            ceiling_height = struct_res.get("estimated_ceiling_height_m", 2.45)
     except Exception as e:
         print(f"  Warning: Structural extraction encountered exception: {e}; falling back to trajectory bounds")
         wall_planes = []
         ceiling_height = 2.45
 
-    # Segment room candidates
-    room_candidates = cluster_trajectory_into_room_regions(raw_poses_list)
+    # Segment room candidates using structural free-space partitioning
+    room_candidates = cluster_trajectory_into_room_regions(raw_poses_list, wall_planes=wall_planes)
     assign_walls_to_rooms(wall_planes, room_candidates)
 
     rooms: List[Room2D] = []

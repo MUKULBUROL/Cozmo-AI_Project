@@ -1,16 +1,17 @@
 """Stage 6 Multi-Room Region Detection & Unified Polygon Extraction.
 
 1. Why this file exists:
-    Segments full-property 3D structural geometry and camera trajectory clusters into
-    discrete room regions (e.g. Room 01, Room 02, Room 03, Connector 01) while strictly
-    preserving a single, unified global coordinate frame (XZ floor plane in meters)
-    and guaranteeing zero impossible room overlaps.
+    Segments full-property 3D structural geometry and camera trajectory into
+    discrete room regions (e.g. Room 01, Room 02, Room 03, Connector 01) using
+    structural free-space partitioning while strictly preserving a single, unified
+    global coordinate frame (XZ floor plane in meters) and guaranteeing zero impossible
+    room overlaps.
 
 2. Pipeline stage:
     Stage 6 — Room Region Detection & Global Polygon Extraction.
 
 3. Inputs:
-    List of 3D WallPlanes from structural extraction, optimized camera poses, and floor bounds.
+    List of 3D WallPlanes from structural extraction, camera poses, and optional bounds.
 
 4. Outputs:
     List of Room2D objects with global polygon vertices, host walls, and room classification
@@ -28,10 +29,10 @@
     math, numpy, scipy.cluster.vq, shapely.geometry, backend.app.models.floorplan.
 
 8. What is most likely to break:
-    Collinear cluster centers causing degenerate Voronoi cells.
+    Sparse or noisy wall planes falling back to trajectory-based Manhattan partitioning.
 
 9. What a developer should inspect first:
-    Verify that polygon coordinates are in global coordinates and sum of areas matches floor footprint.
+    Verify that polygon coordinates are in global coordinates and pairwise intersections are zero.
 """
 
 import math
@@ -40,7 +41,7 @@ from typing import List, Dict, Any, Optional, Tuple
 import numpy as np
 from scipy.cluster.vq import kmeans2
 from shapely.geometry import box, Polygon, Point, MultiPoint
-from shapely.ops import voronoi_diagram
+from shapely.ops import unary_union
 
 from backend.app.models.capture import Pose6D
 from backend.app.models.floorplan import Point2D, Wall2D, Room2D
@@ -66,31 +67,86 @@ class SegmentedRoomCandidate:
     wall_indices: List[int] = field(default_factory=list)
 
 
+def extract_dominant_orientation(
+    poses: List[Pose6D],
+    wall_planes: Optional[List[Dict[str, Any]]] = None,
+) -> float:
+    """Computes the primary Manhattan orientation angle theta of the building in radians.
+
+    Parameters:
+        poses: Camera trajectory poses.
+        wall_planes: Optional structural wall planes from Stage 2.
+
+    Returns:
+        Dominant angle theta in radians [0, pi/2).
+    """
+    angles: List[float] = []
+    if wall_planes:
+        for w in wall_planes:
+            norm = w.get("normal")
+            if norm and len(norm) >= 3:
+                nx, nz = float(norm[0]), float(norm[2])
+                norm_len = math.hypot(nx, nz)
+                if norm_len > 1e-4:
+                    ang = math.atan2(nz, nx) % (math.pi / 2.0)
+                    angles.append(ang)
+
+    if len(angles) >= 2:
+        return float(np.median(angles))
+
+    # Fallback to trajectory covariance / PCA
+    if poses and len(poses) >= 4:
+        pos_xz = np.array([[p.x, p.z] for p in poses], dtype=np.float64)
+        cov = np.cov(pos_xz.T)
+        eigvals, eigvecs = np.linalg.eigh(cov)
+        primary_vec = eigvecs[:, int(np.argmax(eigvals))]
+        return float(math.atan2(primary_vec[1], primary_vec[0]) % (math.pi / 2.0))
+
+    return 0.0
+
+
+def _cluster_1d_lines(values: List[float], tolerance_m: float = 0.8) -> List[float]:
+    """Clusters 1D divider coordinates within a tolerance threshold."""
+    if not values:
+        return []
+    sorted_vals = sorted(values)
+    clusters: List[List[float]] = [[sorted_vals[0]]]
+    for v in sorted_vals[1:]:
+        if v - clusters[-1][-1] <= tolerance_m:
+            clusters[-1].append(v)
+        else:
+            clusters.append([v])
+    return [float(np.mean(c)) for c in clusters]
+
+
+def _rotate_polygon(poly: Any, cos_t: float, sin_t: float) -> Polygon:
+    """Rotates a Shapely Polygon (or largest component of MultiPolygon) using direct matrix coordinates."""
+    if hasattr(poly, "geoms"):
+        poly = max(poly.geoms, key=lambda g: g.area)
+    coords = list(poly.exterior.coords)
+    rot_coords = [(x * cos_t - y * sin_t, x * sin_t + y * cos_t) for x, y in coords]
+    return Polygon(rot_coords)
+
+
 def cluster_trajectory_into_room_regions(
     poses: List[Pose6D],
     target_clusters: int = 4,
+    wall_planes: Optional[List[Dict[str, Any]]] = None,
 ) -> List[SegmentedRoomCandidate]:
     """Partitions camera trajectory and space into discrete, non-overlapping room regions.
 
     Purpose:
-        Discovers the physical layout of rooms visited along the camera walk and constructs
-        a tessellated partition of the building space with zero overlap violations.
+        Constructs a clean structural free-space partition of the building aligned with
+        the dominant architectural Manhattan frame, strictly guaranteeing zero impossible
+        room overlaps and modeling hallways as realistic corridors rather than diagonal wedges.
 
     Parameters:
         poses: Chronological list of Pose6D poses.
         target_clusters: Desired room count (typically 3 to 4 for multi-room properties).
+        wall_planes: Optional structural wall planes from Stage 2 extraction.
 
     Returns:
         List of SegmentedRoomCandidate objects with global centroids and polygon cells.
-
-    Assumptions:
-        Camera covers the scanned rooms in metric coordinates.
-
-    Failure conditions:
-        If trajectory span is small (< 3.0 m), returns a single room region.
-
-    Debugging:
-        Inspect candidate centroids and cell_polygon areas.
     """
     if not poses:
         return []
@@ -105,12 +161,6 @@ def cluster_trajectory_into_room_regions(
 
     # If small single-room scan
     if span_x < 3.5 and span_z < 3.5:
-        poly_pts = [
-            Point2D(x=round(min_x, 3), y=round(min_z, 3)),
-            Point2D(x=round(max_x, 3), y=round(min_z, 3)),
-            Point2D(x=round(max_x, 3), y=round(max_z, 3)),
-            Point2D(x=round(min_x, 3), y=round(max_z, 3)),
-        ]
         cent = (float(np.mean(positions_xz[:, 0])), float(np.mean(positions_xz[:, 1])))
         return [
             SegmentedRoomCandidate(
@@ -122,56 +172,185 @@ def cluster_trajectory_into_room_regions(
             )
         ]
 
-    # Global building bounding envelope
-    b_box = box(min_x, min_z, max_x, max_z)
+    # 1. Compute dominant Manhattan orientation theta
+    theta = extract_dominant_orientation(poses, wall_planes)
+    cos_t, sin_t = math.cos(theta), math.sin(theta)
 
-    # Determine stable cluster count (up to 4)
-    k = min(target_clusters, max(2, len(poses) // 100))
-    centers, labels = kmeans2(positions_xz, k, minit="points", iter=25)
+    # 2. Transform poses to Manhattan frame (u, v)
+    u_vals = positions_xz[:, 0] * cos_t + positions_xz[:, 1] * sin_t
+    v_vals = -positions_xz[:, 0] * sin_t + positions_xz[:, 1] * cos_t
+    uv_poses = np.column_stack((u_vals, v_vals))
 
-    # Determine which cluster acts as connector (closest to the mean trajectory center)
-    global_mean = np.mean(positions_xz, axis=0)
-    dists_to_mean = [float(np.linalg.norm(c - global_mean)) for c in centers]
-    connector_idx = int(np.argmin(dists_to_mean))
+    u_min, u_max = float(u_vals.min()), float(u_vals.max())
+    v_min, v_max = float(v_vals.min()), float(v_vals.max())
 
-    # Generate Voronoi diagram partitioned within the building bounding box
-    pts = MultiPoint([Point(float(c[0]), float(c[1])) for c in centers])
-    vor = voronoi_diagram(pts, envelope=b_box)
+    # 3. Project structural walls to discover Manhattan dividing lines
+    u_divs: List[float] = []
+    v_divs: List[float] = []
 
+    if wall_planes:
+        for w in wall_planes:
+            cent = w.get("centroid")
+            norm = w.get("normal")
+            if not cent or not norm:
+                continue
+            cx, cz = float(cent[0]), float(cent[2])
+            nx, nz = float(norm[0]), float(norm[2])
+
+            cu = cx * cos_t + cz * sin_t
+            cv = -cx * sin_t + cz * cos_t
+            nu = nx * cos_t + nz * sin_t
+            nv = -nx * sin_t + nz * cos_t
+
+            if abs(nu) > abs(nv):
+                u_divs.append(cu)
+            else:
+                v_divs.append(cv)
+
+    u_clustered = _cluster_1d_lines(u_divs, tolerance_m=0.8)
+    v_clustered = _cluster_1d_lines(v_divs, tolerance_m=0.8)
+
+    # Ensure bounding dividers enclose the trajectory
+    margin = 0.4
+    u_bounds = sorted(list(set(
+        [u_min - margin] +
+        [u for u in u_clustered if u_min - margin <= u <= u_max + margin] +
+        [u_max + margin]
+    )))
+    v_bounds = sorted(list(set(
+        [v_min - margin] +
+        [v for v in v_clustered if v_min - margin <= v <= v_max + margin] +
+        [v_max + margin]
+    )))
+
+    # Fallback to k-means regular grid if wall dividers are too few
+    if len(u_bounds) < 3:
+        u_bounds = sorted([u_min - margin, (u_min + u_max) / 2.0, u_max + margin])
+    if len(v_bounds) < 3:
+        v_bounds = sorted([v_min - margin, (v_min + v_max) / 2.0, v_max + margin])
+
+    # 4. Form rectangular structural cells in (u, v) and evaluate trajectory occupancy
+    active_cells: List[Dict[str, Any]] = []
+    for i in range(len(u_bounds) - 1):
+        for j in range(len(v_bounds) - 1):
+            u0, u1 = u_bounds[i], u_bounds[i + 1]
+            v0, v1 = v_bounds[j], v_bounds[j + 1]
+            cell_poly = box(u0, v0, u1, v1)
+
+            # Inliers
+            in_mask = (u_vals >= u0) & (u_vals < u1) & (v_vals >= v0) & (v_vals < v1)
+            frame_indices = [frame_ids[k] for k in range(len(poses)) if in_mask[k]]
+
+            if len(frame_indices) >= max(10, len(poses) // 100):
+                active_cells.append({
+                    "u_range": (u0, u1),
+                    "v_range": (v0, v1),
+                    "poly": cell_poly,
+                    "frames": frame_indices,
+                    "centroid_uv": (float((u0 + u1) / 2.0), float((v0 + v1) / 2.0)),
+                    "area": float(cell_poly.area),
+                })
+
+    # 5. Group active cells into semantic rooms and connecting hallway
+    # In multi-room apartments, the central transitional band (mid-V) acts as the hallway connector
+    v_mid_range = (v_min + (v_max - v_min) * 0.35, v_min + (v_max - v_min) * 0.65)
     candidates: List[SegmentedRoomCandidate] = []
-    room_counter = 1
 
-    for i, c in enumerate(centers):
-        pt = Point(float(c[0]), float(c[1]))
-        matching_poly = None
-        for geom in vor.geoms:
-            if geom.contains(pt):
-                matching_poly = geom.intersection(b_box)
-                break
+    # Identify connector cells: cells that lie within the central transition band connecting wings
+    conn_cells = []
+    room_cell_groups: Dict[str, List[Dict[str, Any]]] = {
+        "north_west": [],
+        "north_east": [],
+        "south_east": [],
+        "south_west": [],
+    }
 
-        if matching_poly is None or matching_poly.area < 1.0:
-            # Fallback to local buffer
-            matching_poly = pt.buffer(2.0).intersection(b_box)
+    u_mid = (u_min + u_max) / 2.0
 
-        c_frames = [frame_ids[idx] for idx in range(len(poses)) if labels[idx] == i]
-        is_conn = (i == connector_idx and k > 2)
-
-        if is_conn:
-            r_id = "connector_01"
+    for c in active_cells:
+        cu, cv = c["centroid_uv"]
+        # If cell spans across central hallway band with high aspect ratio or central V
+        is_in_hallway_band = (v_mid_range[0] <= cv <= v_mid_range[1])
+        if is_in_hallway_band and len(active_cells) > 3:
+            conn_cells.append(c)
         else:
-            r_id = f"room_{room_counter:02d}"
-            room_counter += 1
+            if cv >= v_mid_range[1]:
+                if cu < u_mid:
+                    room_cell_groups["north_west"].append(c)
+                else:
+                    room_cell_groups["north_east"].append(c)
+            else:
+                if cu >= u_mid:
+                    room_cell_groups["south_east"].append(c)
+                else:
+                    room_cell_groups["south_west"].append(c)
 
-        cand = SegmentedRoomCandidate(
-            room_id=r_id,
-            is_connector=is_conn,
-            trajectory_indices=c_frames,
-            centroid_xz=(float(c[0]), float(c[1])),
-            cell_polygon=matching_poly,
+    # Construct Connector Polygon
+    conn_poly_uv = None
+    conn_frames: List[int] = []
+    if conn_cells:
+        conn_poly_uv = unary_union([c["poly"] for c in conn_cells])
+        for c in conn_cells:
+            conn_frames.extend(c["frames"])
+
+    # If connector cells are empty or disconnected, fallback to most central active cell
+    if conn_poly_uv is None or conn_poly_uv.is_empty:
+        if active_cells:
+            # Pick cell closest to overall trajectory center
+            c_center = (float(np.mean(u_vals)), float(np.mean(v_vals)))
+            best_idx = int(np.argmin([math.hypot(c["centroid_uv"][0] - c_center[0], c["centroid_uv"][1] - c_center[1]) for c in active_cells]))
+            conn_cell = active_cells.pop(best_idx)
+            conn_poly_uv = conn_cell["poly"]
+            conn_frames = conn_cell["frames"]
+
+    # Assemble non-overlapping room polygons from the cell groups
+    room_counter = 1
+    for grp_key in ["north_west", "north_east", "south_east", "south_west"]:
+        group = room_cell_groups[grp_key]
+        if not group:
+            continue
+
+        grp_poly = unary_union([c["poly"] for c in group])
+        if conn_poly_uv is not None and not conn_poly_uv.is_empty:
+            grp_poly = grp_poly.difference(conn_poly_uv)
+
+        if grp_poly.is_empty or grp_poly.area < 1.0:
+            continue
+
+        grp_frames: List[int] = []
+        for c in group:
+            grp_frames.extend(c["frames"])
+
+        # Rotate back to global frame (x, z)
+        global_poly = _rotate_polygon(grp_poly, cos_t, -sin_t)
+        gc_x, gc_z = float(global_poly.centroid.x), float(global_poly.centroid.y)
+
+        candidates.append(
+            SegmentedRoomCandidate(
+                room_id=f"room_{room_counter:02d}",
+                is_connector=False,
+                trajectory_indices=grp_frames,
+                centroid_xz=(gc_x, gc_z),
+                cell_polygon=global_poly,
+            )
         )
-        candidates.append(cand)
+        room_counter += 1
 
-    # Sort so connector is first or last systematically
+    # Add connector candidate
+    if conn_poly_uv is not None and not conn_poly_uv.is_empty:
+        global_conn_poly = _rotate_polygon(conn_poly_uv, cos_t, -sin_t)
+        gcc_x, gcc_z = float(global_conn_poly.centroid.x), float(global_conn_poly.centroid.y)
+        candidates.append(
+            SegmentedRoomCandidate(
+                room_id="connector_01",
+                is_connector=True,
+                trajectory_indices=conn_frames,
+                centroid_xz=(gcc_x, gcc_z),
+                cell_polygon=global_conn_poly,
+            )
+        )
+
+    # Sort rooms sequentially, keeping connector at the end
     candidates.sort(key=lambda x: (x.is_connector, x.room_id))
     return candidates
 
@@ -181,28 +360,7 @@ def assign_walls_to_rooms(
     room_candidates: List[SegmentedRoomCandidate],
     max_wall_distance_m: float = 4.0,
 ) -> None:
-    """Associates structural wall planes with candidate room regions based on proximity.
-
-    Purpose:
-        Maps global structural wall lines to rooms whose polygon boundaries border them.
-
-    Parameters:
-        wall_planes: List of wall plane dictionaries from Stage 2 structural extraction.
-        room_candidates: List of SegmentedRoomCandidate objects (modified in-place).
-        max_wall_distance_m: Maximum distance threshold from room polygon to wall plane.
-
-    Returns:
-        None (modifies wall_indices attribute of candidates in-place).
-
-    Assumptions:
-        Structural wall lines are in global XZ coordinates.
-
-    Failure conditions:
-        None; unassociated walls remain unassigned.
-
-    Debugging:
-        Ensure candidate wall_indices has entries for bordering walls.
-    """
+    """Associates structural wall planes with candidate room regions based on proximity."""
     if not wall_planes or not room_candidates:
         return
 
@@ -234,34 +392,13 @@ def build_room_polygon_in_global_frame(
     cell_polygon: Optional[Polygon] = None,
     default_radius_m: float = 2.0,
 ) -> Room2D:
-    """Constructs a valid 2D room polygon strictly maintaining global coordinates.
-
-    Purpose:
-        Produces a non-overlapping Room2D model positioned in the unified global floor plan.
-
-    Parameters:
-        room_id: String ID (e.g. 'room_01').
-        name: Human-readable room title.
-        associated_wall_planes: Structural wall planes belonging to this room.
-        centroid_xz: Global [x, z] center of the room.
-        cell_polygon: Optional precomputed Shapely Polygon partition.
-        default_radius_m: Fallback radius if polygon is absent.
-
-    Returns:
-        Room2D instance with global coordinates, area, perimeter, and walls.
-
-    Assumptions:
-        All coordinates are in global metric meters.
-
-    Failure conditions:
-        None; falls back to rectangular envelope if cell_polygon is invalid.
-
-    Debugging:
-        Check room.polygon coordinates; they must match global spatial footprint.
-    """
+    """Constructs a valid 2D room polygon strictly maintaining global coordinates."""
     if cell_polygon is not None and cell_polygon.is_valid and cell_polygon.area > 1.0:
+        # If multi-polygon, select largest component
+        if hasattr(cell_polygon, "geoms"):
+            cell_polygon = max(cell_polygon.geoms, key=lambda g: g.area)
+
         coords = list(cell_polygon.exterior.coords)
-        # Drop duplicate closing point
         if len(coords) > 1 and coords[0] == coords[-1]:
             coords = coords[:-1]
 
@@ -275,7 +412,7 @@ def build_room_polygon_in_global_frame(
         for k in range(n_pts):
             p_start = poly_pts[k]
             p_end = poly_pts[(k + 1) % n_pts]
-            length_m = math.sqrt((p_end.x - p_start.x)**2 + (p_end.y - p_start.y)**2)
+            length_m = math.hypot(p_end.x - p_start.x, p_end.y - p_start.y)
             wall_segments.append(
                 Wall2D(
                     wall_id=f"{room_id}_w{k+1:02d}",
