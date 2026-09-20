@@ -123,6 +123,7 @@ def run_property_reconstruction(
     archive_path: Optional[str] = None,
     frame_stride: int = 5,
     headless: bool = False,
+    output_dir: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Orchestrates the entire multi-room property reconstruction and drift correction.
 
@@ -134,6 +135,7 @@ def run_property_reconstruction(
         archive_path: Optional explicit zip archive path.
         frame_stride: Downsampling stride for fusion and point cloud reconstruction.
         headless: Flag to suppress interactive displays and format concise summary.
+        output_dir: Optional custom output directory for deliverables.
 
     Returns:
         Dictionary summarizing all reconstruction accounting metrics.
@@ -145,10 +147,13 @@ def run_property_reconstruction(
         Raises FileNotFoundError if archive is missing.
 
     Debugging:
-        Inspect generated JSON files in outputs/<scan_id>/property/.
+        Inspect generated JSON files in outputs/<scan_id>/property/ or custom output_dir.
     """
     t_start = time.time()
-    out_dir = Path("outputs") / scan_id / "property"
+    if output_dir is not None:
+        out_dir = Path(output_dir)
+    else:
+        out_dir = Path("outputs") / scan_id / "property"
     baseline_dir = out_dir / "baseline"
     optimized_dir = out_dir / "optimized"
 
@@ -415,6 +420,7 @@ def main():
     parser.add_argument("--archive", type=str, default=None, help="Explicit archive path")
     parser.add_argument("--frame-stride", type=int, default=5, help="Frame stride for fusion")
     parser.add_argument("--headless", action="store_true", help="Run in headless reporting mode")
+    parser.add_argument("--output-dir", type=str, default=None, help="Destination directory for outputs")
     args = parser.parse_args()
 
     run_property_reconstruction(
@@ -422,6 +428,7 @@ def main():
         archive_path=args.archive,
         frame_stride=args.frame_stride,
         headless=args.headless,
+        output_dir=args.output_dir,
     )
 
 
