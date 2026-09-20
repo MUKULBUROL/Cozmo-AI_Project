@@ -1,0 +1,151 @@
+/**
+ * @file globals.css
+ * @purpose Base stylesheet with Spatial Pro design system, typography, and responsive layout styling.
+ * @stage Frontend Stage 2 (Spatial Pro Product UI + Property Workspace)
+ * @inputs tokens.css variables.
+ * @outputs Global styles, resets, and layout utility classes.
+ * @dependencies ./tokens.css
+ * @assumptions Pure Vanilla CSS. No Tailwind. Responsive across desktop, tablet, and mobile.
+ * @failureModes Missing tokens result in unstyled fallback.
+ * @firstDebuggingPoints Verify that @import './tokens.css' is correctly loaded.
+ */
+
+@import './tokens.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Technical Monospace Numbers */
+.mono,
+code,
+kbd,
+samp {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Accessibility: Clear, high-contrast focus rings */
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Layout Container */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--background);
+}
+
+.workspace-grid {
+  display: grid;
+  grid-template-columns: var(--left-nav-width) 1fr var(--inspector-width);
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Tablet Layout (<= 1100px) */
+@media (max-width: 1100px) {
+  .workspace-grid {
+    grid-template-columns: 60px 1fr var(--inspector-width);
+  }
+}
+
+/* Mobile Layout (<= 768px) */
+@media (max-width: 768px) {
+  .app-shell {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+  .workspace-grid {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    overflow: visible;
+  }
+}
+
+/* Property Card & Interactive UI Utilities */
+.property-card {
+  display: block;
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.property-card:hover {
+  border-color: var(--primary-border);
+  box-shadow: var(--shadow-md);
+}
+
+.room-select-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-primary);
+  text-align: left;
+  transition: border-color 0.15s ease;
+}
+
+.room-select-btn:hover {
+  border-color: var(--primary-border);
+}
+
+/* Custom Minimal Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
