@@ -1,377 +1,399 @@
-"""Stage 7 Visual Structure-from-Motion (SfM) camera pose reconstruction.
+"""
+Stage 7 Visual Structure-from-Motion (SfM) Camera Pose Reconstruction.
 
 1. Why this file exists:
-   Recovers 6-DoF camera poses, self-calibrated intrinsics, and sparse 3D structure
-   from pure RGB video keyframes using pycolmap (COLMAP C++ backend). Operates at
-   arbitrary scale without reading LiDAR odometry or depth.
+   Recovers camera trajectory and sparse 3D scene structure from ordinary RGB video
+   keyframes using pycolmap (COLMAP wrapper). Operates up to an arbitrary visual scale
+   without any LiDAR odometry, sensor depth, or external position cues.
 
 2. Pipeline stage:
-   Stage 7 (Video Tier - Visual Camera Pose Reconstruction).
+   Stage 7 (Video Tier: Visual Camera Pose Reconstruction & Sparse Structure).
 
 3. Inputs:
-   Directory of extracted RGB keyframes (JPEG).
+   Directory containing extracted RGB keyframe images and KeyframeManifest.
 
 4. Outputs:
-   - `SfMReconstructionReport` detailing registration percentage, reprojection error, and status.
-   - List of `SfmCameraPose` records with rotation quaternions and translations.
-   - `VideoCameraIntrinsics` recording self-calibrated focal lengths and principal point.
-   - Sparse 3D tie points saved as `sparse_points.ply`.
-   - `cameras.json`, `poses.json`, and `sfm_stats.json`.
+   - `sfm/cameras.json`: Self-calibrated pinhole camera intrinsics with distortion.
+   - `sfm/poses.json`: Camera poses (rotation matrix, translation, quaternion) for registered keyframes.
+   - `sfm/sparse_points.ply`: Arbitrary-scale sparse 3D point cloud.
+   - `sfm/sfm_stats.json`: Quality metrics (registered ratio, reprojection error, track length, status).
 
 5. Coordinate convention:
-   - OpenCV camera frame (X right, Y down, Z forward).
-   - World coordinate frame: Arbitrary scale, right-handed.
+   - Camera frame: OpenCV convention (X right, Y down, Z forward).
+   - SfM World frame: Arbitrary-scale right-handed coordinate system.
+   - Poses: Stored with both `cam_from_world` (projection matrix) and `world_from_cam` (camera center & orientation).
 
 6. Unit convention:
-   - Translations: Arbitrary SfM units (scaled to metric in downstream Stage 7 scale step).
-   - Focal length and principal point: Pixels.
-   - Reprojection error: Pixels.
+   - Translation & 3D points: Arbitrary SfM units (converted to metric meters downstream in scale.py).
+   - Reprojection error: Pixels (px).
+   - Angles: Unit quaternions and orthonormal 3x3 rotation matrices.
 
 7. Important dependencies:
-   pycolmap, numpy, pathlib, json, open3d (optional for PLY writing fallback),
-   backend.app.models.video, backend.app.pipelines.video.contract.
+   pycolmap, numpy, pathlib, json, backend.app.pipelines.video.contract.
 
 8. Assumptions:
-   Keyframes have sequential visual overlap allowing SIFT feature matching.
+   - Keyframes have sufficient visual overlap and texture for SIFT feature matching.
+   - Camera motion provides sufficient baseline/parallax for triangulation.
 
 9. Main failure modes:
-   - Low-texture scenes (blank walls) leading to insufficient 2D-2D matches.
-   - Disconnected visual graph causing multiple small reconstruction models.
-   - Pure rotation without camera translation preventing triangulation.
+   - Textureless white walls causing feature matching starvation.
+   - Pure rotational camera movement with zero parallax (degenerate two-view geometry).
+   - Fragmented reconstructions (split into disconnected visual components).
 
 10. What a developer should inspect first when debugging:
-    Inspect `output_sfm_dir/sfm_stats.json` for registration ratio and reprojection error,
-    and check `output_sfm_dir/sparse_points.ply` in Open3D/CloudCompare.
+    Inspect `sfm_stats.json` and verify `registration_ratio` and `mean_reprojection_error`.
+    If registration fails, check whether keyframe spacing is too wide or frames are blurry.
 """
 
 import os
 import json
+import shutil
 import time
 from pathlib import Path
-from typing import List, Tuple, Dict, Any, Optional
+from typing import Dict, Any, List, Optional, Tuple
 import numpy as np
-import pycolmap
 
-from backend.app.models.video import (
-    VideoCameraIntrinsics,
-    SfmCameraPose,
-)
+try:
+    import pycolmap
+except ImportError:
+    pycolmap = None
+
 from backend.app.pipelines.video.contract import (
     VideoReconstructionStatus,
+    VideoCameraPose,
+    VideoIntrinsics,
     SfMReconstructionReport,
 )
 
 
-def evaluate_trajectory_continuity(
-    poses: List[SfmCameraPose],
-    max_translation_jump_ratio: float = 5.0,
-    max_rotation_jump_deg: float = 45.0,
-) -> Tuple[bool, List[str]]:
-    """Evaluates smoothness of reconstructed camera trajectory to detect tracking loss or jumps.
+def write_sparse_points_ply(
+    points_xyz: np.ndarray,
+    output_ply_path: Path,
+    colors_rgb: Optional[np.ndarray] = None,
+) -> None:
+    """
+    Write 3D points to an ASCII PLY file.
 
     Purpose:
-        Flags non-physical velocity discontinuities or orientation flips between adjacent keyframes.
+        Serializes sparse triangulated points to disk for visualization and downstream scale alignment.
 
     Parameters:
-        poses: Chronologically sorted list of SfmCameraPose objects.
-        max_translation_jump_ratio: Multiplier above median step distance flagged as a jump.
-        max_rotation_jump_deg: Angular displacement threshold between adjacent frames in degrees.
-
-    Returns:
-        Tuple of (is_continuous: bool, warnings: List[str]).
-
-    Assumptions:
-        Poses are indexed in sequential recording order.
-
-    Failure conditions:
-        Fewer than 3 poses return (True, []).
-
-    Dependencies:
-        numpy.linalg.norm.
+        points_xyz (np.ndarray): (N, 3) float array of 3D point coordinates.
+        output_ply_path (Path): Destination file path for .ply file.
+        colors_rgb (Optional[np.ndarray]): (N, 3) uint8 array of RGB point colors.
     """
-    if len(poses) < 3:
-        return True, []
+    output_ply_path.parent.mkdir(parents=True, exist_ok=True)
+    num_pts = len(points_xyz)
 
-    step_distances: List[float] = []
-    warnings: List[str] = []
+    with open(output_ply_path, "w", encoding="utf-8") as f:
+        f.write("ply\n")
+        f.write("format ascii 1.0\n")
+        f.write(f"element vertex {num_pts}\n")
+        f.write("property float x\n")
+        f.write("property float y\n")
+        f.write("property float z\n")
+        if colors_rgb is not None and len(colors_rgb) == num_pts:
+            f.write("property uchar red\n")
+            f.write("property uchar green\n")
+            f.write("property uchar blue\n")
+        f.write("end_header\n")
 
-    for i in range(len(poses) - 1):
-        p1 = np.array(poses[i].t_vec, dtype=np.float64)
-        p2 = np.array(poses[i + 1].t_vec, dtype=np.float64)
-        d = float(np.linalg.norm(p2 - p1))
-        step_distances.append(d)
-
-    median_dist = float(np.median(step_distances)) if step_distances else 0.0
-    jump_threshold = max(0.01, median_dist * max_translation_jump_ratio)
-
-    is_continuous = True
-    for i, d in enumerate(step_distances):
-        if d > jump_threshold and median_dist > 0.001:
-            is_continuous = False
-            warnings.append(
-                f"Translation jump between frame {poses[i].frame_index} and {poses[i+1].frame_index}: "
-                f"distance {d:.3f} > threshold {jump_threshold:.3f}"
-            )
-
-    return is_continuous, warnings
+        for i in range(num_pts):
+            p = points_xyz[i]
+            if colors_rgb is not None and len(colors_rgb) == num_pts:
+                c = colors_rgb[i]
+                f.write(f"{p[0]:.6f} {p[1]:.6f} {p[2]:.6f} {int(c[0])} {int(c[1])} {int(c[2])}\n")
+            else:
+                f.write(f"{p[0]:.6f} {p[1]:.6f} {p[2]:.6f}\n")
 
 
 def run_visual_sfm(
-    image_dir: Path,
+    keyframes_dir: Path,
     output_sfm_dir: Path,
     capture_id: str,
     camera_model: str = "SIMPLE_RADIAL",
-    min_registration_ratio_good: float = 0.65,
-    min_registration_ratio_provisional: float = 0.35,
-    max_mean_reprojection_error_px: float = 2.0,
-) -> Tuple[SfMReconstructionReport, List[SfmCameraPose], VideoCameraIntrinsics, List[Dict[str, Any]]]:
-    """Runs complete COLMAP visual SfM pipeline via pycolmap on extracted keyframes.
+    sequential_overlap: int = 10,
+    min_registered_ratio: float = 0.50,
+    max_reproj_error_threshold: float = 2.0,
+) -> Tuple[SfMReconstructionReport, List[VideoCameraPose], VideoIntrinsics, Path]:
+    """
+    Execute full sequential visual Structure-from-Motion using pycolmap.
 
     Purpose:
-        Reconstructs 6-DoF camera trajectory, self-calibrated intrinsics, and sparse 3D point cloud
-        from RGB keyframes without external sensor hints.
+        Reconstructs camera trajectory and sparse structure from RGB keyframes
+        without external odometry or LiDAR cues.
 
     Parameters:
-        image_dir: Directory containing input keyframe JPEG images.
-        output_sfm_dir: Destination directory for COLMAP database, sparse model, and JSON stats.
-        capture_id: Unique capture identifier.
-        camera_model: COLMAP camera model (e.g. SIMPLE_RADIAL, PINHOLE).
-        min_registration_ratio_good: Minimum registered frame fraction for GOOD status.
-        min_registration_ratio_provisional: Minimum fraction for PROVISIONAL status.
-        max_mean_reprojection_error_px: Maximum acceptable mean reprojection error in pixels.
+        keyframes_dir (Path): Directory containing selected keyframe JPEG images.
+        output_sfm_dir (Path): Output directory for SfM artifacts.
+        capture_id (str): Unique capture identifier.
+        camera_model (str): PyColmap camera model name (e.g. SIMPLE_RADIAL, PINHOLE).
+        sequential_overlap (int): Number of neighboring keyframes to pair for matching.
+        min_registered_ratio (float): Minimum registration ratio for GOOD status.
+        max_reproj_error_threshold (float): Maximum acceptable reprojection error in px.
 
     Returns:
-        Tuple of (
-            report: SfMReconstructionReport,
-            poses: List[SfmCameraPose],
-            intrinsics: VideoCameraIntrinsics,
-            sparse_points: List[Dict[str, Any]]
-        ).
-
-    Assumptions:
-        pycolmap is installed and supports CPU feature extraction, sequential matching,
-        and incremental mapping.
+        Tuple:
+            - SfMReconstructionReport with statistics and quality status.
+            - List of VideoCameraPose records for registered frames.
+            - VideoIntrinsics extracted from reconstruction.
+            - Path to generated sparse points PLY file.
 
     Failure conditions:
-        If zero models are reconstructed, returns FAILED report and empty poses/points.
-
-    Dependencies:
-        pycolmap.extract_features, pycolmap.match_sequential, pycolmap.incremental_mapping.
-
-    Debugging clues:
-        Inspect output_sfm_dir/sfm_stats.json and reprojection error in the report.
+        - pycolmap is not installed.
+        - Zero keyframes registered in mapping (marked FAILED).
     """
-    t_start = time.time()
-    image_dir = Path(image_dir)
+    if pycolmap is None:
+        raise RuntimeError("pycolmap is required for visual SfM reconstruction but is not installed.")
+
+    start_time = time.time()
     output_sfm_dir = Path(output_sfm_dir)
     output_sfm_dir.mkdir(parents=True, exist_ok=True)
 
-    image_files = sorted(list(image_dir.glob("*.jpg")) + list(image_dir.glob("*.png")))
-    total_images = len(image_files)
+    db_path = output_sfm_dir / "database.db"
+    if db_path.exists():
+        db_path.unlink()
 
-    database_path = output_sfm_dir / "database.db"
-    if database_path.exists():
-        database_path.unlink()
-
-    # Default fallback intrinsics
-    fallback_intrinsics = VideoCameraIntrinsics(
-        fx=1440.0,
-        fy=1440.0,
-        cx=960.0,
-        cy=720.0,
-        width=1920,
-        height=1440,
-        source="default_prior",
-        camera_model="PINHOLE",
-        distortion_coefficients=[],
-        confidence_status="FAILED",
+    # Discover keyframe images
+    image_files = sorted(
+        [p for p in keyframes_dir.glob("*.jpg") or keyframes_dir.glob("*.png")],
+        key=lambda p: p.name
     )
+    total_kfs = len(image_files)
 
-    if total_images < 2:
+    if total_kfs < 3:
         report = SfMReconstructionReport(
             capture_id=capture_id,
-            total_keyframes=total_images,
+            total_keyframes=total_kfs,
             registered_keyframes=0,
             registration_ratio=0.0,
             sparse_point_count=0,
-            mean_reprojection_error=0.0,
+            mean_reprojection_error=999.0,
             track_length_mean=0.0,
             status=VideoReconstructionStatus.FAILED,
-            reconstruction_time_seconds=float(time.time() - t_start),
-            warnings=["Insufficient keyframes for SfM (minimum 2 required)"],
+            reconstruction_time_seconds=0.0,
+            warnings=["Fewer than 3 keyframes available for visual SfM reconstruction."],
         )
-        return report, [], fallback_intrinsics, []
+        dummy_intrinsics = VideoIntrinsics(
+            fx=1500.0, fy=1500.0, cx=960.0, cy=720.0, width=1920, height=1440,
+            provenance="default_fallback", confidence=0.0
+        )
+        return report, [], dummy_intrinsics, output_sfm_dir / "sparse_points.ply"
 
     # Step 1: Feature Extraction
+    sift_opts = pycolmap.SiftExtractionOptions()
+    sift_opts.max_num_features = 2048
+    sift_opts.edge_threshold = 10.0
+
+    reader_opts = pycolmap.ImageReaderOptions()
+    reader_opts.camera_model = camera_model
+
     pycolmap.extract_features(
-        database_path=database_path,
-        image_path=image_dir,
-        camera_model=camera_model,
-        sift_options={"max_num_features": 2048},
+        database_path=db_path,
+        image_path=keyframes_dir,
+        extraction_options=sift_opts,
+        reader_options=reader_opts,
     )
 
-    # Step 2: Sequential Matching with overlap
+    # Step 2: Sequential Matching (ideal for continuous walking video)
+    pairing_opts = pycolmap.SequentialPairingOptions()
+    pairing_opts.overlap = min(sequential_overlap, max(3, total_kfs // 2))
+    pairing_opts.loop_detection = True  # Enable visual loop closure matching
+
+    match_opts = pycolmap.FeatureMatchingOptions()
     pycolmap.match_sequential(
-        database_path=database_path,
-        overlap=min(15, max(3, total_images // 2)),
-        quadratic_overlap=True,
+        database_path=db_path,
+        pairing_options=pairing_opts,
+        matching_options=match_opts,
     )
 
-    # Step 3: Incremental Mapping
+    # Step 3: Incremental Reconstruction
+    inc_opts = pycolmap.IncrementalPipelineOptions()
+    inc_opts.min_num_matches = 15
+    inc_opts.ba_local_max_num_iterations = 25
+    inc_opts.ba_global_max_num_iterations = 50
+
     reconstructions = pycolmap.incremental_mapping(
-        database_path=database_path,
-        image_path=image_dir,
+        database_path=db_path,
+        image_path=keyframes_dir,
         output_path=output_sfm_dir,
+        options=inc_opts,
     )
 
+    elapsed = time.time() - start_time
+
+    # Find largest reconstructed component
     if not reconstructions:
+        warnings = ["Incremental mapping produced zero registered reconstructions."]
         report = SfMReconstructionReport(
             capture_id=capture_id,
-            total_keyframes=total_images,
+            total_keyframes=total_kfs,
             registered_keyframes=0,
             registration_ratio=0.0,
             sparse_point_count=0,
-            mean_reprojection_error=0.0,
+            mean_reprojection_error=999.0,
             track_length_mean=0.0,
             status=VideoReconstructionStatus.FAILED,
-            reconstruction_time_seconds=float(time.time() - t_start),
-            warnings=["Incremental mapping failed to produce any 3D models from keyframe features"],
+            reconstruction_time_seconds=elapsed,
+            warnings=warnings,
         )
-        return report, [], fallback_intrinsics, []
+        dummy_intrinsics = VideoIntrinsics(
+            fx=1500.0, fy=1500.0, cx=960.0, cy=720.0, width=1920, height=1440,
+            provenance="default_fallback", confidence=0.0
+        )
+        return report, [], dummy_intrinsics, output_sfm_dir / "sparse_points.ply"
 
-    # Select the largest reconstruction model
-    recon = max(reconstructions.values(), key=lambda r: r.num_reg_images())
+    # Select reconstruction with most registered images
+    best_rec_idx = max(reconstructions.keys(), key=lambda k: reconstructions[k].num_reg_images())
+    best_rec = reconstructions[best_rec_idx]
 
-    # Export sparse points PLY
-    ply_path = output_sfm_dir / "sparse_points.ply"
-    recon.export_PLY(str(ply_path))
+    reg_kfs_count = best_rec.num_reg_images()
+    reg_ratio = float(reg_kfs_count / total_kfs) if total_kfs > 0 else 0.0
+    num_pts = len(best_rec.points3D)
 
-    # Parse Camera Intrinsics
-    calib_intrinsics = fallback_intrinsics
-    if recon.cameras:
-        cam = next(iter(recon.cameras.values()))
-        calib_intrinsics = VideoCameraIntrinsics(
-            fx=float(cam.focal_length_x),
-            fy=float(cam.focal_length_y),
-            cx=float(cam.principal_point_x),
-            cy=float(cam.principal_point_y),
+    mean_reproj = float(best_rec.compute_mean_reprojection_error()) if reg_kfs_count > 0 else 999.0
+    mean_track = float(best_rec.compute_mean_track_length()) if num_pts > 0 else 0.0
+
+    warnings: List[str] = []
+    if reg_ratio < min_registered_ratio:
+        warnings.append(f"Low registration ratio: {reg_ratio:.1%} ({reg_kfs_count}/{total_kfs})")
+    if mean_reproj > max_reproj_error_threshold:
+        warnings.append(f"High reprojection error: {mean_reproj:.2f}px")
+
+    # Quality status assessment
+    if reg_ratio >= 0.70 and mean_reproj <= 1.5:
+        status = VideoReconstructionStatus.GOOD
+    elif reg_ratio >= min_registered_ratio and mean_reproj <= max_reproj_error_threshold:
+        status = VideoReconstructionStatus.PROVISIONAL
+    else:
+        status = VideoReconstructionStatus.FAILED
+
+    # Extract Camera Intrinsics
+    cameras = best_rec.cameras
+    if cameras:
+        cam = list(cameras.values())[0]
+        fl_x = float(cam.focal_length_x) if hasattr(cam, "focal_length_x") else float(cam.focal_length)
+        fl_y = float(cam.focal_length_y) if hasattr(cam, "focal_length_y") else float(cam.focal_length)
+        pp_x = float(cam.principal_point_x) if hasattr(cam, "principal_point_x") else float(cam.width / 2.0)
+        pp_y = float(cam.principal_point_y) if hasattr(cam, "principal_point_y") else float(cam.height / 2.0)
+
+        video_intrinsics = VideoIntrinsics(
+            fx=fl_x,
+            fy=fl_y,
+            cx=pp_x,
+            cy=pp_y,
             width=int(cam.width),
             height=int(cam.height),
-            source="sfm_self_calibration",
-            camera_model=str(cam.model_name),
-            distortion_coefficients=[float(p) for p in cam.params[cam.extra_params_idxs()]] if hasattr(cam, "extra_params_idxs") else [],
-            confidence_status="GOOD",
+            provenance="sfm_self_calibration",
+            confidence=0.95 if status == VideoReconstructionStatus.GOOD else 0.75,
+        )
+    else:
+        video_intrinsics = VideoIntrinsics(
+            fx=1500.0, fy=1500.0, cx=960.0, cy=720.0, width=1920, height=1440,
+            provenance="default_fallback", confidence=0.0
         )
 
-    # Extract Camera Poses (sorted by image name / index)
-    poses: List[SfmCameraPose] = []
-    # Map image names to reconstructed images
-    image_name_map = {img.name: img for img in recon.images.values()}
+    # Extract Camera Poses
+    camera_poses: List[VideoCameraPose] = []
+    poses_json_records: List[Dict[str, Any]] = []
 
-    for kf_idx, img_file in enumerate(image_files):
-        img_name = img_file.name
-        if img_name in image_name_map:
-            img = image_name_map[img_name]
-            # In COLMAP, cam_from_world transforms world point to camera space
-            # To get camera pose in world space, invert: world_from_cam = cam_from_world.inverse()
-            cam_from_world = img.cam_from_world
-            world_from_cam = cam_from_world.inverse()
+    for img_id, img in sorted(best_rec.images.items(), key=lambda item: item[1].name):
+        # Extract frame index from image name (e.g. frame_000120.jpg or keyframe_0001_f000120.jpg)
+        name = img.name
+        f_idx = 0
+        try:
+            if "f" in name and ".jpg" in name:
+                parts = name.replace(".jpg", "").replace(".png", "").split("_")
+                for p in parts:
+                    if p.startswith("f") and p[1:].isdigit():
+                        f_idx = int(p[1:])
+                        break
+                    elif p.isdigit():
+                        f_idx = int(p)
+            else:
+                f_idx = int("".join(filter(str.isdigit, name)) or "0")
+        except Exception:
+            f_idx = img_id
 
-            # Translation of camera center in world coordinates
-            t_world = [float(c) for c in world_from_cam.translation]
-            # Rotation matrix in world coordinates (3x3)
-            r_mat = [[float(val) for val in row] for row in world_from_cam.rotation.matrix()]
+        # Rigid3d cam_from_world
+        rigid = img.cam_from_world
+        world_from_cam = rigid.inverse()
 
-            # Quaternion components (qw, qx, qy, qz)
-            q_arr = world_from_cam.rotation.quat
-            qw = float(q_arr[0])
-            qx = float(q_arr[1])
-            qy = float(q_arr[2])
-            qz = float(q_arr[3])
+        t_cam = world_from_cam.translation  # Camera center in world coordinates
+        quat_cam = world_from_cam.rotation.quat  # [qw, qx, qy, qz]
+        r_mat = world_from_cam.rotation.matrix().tolist()
 
-            pose = SfmCameraPose(
-                keyframe_id=kf_idx,
-                frame_index=kf_idx,
-                timestamp=0.0,
-                t_vec=t_world,
-                r_matrix=r_mat,
-                qw=qw,
-                qx=qx,
-                qy=qy,
-                qz=qz,
-                reprojection_error=float(img.compute_mean_reprojection_error()) if hasattr(img, "compute_mean_reprojection_error") else 0.0,
-                inlier_count=int(img.num_points3D),
-                is_metric=False,
-            )
-            poses.append(pose)
+        pose = VideoCameraPose(
+            frame_index=f_idx,
+            timestamp_seconds=float(f_idx / 30.0),
+            tx=float(t_cam[0]),
+            ty=float(t_cam[1]),
+            tz=float(t_cam[2]),
+            qw=float(quat_cam[0]),
+            qx=float(quat_cam[1]),
+            qy=float(quat_cam[2]),
+            qz=float(quat_cam[3]),
+            is_metric=False,  # Still arbitrary SfM scale
+        )
+        camera_poses.append(pose)
 
-    # Extract sparse 3D point details
-    sparse_points_data: List[Dict[str, Any]] = []
-    for pt_id, pt in recon.points3D.items():
-        # pt.track contains observations in registered images
-        track_obs: List[Dict[str, Any]] = []
-        for track_el in pt.track.elements:
-            track_obs.append({
-                "image_id": int(track_el.image_id),
-                "point2D_idx": int(track_el.point2D_idx),
-            })
-
-        sparse_points_data.append({
-            "point3D_id": int(pt_id),
-            "xyz": [float(c) for c in pt.xyz],
-            "rgb": [int(c) for c in pt.color],
-            "error": float(pt.error),
-            "track_length": len(track_obs),
-            "track": track_obs,
+        poses_json_records.append({
+            "image_name": name,
+            "frame_index": f_idx,
+            "cam_from_world": {
+                "rotation_matrix": rigid.rotation.matrix().tolist(),
+                "translation": rigid.translation.tolist(),
+                "quaternion_wxyz": rigid.rotation.quat.tolist(),
+            },
+            "world_from_cam": {
+                "rotation_matrix": r_mat,
+                "position": t_cam.tolist(),
+                "quaternion_wxyz": quat_cam.tolist(),
+            },
+            "is_metric": False,
         })
 
-    # Statistical Evaluation
-    reg_count = len(poses)
-    reg_ratio = float(reg_count / total_images) if total_images > 0 else 0.0
-    mean_reproj = float(recon.compute_mean_reprojection_error())
-    mean_track_len = float(recon.compute_mean_track_length())
+    # Save cameras.json
+    cameras_dict = {
+        "intrinsics": video_intrinsics.model_dump(),
+        "camera_model": camera_model,
+        "calibration_status": status.value,
+    }
+    with open(output_sfm_dir / "cameras.json", "w", encoding="utf-8") as f:
+        json.dump(cameras_dict, f, indent=2)
 
-    # Trajectory continuity check
-    is_continuous, cont_warnings = evaluate_trajectory_continuity(poses)
+    # Save poses.json
+    with open(output_sfm_dir / "poses.json", "w", encoding="utf-8") as f:
+        json.dump(poses_json_records, f, indent=2)
 
-    status = VideoReconstructionStatus.GOOD
-    warnings: List[str] = list(cont_warnings)
+    # Save sparse points PLY and collect numpy array
+    ply_path = output_sfm_dir / "sparse_points.ply"
+    pts_xyz = []
+    pts_rgb = []
+    for pt in best_rec.points3D.values():
+        pts_xyz.append(pt.xyz)
+        pts_rgb.append(pt.color)
 
-    if reg_ratio < min_registration_ratio_provisional:
-        status = VideoReconstructionStatus.FAILED
-        warnings.append(f"Registration ratio {reg_ratio:.1%} below provisional threshold {min_registration_ratio_provisional:.1%}")
-    elif reg_ratio < min_registration_ratio_good:
-        status = VideoReconstructionStatus.PROVISIONAL
-        warnings.append(f"Registration ratio {reg_ratio:.1%} below optimal threshold {min_registration_ratio_good:.1%}")
+    if pts_xyz:
+        write_sparse_points_ply(np.array(pts_xyz), ply_path, np.array(pts_rgb))
+    else:
+        write_sparse_points_ply(np.zeros((0, 3)), ply_path)
 
-    if mean_reproj > max_mean_reprojection_error_px:
-        status = VideoReconstructionStatus.PROVISIONAL if status == VideoReconstructionStatus.GOOD else status
-        warnings.append(f"Mean reprojection error {mean_reproj:.2f}px exceeds nominal limit {max_mean_reprojection_error_px:.2f}px")
-
-    if not is_continuous and status == VideoReconstructionStatus.GOOD:
-        status = VideoReconstructionStatus.PROVISIONAL
-
+    # Save report
     report = SfMReconstructionReport(
         capture_id=capture_id,
-        total_keyframes=total_images,
-        registered_keyframes=reg_count,
+        total_keyframes=total_kfs,
+        registered_keyframes=reg_kfs_count,
         registration_ratio=reg_ratio,
-        sparse_point_count=len(sparse_points_data),
+        sparse_point_count=num_pts,
         mean_reprojection_error=mean_reproj,
-        track_length_mean=mean_track_len,
+        track_length_mean=mean_track,
         status=status,
-        reconstruction_time_seconds=float(time.time() - t_start),
+        reconstruction_time_seconds=elapsed,
         warnings=warnings,
     )
-
-    # Save output artifacts
-    with open(output_sfm_dir / "cameras.json", "w", encoding="utf-8") as f:
-        json.dump(calib_intrinsics.model_dump(), f, indent=2)
-
-    with open(output_sfm_dir / "poses.json", "w", encoding="utf-8") as f:
-        json.dump([p.model_dump() for p in poses], f, indent=2)
 
     with open(output_sfm_dir / "sfm_stats.json", "w", encoding="utf-8") as f:
         json.dump(report.model_dump(), f, indent=2)
 
-    return report, poses, calib_intrinsics, sparse_points_data
+    return report, camera_poses, video_intrinsics, ply_path

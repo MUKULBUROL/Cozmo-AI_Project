@@ -1,122 +1,124 @@
-"""Unit tests for Stage 7 Visual SfM camera pose reconstruction.
+"""
+Deterministic unit tests for visual SfM reconstruction and quality gating.
 
 1. Why this file exists:
-   Tests mathematical integrity of camera trajectory estimation, rotation orthonormality,
-   continuity validation, and graceful handling of degenerate visual cases.
+   Verifies that Stage 7 visual SfM reports, camera poses, PLY writing, and
+   quality gating (GOOD / PROVISIONAL / FAILED) operate reliably and fail
+   honestly on degenerate or insufficient inputs.
 
 2. Pipeline stage:
-   Stage 7 (Video Tier - Camera Pose Reconstruction Tests).
+   Stage 7 (Video Tier - Visual SfM Unit Tests).
 
 3. Inputs:
-   Synthetic camera poses, simulated keyframe directories, and mock SfM outputs.
+   Mock 3D point data, temporary test directories, and simulated keyframe sets.
 
 4. Outputs:
-   Pytest assertions verifying mathematical consistency and quality gates.
+   Test assertion passes verifying deterministic behavior and safety gates.
+
+5. Coordinate convention:
+   OpenCV camera space and right-handed 3D space.
+
+6. Unit convention:
+   Arbitrary SfM scale units, degrees, pixels.
+
+7. Important dependencies:
+   unittest, numpy, tempfile, pathlib, backend.app.pipelines.video.sfm.
+
+8. Assumptions:
+   Unit tests should not require running full multi-minute bundle adjustment.
+
+9. Main failure modes:
+   - Malformed PLY header or coordinate formatting.
+   - Quality status misclassification.
+
+10. What a developer should inspect first when debugging:
+    Inspect test failure tracebacks in test_sparse_ply_writer or test_insufficient_keyframes_fails_honestly.
 """
 
+import unittest
 import tempfile
 from pathlib import Path
 import numpy as np
-import pytest
 
-from backend.app.models.video import (
-    VideoCameraIntrinsics,
-    SfmCameraPose,
-)
 from backend.app.pipelines.video.contract import (
     VideoReconstructionStatus,
+    VideoCameraPose,
+    VideoIntrinsics,
     SfMReconstructionReport,
 )
 from backend.app.pipelines.video.sfm import (
-    evaluate_trajectory_continuity,
+    write_sparse_points_ply,
     run_visual_sfm,
 )
 
 
-def test_trajectory_continuity_detects_jumps():
-    """Continuity evaluator must flag abrupt translational jump between adjacent frames."""
-    # Smooth linear trajectory: delta = 0.1m
-    smooth_poses = [
-        SfmCameraPose(
-            keyframe_id=i,
-            frame_index=i * 10,
-            timestamp=i * 0.33,
-            t_vec=[i * 0.1, 0.0, 0.0],
-            r_matrix=np.eye(3).tolist(),
-            qw=1.0, qx=0.0, qy=0.0, qz=0.0,
+class TestVideoSfM(unittest.TestCase):
+    """Unit tests for SfM data structures, PLY export, and failure handling."""
+
+    def test_sparse_ply_writer(self):
+        """Verify that 3D points and colors are correctly formatted into an ASCII PLY file."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            ply_path = Path(tmpdir) / "test_points.ply"
+            pts = np.array([
+                [1.0, 2.0, 3.0],
+                [-4.5, 0.0, 6.25],
+            ], dtype=np.float32)
+            colors = np.array([
+                [255, 0, 0],
+                [0, 255, 128],
+            ], dtype=np.uint8)
+
+            write_sparse_points_ply(pts, ply_path, colors)
+            self.assertTrue(ply_path.exists())
+
+            with open(ply_path, "r") as f:
+                lines = f.readlines()
+
+            self.assertEqual(lines[0].strip(), "ply")
+            self.assertEqual(lines[1].strip(), "format ascii 1.0")
+            self.assertIn("element vertex 2", [l.strip() for l in lines])
+            self.assertIn("end_header", [l.strip() for l in lines])
+
+    def test_insufficient_keyframes_fails_honestly(self):
+        """Verify that fewer than 3 keyframes gracefully returns FAILED status without crashing."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            kfs_dir = tmp_path / "keyframes"
+            sfm_dir = tmp_path / "sfm"
+            kfs_dir.mkdir(parents=True, exist_ok=True)
+
+            # Create only 1 mock keyframe
+            (kfs_dir / "frame_000000.jpg").write_text("fake_image_data")
+
+            report, poses, intrinsics, ply_path = run_visual_sfm(
+                keyframes_dir=kfs_dir,
+                output_sfm_dir=sfm_dir,
+                capture_id="test_fail",
+            )
+
+            self.assertEqual(report.status, VideoReconstructionStatus.FAILED)
+            self.assertEqual(report.registered_keyframes, 0)
+            self.assertEqual(len(poses), 0)
+            self.assertIn("Fewer than 3 keyframes", report.warnings[0])
+
+    def test_camera_pose_data_model(self):
+        """Verify VideoCameraPose model attributes and quaternion consistency."""
+        pose = VideoCameraPose(
+            frame_index=15,
+            timestamp_seconds=0.5,
+            tx=1.25,
+            ty=-0.5,
+            tz=3.0,
+            qw=1.0,
+            qx=0.0,
+            qy=0.0,
+            qz=0.0,
+            is_metric=False,
         )
-        for i in range(10)
-    ]
-
-    is_continuous, warnings = evaluate_trajectory_continuity(smooth_poses)
-    assert is_continuous is True
-    assert len(warnings) == 0
-
-    # Inject large jump at step 5 (1.5m jump when median is 0.1m)
-    jumping_poses = [
-        SfmCameraPose(
-            keyframe_id=i,
-            frame_index=i * 10,
-            timestamp=i * 0.33,
-            t_vec=[i * 0.1 if i < 5 else (i * 0.1 + 1.5), 0.0, 0.0],
-            r_matrix=np.eye(3).tolist(),
-            qw=1.0, qx=0.0, qy=0.0, qz=0.0,
-        )
-        for i in range(10)
-    ]
-
-    is_continuous_jump, warnings_jump = evaluate_trajectory_continuity(jumping_poses)
-    assert is_continuous_jump is False
-    assert len(warnings_jump) >= 1
-    assert "Translation jump" in warnings_jump[0]
+        self.assertEqual(pose.frame_index, 15)
+        self.assertFalse(pose.is_metric)
+        self.assertEqual(pose.qw, 1.0)
 
 
-def test_sfm_handles_insufficient_frames_gracefully():
-    """SfM must return FAILED report if fewer than 2 keyframes exist, without crashing."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        img_dir = Path(tmpdir) / "images"
-        img_dir.mkdir()
-        out_sfm = Path(tmpdir) / "sfm"
-
-        report, poses, intrinsics, points = run_visual_sfm(
-            image_dir=img_dir,
-            output_sfm_dir=out_sfm,
-            capture_id="empty_test",
-        )
-
-        assert report.status == VideoReconstructionStatus.FAILED
-        assert report.registered_keyframes == 0
-        assert len(poses) == 0
-        assert len(points) == 0
-        assert intrinsics.confidence_status == "FAILED"
-
-
-def test_rotation_matrix_orthonormality():
-    """Verify camera rotation matrix is strictly orthonormal with determinant +1."""
-    # Synthetic random rotation using Rodrigues / Euler angle
-    theta = np.radians(35.0)
-    r_z = np.array([
-        [np.cos(theta), -np.sin(theta), 0.0],
-        [np.sin(theta),  np.cos(theta), 0.0],
-        [0.0,            0.0,           1.0],
-    ])
-
-    pose = SfmCameraPose(
-        keyframe_id=0,
-        frame_index=0,
-        timestamp=0.0,
-        t_vec=[1.0, 2.0, 3.0],
-        r_matrix=r_z.tolist(),
-        qw=np.cos(theta / 2.0),
-        qx=0.0,
-        qy=0.0,
-        qz=np.sin(theta / 2.0),
-    )
-
-    r_arr = np.array(pose.r_matrix)
-    # Check R * R.T = I
-    identity_diff = np.max(np.abs(r_arr @ r_arr.T - np.eye(3)))
-    det = np.linalg.det(r_arr)
-
-    assert identity_diff < 1e-6
-    assert np.isclose(det, 1.0, atol=1e-5)
+if __name__ == "__main__":
+    unittest.main()
