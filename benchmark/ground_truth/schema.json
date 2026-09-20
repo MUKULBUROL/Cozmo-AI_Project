@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CozmoPhysicalGroundTruthSchema",
+  "description": "Standardized schema for independent physical ground-truth measurements (laser distance meter or steel tape measure). Rejects system predictions, synthetic estimates, or reconstructed data as ground truth.",
+  "type": "object",
+  "required": [
+    "property_id",
+    "room_id",
+    "measured_by",
+    "timestamp",
+    "walls",
+    "ceiling_height_m"
+  ],
+  "properties": {
+    "property_id": {
+      "type": "string",
+      "description": "Unique identifier of the physical property/building."
+    },
+    "room_id": {
+      "type": "string",
+      "description": "Unique identifier of the measured room (e.g. room_01, bedroom_north)."
+    },
+    "room_name": {
+      "type": "string",
+      "description": "Human readable room designation (e.g. Master Bedroom, Living Room)."
+    },
+    "measured_by": {
+      "type": "string",
+      "description": "Name and credentials of physical auditor/surveyor conducting laser/tape measurement."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of physical measurement session."
+    },
+    "measurement_environment": {
+      "type": "object",
+      "properties": {
+        "temperature_c": { "type": "number" },
+        "lighting_condition": { "type": "string", "enum": ["daylight", "artificial", "dim", "dark"] },
+        "furnished_status": { "type": "string", "enum": ["empty", "partially_furnished", "fully_furnished"] }
+      }
+    },
+    "ceiling_height_m": {
+      "type": "number",
+      "minimum": 0.5,
+      "maximum": 12.0,
+      "description": "True physical floor-to-ceiling height in meters measured via calibrated vertical laser disto."
+    },
+    "room_area_m2": {
+      "type": ["number", "null"],
+      "description": "Independently verified room floor area in square meters (e.g., from surveyor CAD plan)."
+    },
+    "walls": {
+      "type": "array",
+      "minItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["wall_id", "length_m", "measurement_method", "measurement_device"],
+        "properties": {
+          "wall_id": { "type": "string", "description": "Unique wall identifier matching room layout." },
+          "length_m": { "type": "number", "minimum": 0.1, "maximum": 50.0, "description": "Physical wall length in meters." },
+          "measurement_method": {
+            "type": "string",
+            "enum": ["laser_disto", "steel_tape", "total_station", "optical_micrometer"],
+            "description": "Audited physical measurement method. Synthetic or prediction inferences are strictly prohibited."
+          },
+          "measurement_device": {
+            "type": "string",
+            "description": "Exact tool model (e.g. Leica DISTO D2, Bosch GLM 50 C, Stanley FatMax 8m)."
+          },
+          "device_accuracy_spec_mm": {
+            "type": "number",
+            "description": "Manufacturer rated device precision in millimeters (e.g., 1.5)."
+          },
+          "notes": { "type": "string", "description": "Notes regarding obstructions, baseboards, or surface irregularities." }
+        }
+      }
+    },
+    "openings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["opening_id", "type", "width_m", "measurement_method", "measurement_device"],
+        "properties": {
+          "opening_id": { "type": "string" },
+          "type": { "type": "string", "enum": ["door", "window", "passage", "archway"] },
+          "wall_id": { "type": "string" },
+          "width_m": { "type": "number", "minimum": 0.2, "maximum": 10.0, "description": "Clear rough or finished opening width in meters." },
+          "height_m": { "type": ["number", "null"], "description": "Opening height in meters if measured." },
+          "sill_height_m": { "type": ["number", "null"], "description": "Window sill height above finished floor in meters." },
+          "measurement_method": {
+            "type": "string",
+            "enum": ["laser_disto", "steel_tape", "total_station"]
+          },
+          "measurement_device": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "damage_annotations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["damage_id", "ground_truth_class", "location_description"],
+        "properties": {
+          "damage_id": { "type": "string" },
+          "ground_truth_class": {
+            "type": "string",
+            "enum": ["water_stain", "mold_growth", "drywall_crack", "ceiling_sag", "impact_hole", "missing_baseboard", "exposed_framing"]
+          },
+          "location_description": { "type": "string" },
+          "wall_id": { "type": ["string", "null"] },
+          "physical_area_m2": { "type": ["number", "null"] },
+          "physical_length_m": { "type": ["number", "null"] },
+          "measurement_method": { "type": "string" },
+          "repair_urgency": { "type": "string", "enum": ["cosmetic", "standard", "urgent", "structural"] }
+        }
+      }
+    },
+    "notes": { "type": "string" }
+  }
+}

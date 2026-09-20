@@ -1,0 +1,7 @@
+measurement_id,room_id,measurement_type,value,unit,source,notes
+w1,room_01,wall_length,5.420,m,laser_disto,North Wall clear span
+w2,room_01,wall_length,4.485,m,laser_disto,East Wall clear span
+w3,room_01,wall_length,5.422,m,laser_disto,South Wall clear span
+w4,room_01,wall_length,4.490,m,laser_disto,West Wall clear span
+c1,room_01,ceiling_height,2.450,m,laser_disto,Vertical disto check
+a1,room_01,floor_area,24.32,m2,surveyor_cad,Total enclosed area

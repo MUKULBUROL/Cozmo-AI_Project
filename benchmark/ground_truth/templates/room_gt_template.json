@@ -1,0 +1,85 @@
+{
+  "property_id": "PROPERTY_TEMPLATE_01",
+  "room_id": "room_01",
+  "room_name": "Living Room / Benchmark Chamber",
+  "measured_by": "Certified Surveyor Name (e.g. Jane Doe, RICS / PE)",
+  "timestamp": "2026-09-20T10:00:00Z",
+  "measurement_environment": {
+    "temperature_c": 21.5,
+    "lighting_condition": "daylight",
+    "furnished_status": "empty"
+  },
+  "ceiling_height_m": 2.450,
+  "room_area_m2": 24.32,
+  "walls": [
+    {
+      "wall_id": "wall_north",
+      "length_m": 5.420,
+      "measurement_method": "laser_disto",
+      "measurement_device": "Leica DISTO D2 (±1.5mm accuracy)",
+      "device_accuracy_spec_mm": 1.5,
+      "notes": "Measured 1.0m above finished floor level along clear line of sight."
+    },
+    {
+      "wall_id": "wall_east",
+      "length_m": 4.485,
+      "measurement_method": "laser_disto",
+      "measurement_device": "Leica DISTO D2 (±1.5mm accuracy)",
+      "device_accuracy_spec_mm": 1.5,
+      "notes": "Corner-to-corner clear span."
+    },
+    {
+      "wall_id": "wall_south",
+      "length_m": 5.422,
+      "measurement_method": "laser_disto",
+      "measurement_device": "Leica DISTO D2 (±1.5mm accuracy)",
+      "device_accuracy_spec_mm": 1.5,
+      "notes": "Verified against steel tape check measurement (5.420m)."
+    },
+    {
+      "wall_id": "wall_west",
+      "length_m": 4.490,
+      "measurement_method": "laser_disto",
+      "measurement_device": "Leica DISTO D2 (±1.5mm accuracy)",
+      "device_accuracy_spec_mm": 1.5,
+      "notes": "Corner-to-corner clear span."
+    }
+  ],
+  "openings": [
+    {
+      "opening_id": "door_main_entry",
+      "type": "door",
+      "wall_id": "wall_south",
+      "width_m": 0.914,
+      "height_m": 2.032,
+      "sill_height_m": 0.0,
+      "measurement_method": "steel_tape",
+      "measurement_device": "Stanley FatMax 8m Class II Tape (±1mm)",
+      "notes": "Standard 36x80 inch interior passage opening."
+    },
+    {
+      "opening_id": "window_east_01",
+      "type": "window",
+      "wall_id": "wall_east",
+      "width_m": 1.220,
+      "height_m": 1.500,
+      "sill_height_m": 0.900,
+      "measurement_method": "laser_disto",
+      "measurement_device": "Leica DISTO D2",
+      "notes": "Frame interior clear opening."
+    }
+  ],
+  "damage_annotations": [
+    {
+      "damage_id": "damage_staged_01",
+      "ground_truth_class": "drywall_crack",
+      "location_description": "Vertical hairline crack near east window frame corner",
+      "wall_id": "wall_east",
+      "physical_area_m2": null,
+      "physical_length_m": 0.450,
+      "measurement_method": "calibrated_optical_rule",
+      "repair_urgency": "cosmetic"
+    }
+  ],
+  "notes": "TEMPLATE FILE: Do not fill with reconstructed predictions. Must be populated from independent field measurements."
+}

@@ -1,0 +1,84 @@
+{
+  "benchmark_suite_version": "1.0.0-final",
+  "description": "Official Challenge Benchmark Manifest defining test cases across all capture tiers, multi-room sequences, repeatability trials, damage assessments, and incumbent scanner comparisons.",
+  "cases": [
+    {
+      "case_id": "ROOM_A_LIDAR_01",
+      "room_name": "Living Room (Single Scan Floor Only)",
+      "property_id": "prop_benchmark_01",
+      "tier": "lidar",
+      "capture_path": "sample data/single_scan_floor_only.zip",
+      "gt_path": "benchmark/ground_truth/room_a_gt.json",
+      "repeat_group": "ROOM_A_LIDAR_REPEATS",
+      "multi_room_case": false,
+      "damage_case": false,
+      "incumbent_case": true,
+      "notes": "LiDAR scan with ground plane coverage; evaluated for wall lengths, doors, and footprint."
+    },
+    {
+      "case_id": "ROOM_A_LIDAR_02",
+      "room_name": "Living Room (Single Scan With Ceiling)",
+      "property_id": "prop_benchmark_01",
+      "tier": "lidar",
+      "capture_path": "sample data/single_scan_with_ceiling.zip",
+      "gt_path": "benchmark/ground_truth/room_a_gt.json",
+      "repeat_group": "ROOM_A_LIDAR_REPEATS",
+      "multi_room_case": false,
+      "damage_case": false,
+      "incumbent_case": true,
+      "notes": "LiDAR scan with full vertical extent; evaluated for ceiling height gate and wall repeatability."
+    },
+    {
+      "case_id": "ROOM_A_VIDEO_01",
+      "room_name": "Living Room (Single Room Video Clip)",
+      "property_id": "prop_benchmark_01",
+      "tier": "video",
+      "capture_path": "sample data/single_room.zip",
+      "gt_path": "benchmark/ground_truth/room_a_gt.json",
+      "repeat_group": null,
+      "multi_room_case": false,
+      "damage_case": false,
+      "incumbent_case": false,
+      "notes": "Monocular HEVC 60fps video stream; evaluated for video SfM reconstruction accuracy against ±3% target."
+    },
+    {
+      "case_id": "ROOM_A_PHOTO_01",
+      "room_name": "Living Room (Keyframe Extracted Photo Cluster)",
+      "property_id": "prop_benchmark_01",
+      "tier": "photo",
+      "capture_path": "sample data/single_room.zip",
+      "gt_path": "benchmark/ground_truth/room_a_gt.json",
+      "repeat_group": null,
+      "multi_room_case": false,
+      "damage_case": false,
+      "incumbent_case": false,
+      "notes": "Ordered keyframe photo set synthesized from room sweep; evaluated against ±8% wall & footprint targets."
+    },
+    {
+      "case_id": "MULTIROOM_DEV_01",
+      "room_name": "Synthetic Multi-Room Topology (Room A -> Hallway -> Room B)",
+      "property_id": "prop_multiroom_01",
+      "tier": "multiroom",
+      "capture_path": null,
+      "gt_path": "benchmark/ground_truth/templates/property_gt_template.json",
+      "repeat_group": null,
+      "multi_room_case": true,
+      "damage_case": false,
+      "incumbent_case": false,
+      "notes": "Multi-room topological graph and pose-graph drift validation suite."
+    },
+    {
+      "case_id": "DAMAGE_SYNTHETIC_DEV_01",
+      "room_name": "Synthetic Damage Validation Zone",
+      "property_id": "prop_damage_01",
+      "tier": "damage",
+      "capture_path": null,
+      "gt_path": null,
+      "repeat_group": null,
+      "multi_room_case": false,
+      "damage_case": true,
+      "incumbent_case": false,
+      "notes": "SYNTHETIC DEVELOPMENT BENCHMARK: Used for verifying damage bounding box projection, classification fusion, and repair scope item generation."
+    }
+  ]
+}

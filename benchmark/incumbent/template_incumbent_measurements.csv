@@ -1,0 +1,9 @@
+room_id,dimension_name,ground_truth_m,cozmo_predicted_m,incumbent_scanner_m,notes
+ROOM_01_LIVING,North Wall,5.420,PENDING_RECON,PENDING_INCUMBENT,Laser Disto verified GT
+ROOM_01_LIVING,East Wall,4.485,PENDING_RECON,PENDING_INCUMBENT,Laser Disto verified GT
+ROOM_01_LIVING,Ceiling Height,2.450,PENDING_RECON,PENDING_INCUMBENT,Laser Disto verified GT
+ROOM_01_LIVING,Main Door Width,0.914,PENDING_RECON,PENDING_INCUMBENT,Steel Tape verified GT
+ROOM_02_BEDROOM,South Wall,3.850,PENDING_RECON,PENDING_INCUMBENT,Laser Disto verified GT
+ROOM_02_BEDROOM,West Wall,3.200,PENDING_RECON,PENDING_INCUMBENT,Laser Disto verified GT
+ROOM_02_BEDROOM,Ceiling Height,2.450,PENDING_RECON,PENDING_INCUMBENT,Laser Disto verified GT
+ROOM_02_BEDROOM,Bedroom Door Width,0.812,PENDING_RECON,PENDING_INCUMBENT,Steel Tape verified GT

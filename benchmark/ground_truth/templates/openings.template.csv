@@ -1,0 +1,3 @@
+measurement_id,room_id,measurement_type,value,unit,source,notes
+door_01,room_01,door_width,0.914,m,steel_tape,Main entrance passage
+win_01,room_01,window_width,1.220,m,laser_disto,East exterior window
