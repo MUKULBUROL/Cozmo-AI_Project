@@ -1,0 +1,40 @@
+{
+  "dataset_name": "Synthetic & Staged Property Damage Development Set",
+  "stage": "Stage 9 Development & Verification",
+  "is_synthetic": true,
+  "disclaimer": "Generated exclusively for software-path tests and geometric extent validation. Does not represent real property forensic accuracy.",
+  "ground_truth_damages": [
+    {
+      "id": "dev_water_stain_01",
+      "filename": "water_stain_wall.jpg",
+      "class": "water_stain",
+      "target_surface": "wall",
+      "true_area_m2": 1.2,
+      "notes": "Large brown moisture perimeter on interior drywall"
+    },
+    {
+      "id": "dev_crack_01",
+      "filename": "crack_wall.jpg",
+      "class": "surface_crack",
+      "target_surface": "wall",
+      "true_length_m": 1.5,
+      "notes": "Diagonal settling fissure on plaster substrate"
+    },
+    {
+      "id": "dev_hole_01",
+      "filename": "hole_wall.jpg",
+      "class": "hole_or_missing_material",
+      "target_surface": "wall",
+      "true_area_m2": 0.35,
+      "notes": "Punctured drywall opening with visible stud backing"
+    },
+    {
+      "id": "dev_mold_01",
+      "filename": "mold_ceiling.jpg",
+      "class": "mold_like_discoloration",
+      "target_surface": "ceiling",
+      "true_area_m2": 0.6,
+      "notes": "Patchy dark discoloration colony on ceiling finish"
+    }
+  ]
+}

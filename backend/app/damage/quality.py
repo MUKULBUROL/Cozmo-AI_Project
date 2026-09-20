@@ -57,11 +57,11 @@ class DamageImageQualityGate:
         self,
         min_width: int = 640,
         min_height: int = 480,
-        min_sharpness_usable: float = 60.0,
-        min_sharpness_provisional: float = 25.0,
-        min_brightness: float = 25.0,
-        max_brightness: float = 235.0,
-        min_contrast: float = 18.0,
+        min_sharpness_usable: float = 15.0,
+        min_sharpness_provisional: float = 5.0,
+        min_brightness: float = 20.0,
+        max_brightness: float = 240.0,
+        min_contrast: float = 12.0,
     ):
         """Initializes the quality gate thresholds.
 
