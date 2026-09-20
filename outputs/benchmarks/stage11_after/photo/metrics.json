@@ -1,0 +1,52 @@
+{
+  "capture_id": "photo_room_and_property",
+  "tier": "photo",
+  "status": "PROVISIONAL",
+  "measurements": [
+    {
+      "measurement_id": "floor_area_photo_single_room",
+      "room_id": "room_01",
+      "type": "floor_area",
+      "predicted_value": null,
+      "reference_value": null,
+      "unit": "m2",
+      "absolute_error": null,
+      "relative_error": null,
+      "evidence_level": "NOT_EVALUABLE",
+      "status": "NOT_EVALUABLE",
+      "uncertainty_lower": null,
+      "uncertainty_upper": null,
+      "details": {}
+    },
+    {
+      "measurement_id": "perimeter_photo_single_room",
+      "room_id": "room_01",
+      "type": "perimeter",
+      "predicted_value": null,
+      "reference_value": null,
+      "unit": "m",
+      "absolute_error": null,
+      "relative_error": null,
+      "evidence_level": "NOT_EVALUABLE",
+      "status": "NOT_EVALUABLE",
+      "uncertainty_lower": null,
+      "uncertainty_upper": null,
+      "details": {}
+    }
+  ],
+  "failures": [
+    "TOPOLOGY_FAILURE",
+    "NOT_EVALUABLE"
+  ],
+  "runtime": 48.41,
+  "coverage": 0.55,
+  "gates": [],
+  "details": {
+    "single_room_registered": "5/6",
+    "scale_factor": 0.17212347856483118,
+    "single_room_polygon_valid": false,
+    "floor_area": null,
+    "perimeter": null,
+    "property_status": "PROPERTY_STITCH_NOT_EVALUABLE"
+  }
+}

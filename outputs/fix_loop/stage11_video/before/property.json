@@ -1,0 +1,21 @@
+{
+  "capture_id": "video_multi_room",
+  "tier": "video",
+  "status": "NOT_EVALUABLE",
+  "rooms": [],
+  "connections": [],
+  "failure_reasons": [
+    "only_4_registered_views_minimum_20",
+    "registration_ratio_0.100_below_0.30",
+    "largest_registered_time_gap_106.066s_exceeds_continuity_limit"
+  ],
+  "evidence": {
+    "input_provenance": "RGB_VIDEO_ONLY",
+    "registered_views": 4,
+    "total_keyframes": 40,
+    "registration_ratio": 0.1,
+    "temporal_coverage_ratio": 0.5137,
+    "largest_registered_time_gap_seconds": 106.066
+  },
+  "note": "The reconstructed component is insufficient to claim a whole-property plan."
+}

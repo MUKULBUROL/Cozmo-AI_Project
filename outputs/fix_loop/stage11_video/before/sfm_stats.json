@@ -1,0 +1,20 @@
+{
+  "capture_id": "video_multi_room",
+  "total_keyframes": 40,
+  "registered_keyframes": 4,
+  "registration_ratio": 0.1,
+  "sparse_point_count": 60,
+  "mean_reprojection_error": 0.7320726819907619,
+  "median_reprojection_error": 0.6662211715672337,
+  "track_length_mean": 3.1,
+  "trajectory_continuous": false,
+  "pose_jump_warnings": [
+    "Registration gap 7->26: 18 intervening keyframes are unregistered"
+  ],
+  "status": "PROVISIONAL",
+  "reconstruction_time_seconds": 77.63046026229858,
+  "warnings": [
+    "Low registration ratio: 10.0% (4/40)",
+    "Registration gap 7->26: 18 intervening keyframes are unregistered"
+  ]
+}

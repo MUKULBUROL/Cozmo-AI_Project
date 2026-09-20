@@ -1,0 +1,95 @@
+{
+  "capture_id": "c7d28f72c6",
+  "tier": "video",
+  "fix_loop_stage": "Stage 11",
+  "prediction_evaluation": {
+    "predicted_registered_views": "24 / 40",
+    "predicted_registration_ratio": 0.60,
+    "actual_registered_views": "31 / 40",
+    "actual_registration_ratio": 0.775,
+    "prediction_met": true,
+    "prediction_delta_views": 7,
+    "prediction_delta_ratio": 0.175
+  },
+  "fix_loop_status": "MEANINGFUL_IMPROVEMENT",
+  "comparison_table": {
+    "keyframes_total": {
+      "before": 40,
+      "after": 40
+    },
+    "registered_views": {
+      "before": 4,
+      "after": 31
+    },
+    "registration_ratio": {
+      "before": 0.10,
+      "after": 0.775
+    },
+    "largest_tracking_gap_seconds": {
+      "before": 80.867,
+      "after": 21.085
+    },
+    "match_graph_components": {
+      "before": 24,
+      "after": 2
+    },
+    "largest_connected_component_size": {
+      "before": 8,
+      "after": 39
+    },
+    "isolated_nodes_count": {
+      "before": 16,
+      "after": 1
+    },
+    "verified_pairs_count": {
+      "before": 19,
+      "after": 188
+    },
+    "sparse_points": {
+      "before": 60,
+      "after": 877
+    },
+    "reprojection_error_px": {
+      "before": 0.732,
+      "after": 0.837
+    },
+    "metric_scale_factor_m_per_unit": {
+      "before": 0.2342,
+      "after": 0.7207
+    },
+    "metric_scale_status": {
+      "before": "GOOD",
+      "after": "GOOD"
+    },
+    "cloud_points_filtered": {
+      "before": 32790,
+      "after": 462637
+    },
+    "walls_detected": {
+      "before": 7,
+      "after": 9
+    },
+    "property_status": {
+      "before": "NOT_EVALUABLE",
+      "after": "PROVISIONAL"
+    },
+    "room_count": {
+      "before": 0,
+      "after": 1
+    },
+    "topology_valid": {
+      "before": false,
+      "after": true
+    },
+    "runtime_seconds": {
+      "before": 289.20,
+      "after": 449.28
+    }
+  },
+  "rgb_only_isolation": {
+    "lidar_depth_used": false,
+    "arkit_poses_used": false,
+    "imu_used": false,
+    "odometry_used": false
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "intrinsics": {
+    "fx": 2346.0845489613293,
+    "fy": 2346.0845489613293,
+    "cx": 960.0,
+    "cy": 720.0,
+    "width": 1920,
+    "height": 1440,
+    "provenance": "sfm_self_calibration",
+    "confidence": 0.75
+  },
+  "camera_model": "SIMPLE_RADIAL",
+  "calibration_status": "PROVISIONAL"
+}

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600" style="background:#0f172a;">
+  <text x="60" y="35" fill="#f8fafc" font-size="16" font-weight="bold">Reconstructed Visual Camera Trajectory</text>
+  <text x="60" y="55" fill="#94a3b8" font-size="12">Span: 23.31m x 15.69m | 31 Keyframes</text>
+  <path d="M 371.3 175.1 L 370.7 204.2 L 377.2 173.4 L 344.0 125.3 L 60.0 242.7 L 423.7 157.9 L 368.7 275.4 L 375.5 205.7 L 540.0 540.0 L 369.9 190.4 L 371.4 175.1 L 371.1 175.7 L 417.8 166.9 L 387.6 178.6 L 376.3 172.4 L 376.3 172.4 L 374.4 172.8 L 376.3 172.4 L 361.7 278.2 L 359.9 235.9 L 377.9 189.8 L 479.1 459.0 L 270.6 216.8 L 432.6 184.9 L 386.6 156.4 L 382.4 166.1 L 517.9 125.3 L 376.3 172.4 L 376.5 172.5 L 387.9 187.8 L 496.6 60.0" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="371.3" cy="175.1" r="5" fill="#22c55e" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="370.7" cy="204.2" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="377.2" cy="173.4" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="344.0" cy="125.3" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="60.0" cy="242.7" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="423.7" cy="157.9" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="368.7" cy="275.4" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="375.5" cy="205.7" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="540.0" cy="540.0" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="369.9" cy="190.4" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="371.4" cy="175.1" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="371.1" cy="175.7" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="417.8" cy="166.9" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="387.6" cy="178.6" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="376.3" cy="172.4" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="376.3" cy="172.4" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="374.4" cy="172.8" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="376.3" cy="172.4" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="361.7" cy="278.2" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="359.9" cy="235.9" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="377.9" cy="189.8" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="479.1" cy="459.0" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="270.6" cy="216.8" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="432.6" cy="184.9" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="386.6" cy="156.4" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="382.4" cy="166.1" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="517.9" cy="125.3" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="376.3" cy="172.4" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="376.5" cy="172.5" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="387.9" cy="187.8" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="496.6" cy="60.0" r="5" fill="#ef4444" stroke="#ffffff" stroke-width="1"/>
+</svg>

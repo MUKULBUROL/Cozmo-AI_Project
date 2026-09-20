@@ -208,15 +208,15 @@ def run_visual_sfm(
         )
         return report, [], dummy_intrinsics, []
 
-    # Step 1: Feature Extraction
+    # Step 1: Feature Extraction (Stage 11 tuned sensitivity for indoor architectural surfaces)
     feat_opts = pycolmap.FeatureExtractionOptions()
     feat_opts.use_gpu = False
     feat_opts.max_image_size = 1280
-    feat_opts.num_threads = 2
+    feat_opts.num_threads = min(4, os.cpu_count() or 2)
     feat_opts.sift.first_octave = -1
-    feat_opts.sift.max_num_features = 4096
+    feat_opts.sift.max_num_features = 8192
     feat_opts.sift.edge_threshold = 15.0
-    feat_opts.sift.peak_threshold = 0.004
+    feat_opts.sift.peak_threshold = 0.002
 
     reader_opts = pycolmap.ImageReaderOptions()
     reader_opts.camera_model = camera_model
@@ -232,38 +232,53 @@ def run_visual_sfm(
         extraction_options=feat_opts,
     )
 
-    # Step 2: Feature Matching
-    # For keyframe sequences (typically 20-50 frames), exhaustive matching is fast (<2s)
-    # and crucial for indoor scanning where the camera pans back across previously seen walls.
+    # Step 2: Feature Matching & Geometric Verification
+    # Stage 11 guided matching and calibrated epipolar verification recover inliers across
+    # low-texture indoor planar surfaces and wide viewpoint transitions.
     match_opts = pycolmap.FeatureMatchingOptions()
     match_opts.use_gpu = False
-    match_opts.num_threads = 2
+    match_opts.num_threads = min(4, os.cpu_count() or 2)
+    match_opts.guided_matching = True
+    match_opts.sift.max_ratio = 0.85
+
+    v_opts = pycolmap.TwoViewGeometryOptions()
+    v_opts.min_num_inliers = 10
+    v_opts.ransac.min_inlier_ratio = 0.12
+    v_opts.min_E_F_inlier_ratio = 0.80
 
     if total_kfs <= 80:
         pycolmap.match_exhaustive(
             database_path=db_path,
             matching_options=match_opts,
+            verification_options=v_opts,
         )
     else:
         pairing_opts = pycolmap.SequentialPairingOptions()
         pairing_opts.overlap = min(sequential_overlap, 25)
-        pairing_opts.loop_detection = False
+        pairing_opts.loop_detection = True
         pycolmap.match_sequential(
             database_path=db_path,
             pairing_options=pairing_opts,
             matching_options=match_opts,
+            verification_options=v_opts,
         )
 
     # Step 3: Incremental Reconstruction
+    # Stage 11 resilient absolute pose registration, shared focal stability, and retries
+    # allow transitional bridge keyframes to register into the primary model without splitting.
     inc_opts = pycolmap.IncrementalPipelineOptions()
-    inc_opts.num_threads = 2
-    inc_opts.mapper.num_threads = 2
-    inc_opts.min_num_matches = 10
+    inc_opts.num_threads = min(4, os.cpu_count() or 2)
+    inc_opts.mapper.num_threads = min(4, os.cpu_count() or 2)
+    inc_opts.min_num_matches = 6
     inc_opts.mapper.init_min_num_inliers = 15
+    inc_opts.mapper.init_min_tri_angle = 1.5
+    inc_opts.mapper.init_max_reg_trials = 5
+    inc_opts.mapper.max_reg_trials = 5
     inc_opts.mapper.abs_pose_min_num_inliers = 8
-    inc_opts.mapper.abs_pose_min_inlier_ratio = 0.10
-    inc_opts.mapper.init_min_tri_angle = 2.0
-    inc_opts.mapper.filter_min_tri_angle = 0.8
+    inc_opts.mapper.abs_pose_min_inlier_ratio = 0.12
+    inc_opts.mapper.ba_local_min_tri_angle = 1.2
+    inc_opts.mapper.filter_min_tri_angle = 0.5
+    inc_opts.mapper.abs_pose_refine_focal_length = False
     inc_opts.min_model_size = 3
     inc_opts.ba_local_max_num_iterations = 25
     inc_opts.ba_global_max_num_iterations = 40

@@ -1,0 +1,14 @@
+{
+  "status": "INCUMBENT_COMPARISON_NOT_EVALUABLE",
+  "shared_dimensions_count": 0,
+  "beat_count": 0,
+  "tie_count": 0,
+  "loss_count": 0,
+  "beat_tie_ratio": null,
+  "cozmo_mae": null,
+  "incumbent_mae": null,
+  "reasons": [
+    "No incumbent benchmark measurements provided in benchmark inputs."
+  ],
+  "details": []
+}

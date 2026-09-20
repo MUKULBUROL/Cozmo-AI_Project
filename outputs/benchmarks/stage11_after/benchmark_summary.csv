@@ -1,0 +1,31 @@
+Tier,Metric,Value,Unit,Evidence_Level,Status,Notes
+LIDAR,Status,WORKING,status,INTERNAL_CONSISTENCY,WORKING,"Coverage: 100.0%, Runtime: 26.26s"
+LIDAR,wall_length_wall_01,1.39,m,NOT_EVALUABLE,EVALUATED,"Ref: None, AbsErr: None"
+LIDAR,wall_length_wall_03,2.544,m,NOT_EVALUABLE,EVALUATED,"Ref: None, AbsErr: None"
+LIDAR,wall_length_wall_05,1.314,m,NOT_EVALUABLE,EVALUATED,"Ref: None, AbsErr: None"
+LIDAR,wall_length_wall_02,0.076,m,NOT_EVALUABLE,EVALUATED,"Ref: None, AbsErr: None"
+LIDAR,wall_length_wall_08,1.665,m,NOT_EVALUABLE,EVALUATED,"Ref: None, AbsErr: None"
+LIDAR,wall_length_wall_04,2.409,m,NOT_EVALUABLE,EVALUATED,"Ref: None, AbsErr: None"
+LIDAR,wall_length_wall_01,1.656,m,NOT_EVALUABLE,EVALUATED,"Ref: None, AbsErr: None"
+LIDAR,floor_area_floor_area_room_01,7.554,m2,NOT_EVALUABLE,EVALUATED,"Ref: None, AbsErr: None"
+LIDAR,door_width_opening_01,1.5682,m,NOT_EVALUABLE,EVALUATED,"Ref: None, AbsErr: None"
+VIDEO,Status,PROVISIONAL,status,INTERNAL_CONSISTENCY,PROVISIONAL,"Coverage: 45.0%, Runtime: 2769.55s"
+VIDEO,floor_area_floor_area_video_single_room,N/A,m2,NOT_EVALUABLE,NOT_EVALUABLE,"Ref: None, AbsErr: None"
+VIDEO,perimeter_perimeter_video_single_room,N/A,m,NOT_EVALUABLE,NOT_EVALUABLE,"Ref: None, AbsErr: None"
+PHOTO,Status,PROVISIONAL,status,INTERNAL_CONSISTENCY,PROVISIONAL,"Coverage: 55.0%, Runtime: 48.41s"
+PHOTO,floor_area_floor_area_photo_single_room,N/A,m2,NOT_EVALUABLE,NOT_EVALUABLE,"Ref: None, AbsErr: None"
+PHOTO,perimeter_perimeter_photo_single_room,N/A,m,NOT_EVALUABLE,NOT_EVALUABLE,"Ref: None, AbsErr: None"
+DAMAGE,Status,WORKING,status,INTERNAL_CONSISTENCY,WORKING,"Coverage: 100.0%, Runtime: 4.40s"
+DAMAGE,damage_area_dev_water_stain_01_area,1.15,m2,SYNTHETIC_GROUND_TRUTH,EVALUATED,"Ref: 1.2, AbsErr: 0.05"
+DAMAGE,damage_length_dev_crack_01_length,1.48,m,SYNTHETIC_GROUND_TRUTH,EVALUATED,"Ref: 1.5, AbsErr: 0.02"
+DAMAGE,damage_area_dev_hole_01_area,0.34,m2,SYNTHETIC_GROUND_TRUTH,EVALUATED,"Ref: 0.35, AbsErr: 0.01"
+DAMAGE,damage_area_dev_mold_01_area,0.58,m2,SYNTHETIC_GROUND_TRUTH,EVALUATED,"Ref: 0.6, AbsErr: 0.02"
+OFFICIAL_GATE,GATE_OPENING_WIDTH,NOT_EVALUABLE,gate_status,NOT_EVALUABLE,NOT_EVALUABLE,Threshold: error <= 0.02m on >= 85% of openings
+OFFICIAL_GATE,GATE_CEILING_HEIGHT,NOT_EVALUABLE,gate_status,NOT_EVALUABLE,NOT_EVALUABLE,Threshold: error <= 0.015m per room
+OFFICIAL_GATE,GATE_REPEATABILITY,NOT_EVALUABLE,gate_status,NOT_EVALUABLE,NOT_EVALUABLE,Threshold: <= 0.01m or <= 0.5%
+OFFICIAL_GATE,GATE_VIDEO_WALL_LENGTH,NOT_EVALUABLE,gate_status,NOT_EVALUABLE,NOT_EVALUABLE,Threshold: approx ±3% (0.03)
+OFFICIAL_GATE,GATE_PHOTO_WALL_LENGTH,NOT_EVALUABLE,gate_status,NOT_EVALUABLE,NOT_EVALUABLE,Threshold: approx ±8% (0.08)
+OFFICIAL_GATE,GATE_PHOTO_PROPERTY_FOOTPRINT,NOT_EVALUABLE,gate_status,NOT_EVALUABLE,NOT_EVALUABLE,Threshold: approx ±8% (0.08)
+OFFICIAL_GATE,GATE_DRIFT_ABLATION,PASS,gate_status,INTERNAL_CONSISTENCY,PASS,Threshold: Ablation manifest & pose graph optimization implemented
+OFFICIAL_GATE,GATE_INCUMBENT_COMPARISON,NOT_EVALUABLE,gate_status,NOT_EVALUABLE,NOT_EVALUABLE,Threshold: beat/tie >= 70% (0.70)
+OFFICIAL_GATE,GATE_DAMAGE_EXTENT,PASS,gate_status,SYNTHETIC_GROUND_TRUTH,PASS,Threshold: Synthetic fixture extent validation & scope generation

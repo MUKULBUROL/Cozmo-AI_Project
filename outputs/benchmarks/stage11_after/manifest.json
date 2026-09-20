@@ -1,0 +1,18 @@
+{
+  "stage": "Stage 10 (Frozen System Benchmark + Development Evaluation)",
+  "baseline_commit": "e6d7a2065faf15565f4c4e23afd6ad8fb3004b24",
+  "is_production_code_frozen": true,
+  "tiers_evaluated": [
+    "lidar",
+    "video",
+    "photo",
+    "damage"
+  ],
+  "cross_tier_pairs": [
+    "lidar_video",
+    "lidar_photo",
+    "video_photo"
+  ],
+  "gate_count": 9,
+  "worst_failure_candidate": "VIDEO_MULTIROOM_SFM_REGISTRATION_FAILURE"
+}

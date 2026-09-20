@@ -1,0 +1,14 @@
+{
+  "capture_id": "video_multi_room",
+  "video_path": "/tmp/tmp6rss1liw/video.mp4",
+  "codec": "hevc",
+  "width": 1920,
+  "height": 1440,
+  "frame_count": 9745,
+  "fps": 45.33964019851117,
+  "duration_seconds": 214.9333333333333,
+  "file_size_bytes": 252331542,
+  "orientation_rotation_deg": 0,
+  "camera_model_status": "uncalibrated",
+  "aspect_ratio": "4:3"
+}
