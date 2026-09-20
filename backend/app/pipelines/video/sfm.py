@@ -435,9 +435,21 @@ def run_visual_sfm(
             "is_metric": False,
         })
 
+    camera_poses.sort(key=lambda pose: pose.keyframe_id)
     pose_jump_warnings: List[str] = []
     trajectory_continuous = len(camera_poses) >= 3
     if len(camera_poses) >= 3:
+        keyframe_gaps = np.diff([pose.keyframe_id for pose in camera_poses])
+        maximum_supported_gap = max(3, int(np.ceil(total_kfs * 0.20)))
+        for index, gap in enumerate(keyframe_gaps):
+            if gap > maximum_supported_gap:
+                trajectory_continuous = False
+                pose_jump_warnings.append(
+                    f"Registration gap {camera_poses[index].keyframe_id}->"
+                    f"{camera_poses[index + 1].keyframe_id}: {gap - 1} intervening keyframes "
+                    f"are unregistered"
+                )
+
         centers = np.array([pose.t_vec for pose in camera_poses], dtype=np.float64)
         steps = np.linalg.norm(np.diff(centers, axis=0), axis=1)
         median_step = float(np.median(steps))

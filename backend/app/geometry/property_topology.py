@@ -250,6 +250,8 @@ def assemble_property_plan_output(
     drift_status: str,
     residual_m: float,
     ceiling_height_m: Optional[float] = None,
+    capture_tier: CaptureTier = CaptureTier.LIDAR,
+    reconstruction_method: str = "arkit_lidar_pose_graph_optimized",
 ) -> PropertyPlanOutput:
     """Builds the final challenge-compliant PropertyPlanOutput object.
 
@@ -263,6 +265,8 @@ def assemble_property_plan_output(
         drift_status: Optimization status ('improved', 'neutral', 'rejected').
         residual_m: Final loop closure residual in meters.
         ceiling_height_m: Measured ceiling height if observed.
+        capture_tier: Sensor tier that produced the geometry.
+        reconstruction_method: Machine-readable reconstruction method identifier.
 
     Returns:
         Validated PropertyPlanOutput instance.
@@ -278,6 +282,12 @@ def assemble_property_plan_output(
     """
     dim_rooms: List[DimensionedRoom] = []
     total_area_val = 0.0
+    is_video = capture_tier == CaptureTier.VIDEO
+    wall_uncertainty_m = 0.10 if is_video else 0.03
+    linear_confidence = 0.70 if is_video else 0.95
+    relative_uncertainty = 0.10 if is_video else 0.05
+    wall_method = "video_metric_depth_ransac_wall" if is_video else "lidar_ransac_wall"
+    ceiling_method = "video_metric_depth_floor_ceiling_separation" if is_video else "lidar_floor_ceiling_separation"
 
     for r in rooms:
         total_area_val += r.area_sqm
@@ -292,10 +302,10 @@ def assemble_property_plan_output(
                     length=Measurement(
                         value=w.length_meters,
                         unit="m",
-                        lower_bound=round(w.length_meters - 0.03, 3),
-                        upper_bound=round(w.length_meters + 0.03, 3),
-                        confidence=0.95,
-                        method="lidar_ransac_wall",
+                        lower_bound=round(max(0.0, w.length_meters - wall_uncertainty_m), 3),
+                        upper_bound=round(w.length_meters + wall_uncertainty_m, 3),
+                        confidence=linear_confidence,
+                        method=wall_method,
                     ),
                     thickness=Measurement(
                         value=0.15,
@@ -314,10 +324,10 @@ def assemble_property_plan_output(
             ceil_measurement = Measurement(
                 value=round(ceiling_height_m, 2),
                 unit="m",
-                lower_bound=round(ceiling_height_m - 0.04, 2),
-                upper_bound=round(ceiling_height_m + 0.04, 2),
-                confidence=0.95,
-                method="lidar_floor_ceiling_separation",
+                lower_bound=round(max(0.0, ceiling_height_m - wall_uncertainty_m), 2),
+                upper_bound=round(ceiling_height_m + wall_uncertainty_m, 2),
+                confidence=linear_confidence,
+                method=ceiling_method,
             )
 
         dim_rooms.append(
@@ -327,17 +337,17 @@ def assemble_property_plan_output(
                 floor_area=Measurement(
                     value=r.area_sqm,
                     unit="m2",
-                    lower_bound=round(r.area_sqm * 0.95, 2),
-                    upper_bound=round(r.area_sqm * 1.05, 2),
-                    confidence=0.95,
+                    lower_bound=round(r.area_sqm * (1.0 - relative_uncertainty), 2),
+                    upper_bound=round(r.area_sqm * (1.0 + relative_uncertainty), 2),
+                    confidence=linear_confidence,
                     method="polygon_shoelace_formula",
                 ),
                 perimeter=Measurement(
                     value=r.perimeter_meters,
                     unit="m",
-                    lower_bound=round(r.perimeter_meters * 0.96, 2),
-                    upper_bound=round(r.perimeter_meters * 1.04, 2),
-                    confidence=0.95,
+                    lower_bound=round(r.perimeter_meters * (1.0 - relative_uncertainty), 2),
+                    upper_bound=round(r.perimeter_meters * (1.0 + relative_uncertainty), 2),
+                    confidence=linear_confidence,
                     method="polygon_perimeter_sum",
                 ),
                 ceiling_height=ceil_measurement,
@@ -350,15 +360,15 @@ def assemble_property_plan_output(
     return PropertyPlanOutput(
         property_id=f"prop_{scan_id}",
         capture_id=scan_id,
-        tier=CaptureTier.LIDAR,
+        tier=capture_tier,
         rooms=dim_rooms,
         connections=connections,
         total_floor_area=Measurement(
             value=round(total_area_val, 2),
             unit="m2",
-            lower_bound=round(total_area_val * 0.95, 2),
-            upper_bound=round(total_area_val * 1.05, 2),
-            confidence=0.95,
+            lower_bound=round(total_area_val * (1.0 - relative_uncertainty), 2),
+            upper_bound=round(total_area_val * (1.0 + relative_uncertainty), 2),
+            confidence=linear_confidence,
             method="sum_of_room_areas",
         ),
         capture_metadata={
@@ -366,7 +376,7 @@ def assemble_property_plan_output(
             "unit": "meters",
             "drift_correction_status": drift_status,
         },
-        reconstruction_method="arkit_lidar_pose_graph_optimized",
+        reconstruction_method=reconstruction_method,
         stitching_residual_meters=round(residual_m, 4),
     )
 

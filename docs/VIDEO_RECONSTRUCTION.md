@@ -1,7 +1,7 @@
 # Stage 7: Video Reconstruction Technical Documentation
 
 ## Executive Overview
-Stage 7 introduces the **Video Input Tier** to the Cozmo AI floorplan reconstruction system. This allows the pipeline to process ordinary handheld smartphone RGB video (`.mp4`, `.mov`) into metric 3D point clouds, structural planes, dimensioned room polygons, and multi-room property plans.
+Stage 7 introduces the **Video Input Tier** to the Cozmo AI floorplan reconstruction system. The pipeline processes ordinary handheld smartphone RGB video (`.mp4`, `.mov`) into metric 3D point clouds, structural planes, and quality-gated room or property outputs. It emits an explicit `NOT_EVALUABLE` result instead of claiming a floor plan when visual registration is too sparse.
 
 In accordance with the core architectural principle:
 ```
@@ -30,7 +30,7 @@ Processing every video frame (at 60 fps) through neural networks is computationa
 ### 3. How Camera Poses are Recovered
 Visual camera poses ($R, t$) are estimated using **pycolmap (COLMAP C++ backend)**:
 1. **Feature Extraction**: Extracts SIFT descriptors from selected keyframes.
-2. **Sequential Feature Matching**: Matches adjacent keyframe pairs with an overlap window (`overlap=15`), utilizing quadratic overlap for trajectory loops.
+2. **Feature Matching**: Uses exhaustive matching for the bounded 20-50 keyframe workload and falls back to sequential matching when the installed pycolmap interface requires it.
 3. **Incremental Bundle Adjustment**: Solves camera poses and triangulates 3D tie points while self-calibrating camera intrinsics $(f_x, f_y, c_x, c_y)$.
 
 ### 4. Why Visual SfM Has Arbitrary Scale
@@ -66,8 +66,8 @@ Points are transformed into world space via scaled poses $X_{\text{world}} = R_{
 - **Stage 2**: Structural plane extraction (`extract_structure`) finds floor, ceiling, and wall planes via RANSAC.
 - **Stage 3**: Room polygon extraction (`run_stage3_pipeline`) projects 2D wall lines, detects corners, and extracts closed room polygons.
 - **Stage 4**: Measurement engine (`compute_room_measurements`) produces room area, perimeter, and wall dimensions with uncertainty.
-- **Stage 5**: Opening detector semantics for door/window boundaries.
-- **Stage 6**: Multi-room property segmentation and non-overlapping topology validation (`segment_property_floorplan`, `validate_room_topology`).
+- **Stage 5**: The existing opening pipeline is LiDAR-oriented and is not invoked by Stage 7. Video opening dimensions remain unsupported rather than being inferred from sensor-only inputs.
+- **Stage 6**: Multi-room region segmentation, adjacency, and non-overlapping topology validation reuse the existing geometry primitives only after the RGB trajectory passes registration and temporal-coverage gates.
 
 ### 10. Why Cross-Tier Comparison is NOT Ground Truth
 Comparing video-derived measurements against LiDAR-derived measurements is labeled:
@@ -78,6 +78,9 @@ LiDAR scans themselves possess measurement uncertainty and potential drift; agre
 - Extreme featureless white walls with no visual texture may cause sparse tie point dropouts.
 - Fast, sudden camera pans causing severe motion blur may drop registered keyframe percentage.
 - Highly reflective surfaces (mirrors, glass) require quality masking.
+- A valid polygon from one registered SfM component does not establish full-property coverage.
+- COLMAP bundle adjustment does not expose an independent correction-off trajectory. Therefore Stage 7 writes drift as `NOT_EVALUABLE` unless a validated RGB loop pair exists; start-to-end displacement alone is never labeled drift.
+- Video-derived door and window measurements are not yet produced by the shared Stage 5 implementation.
 
 ### 12. CLI Run Commands
 
@@ -105,3 +108,21 @@ python3 -m scripts.view_video_reconstruction \
     --lidar-scan c00a170fe1 \
     --headless
 ```
+
+## Executed Validation Results
+
+These results describe the checked-in implementation on the available captures; they are not accuracy claims.
+
+### Standalone RGB Isolation
+
+The pipeline completed from a standalone MP4 in a directory containing no `odometry.csv`, sensor `depth/`, `confidence/`, or LiDAR point cloud. The run registered 4 of 25 keyframes, recovered a provisional metric reconstruction, and completed Stages 2-4. This is execution evidence for input isolation, not proof of geometric accuracy.
+
+### Single-Room Archive
+
+The required `c00a170fe1/rgb.mp4` run registered 4 of 25 keyframes (16%), reconstructed 24 sparse points, and achieved 0.4246 px mean and 0.4073 px median reprojection error. Stage 3 rejected the room polygon with `no_valid_closed_simple_cycle_found`; no polygon was fabricated. Any LiDAR comparison is labeled **CROSS-TIER AGREEMENT, NOT GROUND-TRUTH ACCURACY**.
+
+### Multi-Room Archive
+
+The required `c7d28f72c6/rgb.mp4` run used 40 keyframes from a 214.93-second video and completed in 289.2 seconds internally (299.25 seconds wall clock, 1,367,280 KiB peak RSS). It produced 1,224,248 raw RGB-derived points, 32,790 filtered points, and seven structural wall candidates. Metric scale was 0.2342 m per SfM unit with 0.607% relative uncertainty.
+
+Only 4 of 40 keyframes registered (10%), with 60 sparse points and a 106.066-second gap between registered trajectory islands. The 1.68 m2 closed polygon belongs to a partial SfM component and is not presented as a whole-property result. `property/property.json` and `property/drift_ablation.json` therefore report `NOT_EVALUABLE`, zero claimed rooms, no applied drift correction, and the exact quality-gate reasons.

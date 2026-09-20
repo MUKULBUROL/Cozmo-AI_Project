@@ -48,6 +48,7 @@ import os
 from pathlib import Path
 import numpy as np
 import cv2
+import json
 
 from backend.app.models.video import (
     VideoCaptureMetadata,
@@ -67,6 +68,9 @@ from backend.app.pipelines.video.keyframes import (
     compute_visual_motion_delta,
     extract_video_keyframes,
 )
+from backend.app.pipelines.video.pipeline import write_video_multiroom_outputs
+from backend.app.geometry.property_topology import assemble_property_plan_output
+from backend.app.models.capture import CaptureTier
 
 
 class TestVideoReconstructionUnit(unittest.TestCase):
@@ -226,6 +230,55 @@ class TestVideoReconstructionUnit(unittest.TestCase):
             self.assertEqual(meta.width, 160)
             self.assertEqual(meta.height, 120)
             self.assertEqual(meta.frame_count, 10)
+
+    def test_sparse_multiroom_trajectory_emits_not_evaluable_reports(self):
+        """Verify sparse RGB SfM evidence cannot be presented as a whole-property result."""
+        poses = [
+            SfmCameraPose(
+                keyframe_id=index,
+                frame_index=index * 100,
+                timestamp=float(index * 10),
+                t_vec=[float(index), 0.0, 0.0],
+                is_metric=True,
+            )
+            for index in range(4)
+        ]
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_dir = Path(tmpdir)
+            summary = write_video_multiroom_outputs(
+                output_dir=output_dir,
+                capture_id="sparse_video",
+                poses=poses,
+                total_keyframes=40,
+                video_duration_seconds=200.0,
+                structure_json_path=output_dir / "unused_structure.json",
+            )
+
+            self.assertEqual(summary["status"], "NOT_EVALUABLE")
+            with open(output_dir / "property" / "property.json", encoding="utf-8") as f:
+                property_report = json.load(f)
+            with open(output_dir / "property" / "drift_ablation.json", encoding="utf-8") as f:
+                drift_report = json.load(f)
+            self.assertEqual(property_report["tier"], "video")
+            self.assertEqual(property_report["rooms"], [])
+            self.assertIn("only_4_registered_views_minimum_20", property_report["failure_reasons"])
+            self.assertEqual(drift_report["status"], "NOT_EVALUABLE")
+            self.assertFalse(drift_report["correction_applied"])
+
+    def test_video_property_contract_preserves_tier_and_method(self):
+        """Verify a supported Stage 6 handoff cannot be serialized as LiDAR provenance."""
+        property_output = assemble_property_plan_output(
+            scan_id="video_property",
+            rooms=[],
+            connections=[],
+            drift_status="not_evaluable",
+            residual_m=0.0,
+            capture_tier=CaptureTier.VIDEO,
+            reconstruction_method="rgb_video_sfm_metric_depth",
+        )
+
+        self.assertEqual(property_output.tier, CaptureTier.VIDEO)
+        self.assertEqual(property_output.reconstruction_method, "rgb_video_sfm_metric_depth")
 
 
 if __name__ == "__main__":

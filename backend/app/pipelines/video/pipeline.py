@@ -68,6 +68,7 @@ from backend.app.models.video import (
     VideoCameraIntrinsics,
     MetricScaleEstimate,
 )
+from backend.app.models.capture import CaptureTier, Pose6D
 from backend.app.pipelines.video.contract import (
     VideoReconstructionStatus,
     SfMReconstructionReport,
@@ -81,6 +82,204 @@ from backend.app.pipelines.video.fusion import fuse_video_metric_pointcloud
 from backend.app.geometry.structural_extraction import StructuralConfig, extract_structure
 from backend.app.geometry.room_footprint import run_stage3_pipeline
 from backend.app.measurements.engine import compute_room_measurements
+from backend.app.geometry.multiroom_segmentation import (
+    assign_walls_to_rooms,
+    build_room_polygon_in_global_frame,
+    cluster_trajectory_into_room_regions,
+)
+from backend.app.geometry.property_topology import (
+    assemble_property_plan_output,
+    build_room_adjacency_graph,
+    export_property_json,
+    validate_room_topology,
+)
+from backend.app.geometry.property_viz import render_property_debug_svg
+
+
+def _to_capture_pose(pose: SfmCameraPose) -> Pose6D:
+    """Convert one metric SfM pose into the shared Y-up capture-pose contract.
+
+    The input camera center and output translation are both expressed in world-frame meters;
+    quaternion values are copied unchanged. This adapter assumes ``apply_metric_scale`` has run.
+    A short ``t_vec`` is treated as malformed and raises ``ValueError`` for the caller to report.
+    """
+    if len(pose.t_vec) < 3:
+        raise ValueError(f"SfM pose {pose.keyframe_id} has no 3D camera center")
+    return Pose6D(
+        timestamp=pose.timestamp,
+        frame_index=pose.frame_index,
+        x=pose.t_vec[0],
+        y=pose.t_vec[1],
+        z=pose.t_vec[2],
+        qx=pose.qx,
+        qy=pose.qy,
+        qz=pose.qz,
+        qw=pose.qw,
+    )
+
+
+def write_video_multiroom_outputs(
+    output_dir: Path,
+    capture_id: str,
+    poses: List[SfmCameraPose],
+    total_keyframes: int,
+    video_duration_seconds: float,
+    structure_json_path: Path,
+) -> Dict[str, Any]:
+    """Write quality-gated Stage 6 property and drift evidence from RGB-derived geometry.
+
+    Parameters contain only metric SfM poses, keyframe/video counts, and Stage 2 structure derived
+    from the fused RGB cloud. Outputs are ``property/property.json``, ``drift_ablation.json``, and,
+    when segmentation is supportable, ``property_debug.svg``. XZ coordinates and distances are
+    meters. At least 20 registered views, 30 percent registration, and 30 percent temporal
+    coverage are required; otherwise explicit ``NOT_EVALUABLE`` reports are emitted. The function
+    never reads raw depth, confidence, odometry, or LiDAR data. Inspect the report reasons and SfM
+    statistics first when the gate fails.
+    """
+    property_dir = output_dir / "property"
+    property_dir.mkdir(parents=True, exist_ok=True)
+
+    registration_ratio = len(poses) / max(total_keyframes, 1)
+    timestamps = sorted(p.timestamp for p in poses)
+    temporal_coverage = (
+        (timestamps[-1] - timestamps[0]) / max(video_duration_seconds, 1e-6)
+        if len(timestamps) >= 2
+        else 0.0
+    )
+    largest_gap_seconds = max(
+        (later - earlier for earlier, later in zip(timestamps, timestamps[1:])),
+        default=0.0,
+    )
+    gate_reasons: List[str] = []
+    if len(poses) < 20:
+        gate_reasons.append(f"only_{len(poses)}_registered_views_minimum_20")
+    if registration_ratio < 0.30:
+        gate_reasons.append(f"registration_ratio_{registration_ratio:.3f}_below_0.30")
+    if temporal_coverage < 0.30:
+        gate_reasons.append(f"temporal_coverage_{temporal_coverage:.3f}_below_0.30")
+    if largest_gap_seconds > max(15.0, video_duration_seconds * 0.20):
+        gate_reasons.append(
+            f"largest_registered_time_gap_{largest_gap_seconds:.3f}s_exceeds_continuity_limit"
+        )
+
+    evidence = {
+        "input_provenance": "RGB_VIDEO_ONLY",
+        "registered_views": len(poses),
+        "total_keyframes": total_keyframes,
+        "registration_ratio": round(registration_ratio, 4),
+        "temporal_coverage_ratio": round(temporal_coverage, 4),
+        "largest_registered_time_gap_seconds": round(largest_gap_seconds, 3),
+    }
+    drift_report: Dict[str, Any] = {
+        "ablation_title": "Stage 7 RGB Video Trajectory Drift Evaluation",
+        "status": "NOT_EVALUABLE",
+        "correction_applied": False,
+        "reason": "No independently measured raw/optimized loop pair is available from the sparse SfM trajectory.",
+        "endpoint_displacement_is_not_assumed_to_be_drift": True,
+        "accepted_loop_closures": 0,
+        "evidence": evidence,
+    }
+
+    if gate_reasons:
+        property_report = {
+            "capture_id": capture_id,
+            "tier": CaptureTier.VIDEO.value,
+            "status": "NOT_EVALUABLE",
+            "rooms": [],
+            "connections": [],
+            "failure_reasons": gate_reasons,
+            "evidence": evidence,
+            "note": "The reconstructed component is insufficient to claim a whole-property plan.",
+        }
+        with open(property_dir / "property.json", "w", encoding="utf-8") as f:
+            json.dump(property_report, f, indent=2)
+        with open(property_dir / "drift_ablation.json", "w", encoding="utf-8") as f:
+            json.dump(drift_report, f, indent=2)
+        return {
+            "status": "NOT_EVALUABLE",
+            "room_count": 0,
+            "topology_valid": False,
+            "failure_reasons": gate_reasons,
+            "drift_status": "NOT_EVALUABLE",
+        }
+
+    with open(structure_json_path, "r", encoding="utf-8") as f:
+        structure_data = json.load(f)
+    wall_planes = structure_data.get("walls", [])
+    capture_poses = [_to_capture_pose(pose) for pose in poses]
+    candidates = cluster_trajectory_into_room_regions(capture_poses, wall_planes=wall_planes)
+    assign_walls_to_rooms(wall_planes, candidates)
+
+    rooms = []
+    for candidate in candidates:
+        assigned_walls = [
+            wall_planes[index]
+            for index in candidate.wall_indices
+            if index < len(wall_planes)
+        ]
+        room_name = "Hallway Connector" if candidate.is_connector else f"Room {candidate.room_id.split('_')[-1]}"
+        rooms.append(
+            build_room_polygon_in_global_frame(
+                room_id=candidate.room_id,
+                name=room_name,
+                associated_wall_planes=assigned_walls,
+                centroid_xz=candidate.centroid_xz,
+                cell_polygon=candidate.cell_polygon,
+            )
+        )
+
+    if not rooms:
+        reason = "segmentation_produced_no_supported_room_regions"
+        property_report = {
+            "capture_id": capture_id,
+            "tier": CaptureTier.VIDEO.value,
+            "status": "NOT_EVALUABLE",
+            "rooms": [],
+            "connections": [],
+            "failure_reasons": [reason],
+            "evidence": evidence,
+            "note": "The RGB-derived trajectory and walls did not support a room partition.",
+        }
+        with open(property_dir / "property.json", "w", encoding="utf-8") as f:
+            json.dump(property_report, f, indent=2)
+        with open(property_dir / "drift_ablation.json", "w", encoding="utf-8") as f:
+            json.dump(drift_report, f, indent=2)
+        return {
+            "status": "NOT_EVALUABLE",
+            "room_count": 0,
+            "topology_valid": False,
+            "failure_reasons": [reason],
+            "drift_status": "NOT_EVALUABLE",
+        }
+
+    topology = validate_room_topology(rooms)
+    connections = build_room_adjacency_graph(rooms)
+    property_output = assemble_property_plan_output(
+        scan_id=capture_id,
+        rooms=rooms,
+        connections=connections,
+        drift_status="not_evaluable",
+        residual_m=0.0,
+        capture_tier=CaptureTier.VIDEO,
+        reconstruction_method="rgb_video_sfm_metric_depth",
+    )
+    export_property_json(property_output, property_dir / "property.json")
+    render_property_debug_svg(
+        rooms=rooms,
+        connections=connections,
+        scan_id=capture_id,
+        drift_status="NOT EVALUABLE",
+        output_path=property_dir / "property_debug.svg",
+    )
+    with open(property_dir / "drift_ablation.json", "w", encoding="utf-8") as f:
+        json.dump(drift_report, f, indent=2)
+    return {
+        "status": "PROVISIONAL" if topology.is_valid else "FAILED",
+        "room_count": len(rooms),
+        "topology_valid": topology.is_valid,
+        "topology_warnings": topology.warnings,
+        "drift_status": "NOT_EVALUABLE",
+    }
 
 
 def run_video_pipeline(
@@ -321,27 +520,14 @@ def run_video_pipeline(
     if run_multiroom:
         t0 = time.time()
         try:
-            from backend.app.geometry.multiroom_segmentation import segment_property_floorplan
-            from backend.app.geometry.property_topology import validate_room_topology
-            prop_dir = output_dir / "property"
-            prop_dir.mkdir(parents=True, exist_ok=True)
-
-            poly_file = geometry_dir / "room_polygon.json"
-            with open(poly_file, "r", encoding="utf-8") as f:
-                poly_data = json.load(f)
-
-            seg_result = segment_property_floorplan(
-                property_polygon=poly_data.get("vertices", []),
-                all_wall_segments=[],
-                camera_poses=recon_result.trajectory.poses if recon_result.trajectory else [],
+            multiroom_summary = write_video_multiroom_outputs(
+                output_dir=output_dir,
+                capture_id=capture_id,
+                poses=scaled_poses,
+                total_keyframes=len(keyframes),
+                video_duration_seconds=metadata.duration_seconds,
+                structure_json_path=structure_dir / "structure.json",
             )
-            multiroom_summary = {
-                "room_count": len(seg_result.rooms),
-                "rooms": [r.model_dump() for r in seg_result.rooms],
-                "topology_valid": True,
-            }
-            with open(prop_dir / "property_plan.json", "w", encoding="utf-8") as f:
-                json.dump(multiroom_summary, f, indent=2)
         except Exception as e:
             multiroom_summary = {"status": "FAILED", "error": str(e)}
         timings["multiroom_seconds"] = round(time.time() - t0, 3)
@@ -387,6 +573,7 @@ def run_video_pipeline(
         "perimeter_m": stage3_summary.get("perimeter_m") or measurements_summary.get("room_dimensions", {}).get("perimeter", {}).get("value", 0.0),
         "overall_status": "GOOD" if (sfm_report.status == VideoReconstructionStatus.GOOD and scale_estimate.status == "GOOD") else "PROVISIONAL",
         "benchmark_accuracy": "NOT VERIFIED (pending laser/tape ground truth)",
+        "multiroom": multiroom_summary if run_multiroom else {"status": "NOT_REQUESTED"},
         "timings": timings,
     }
 
