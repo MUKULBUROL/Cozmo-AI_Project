@@ -94,6 +94,10 @@ from backend.app.geometry.property_topology import (
     validate_room_topology,
 )
 from backend.app.geometry.property_viz import render_property_debug_svg
+from backend.app.pipelines.video.registration_diagnostics import (
+    collect_registration_diagnostics,
+    generate_registration_timeline_svg,
+)
 
 
 def _to_capture_pose(pose: SfmCameraPose) -> Pose6D:
@@ -389,6 +393,22 @@ def run_video_pipeline(
         capture_id=capture_id,
     )
     timings["sfm_seconds"] = round(time.time() - t0, 3)
+
+    # Collect Stage 11 registration diagnostics and timeline SVG
+    try:
+        diag_report = collect_registration_diagnostics(
+            keyframes_dir=keyframes_dir,
+            sfm_dir=sfm_dir,
+            video_duration_seconds=metadata.duration_seconds,
+        )
+        with open(sfm_dir / "registration_diagnostics.json", "w", encoding="utf-8") as f:
+            json.dump(diag_report, f, indent=2)
+        generate_registration_timeline_svg(
+            diagnostics=diag_report,
+            output_svg_path=sfm_dir / "registration_timeline.svg",
+        )
+    except Exception:
+        pass
 
     if sfm_report.status == VideoReconstructionStatus.FAILED or len(raw_poses) < 2:
         return {

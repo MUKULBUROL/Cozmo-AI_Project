@@ -274,12 +274,24 @@ def extract_video_keyframes(
                 best_candidate = None
 
             current_window = window_index
-            candidate_score = sharpness if exposure_ok else sharpness * 0.1
+            # Stage 11 continuity & overlap: score candidate by combining edge sharpness,
+            # exposure quality, and Gaussian temporal centering within the window to prevent
+            # inter-window frame gaps from exploding into multi-second tracking blind spots.
+            w_size = max(1.0, float(frame_count) / float(window_count))
+            w_center = (float(window_index) + 0.5) * w_size
+            sigma = max(5.0, 0.35 * w_size)
+            dist_penalty = float(np.exp(-((float(frame_idx) - w_center) ** 2) / (2.0 * sigma * sigma)))
+
+            base_sharpness = sharpness if exposure_ok else sharpness * 0.1
+            candidate_score = base_sharpness * (0.3 + 0.7 * dist_penalty)
+
             previous_score = -1.0
             if best_candidate is not None:
-                previous_score = best_candidate[2] if best_candidate[3] else best_candidate[2] * 0.1
-            # Keep frame zero as a deterministic trajectory anchor; later windows optimize
-            # sharpness because they do not have an externally meaningful start boundary.
+                prev_idx, _, prev_sharp, prev_exp = best_candidate
+                prev_base = prev_sharp if prev_exp else prev_sharp * 0.1
+                prev_dist_pen = float(np.exp(-((float(prev_idx) - w_center) ** 2) / (2.0 * sigma * sigma)))
+                previous_score = prev_base * (0.3 + 0.7 * prev_dist_pen)
+
             if candidate_score > previous_score and not (
                 window_index == 0 and best_candidate is not None
             ):
