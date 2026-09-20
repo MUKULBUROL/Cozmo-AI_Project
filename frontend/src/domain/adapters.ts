@@ -324,7 +324,7 @@ export function normalizeMultiRoomProperty(raw: unknown): PropertyViewModel {
   const tier: ReconstructionTier =
     data.tier === 'video' ? 'video' : data.tier === 'photo' ? 'photo' : 'lidar';
 
-  const status = normalizeStatus(data.status, tier, captureId);
+  const status = normalizeStatus(data.status, tier);
   const totalFloorArea = normalizeValueWithConfidence(data.total_floor_area, 'm2');
   const reconstructionMethod = typeof data.reconstruction_method === 'string' ? data.reconstruction_method : null;
 
@@ -430,7 +430,7 @@ export function normalizeSingleRoomScan(raw: unknown): PropertyViewModel {
     ? data.room_polygon
     : {}) as Record<string, unknown>;
 
-  const status = normalizeStatus(rawMeas.status || data.status, tier, captureId);
+  const status = normalizeStatus(rawMeas.status || data.status, tier);
 
   // Extract polygon vertices
   const polygon: Point2D[] = [];
