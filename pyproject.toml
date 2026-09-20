@@ -30,6 +30,12 @@ viz = [
     "open3d>=0.18.0",
     "matplotlib>=3.8.0",
 ]
+photo = [
+    "open3d>=0.18.0",
+    "pycolmap>=3.10.0",
+    "torch>=2.2.0",
+    "transformers>=4.39.0",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["backend/tests"]

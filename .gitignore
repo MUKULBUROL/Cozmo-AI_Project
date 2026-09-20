@@ -50,6 +50,7 @@ tmp/
 # Large datasets and archives (keep read-only on disk, do not commit 800MB+ binaries)
 sample data/
 sample_data/
+data/photo_dev/
 *.zip
 *.tar
 *.tar.gz
@@ -65,5 +66,4 @@ sample_data/
 weights/
 weights/*
 checkpoints/
-
 

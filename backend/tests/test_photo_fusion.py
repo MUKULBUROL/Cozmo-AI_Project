@@ -13,9 +13,15 @@
 """
 
 import numpy as np
+from PIL import Image
 
-from backend.app.models.video import SfmCameraPose
-from backend.app.pipelines.photo.fusion import compute_y_up_rotation, filter_cross_view_consistency
+from backend.app.models.capture import CaptureTier
+from backend.app.models.video import SfmCameraPose, VideoCameraIntrinsics
+from backend.app.pipelines.photo.fusion import (
+    compute_y_up_rotation,
+    filter_cross_view_consistency,
+    fuse_photo_metric_pointcloud,
+)
 
 
 def test_y_up_alignment_maps_camera_up_to_global_y() -> None:
@@ -37,3 +43,49 @@ def test_cross_view_filter_counts_supported_and_rejected_points() -> None:
     assert report["rejected_points"] == 2
     assert len(points) == 4  # Fallback retains all because this tiny unit fixture has <100 support.
     assert report["status"] == "PROVISIONAL"
+
+
+def test_metric_photo_pointcloud_uses_common_reconstruction_contract(tmp_path) -> None:
+    """Fuse two synthetic views and preserve PHOTO tier, meter bounds, trajectory, and PLY outputs.
+
+    ``tmp_path`` supplies isolated image/output paths and the function returns no value. Depth is a
+    one-meter fronto-parallel surface in OpenCV camera coordinates; identity poses deliberately
+    overlap. The fixture assumes Open3D is available. A failure points first to key IDs, image/depth
+    resolution, output PLY creation, or common ``ReconstructionResult`` provenance.
+    """
+    image_paths = {}
+    for key, color in [(0, "red"), (1, "blue")]:
+        path = tmp_path / f"photo_{key}.jpg"
+        Image.new("RGB", (96, 96), color).save(path)
+        image_paths[key] = path
+    depth_maps = {key: np.ones((96, 96), dtype=np.float32) for key in image_paths}
+    depth_masks = {key: np.ones((96, 96), dtype=bool) for key in image_paths}
+    poses = [
+        SfmCameraPose(
+            keyframe_id=key,
+            frame_index=key,
+            timestamp=float(key),
+            t_vec=[0.0, 0.0, 0.0],
+            r_matrix=np.eye(3).tolist(),
+            is_metric=True,
+        )
+        for key in image_paths
+    ]
+    intrinsics = VideoCameraIntrinsics(
+        fx=80.0, fy=80.0, cx=48.0, cy=48.0, width=96, height=96
+    )
+    result, cloud, aligned = fuse_photo_metric_pointcloud(
+        image_paths,
+        depth_maps,
+        depth_masks,
+        poses,
+        intrinsics,
+        tmp_path / "output",
+        "contract",
+        1.0,
+    )
+    assert result.tier == CaptureTier.PHOTO
+    assert result.metrics["unit"] == "meters"
+    assert result.trajectory is not None and len(result.trajectory.poses) == 2
+    assert len(cloud.points) > 0 and len(aligned) == 2
+    assert (tmp_path / "output" / "photo_pointcloud_filtered.ply").exists()

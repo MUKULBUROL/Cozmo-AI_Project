@@ -223,11 +223,37 @@ def assemble_stitched_property(
     """
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    if len(local_rooms) < 2:
+        report = {
+            "capture_id": capture_id,
+            "tier": "photo",
+            "status": "PROPERTY_STITCH_NOT_EVALUABLE",
+            "rooms": [],
+            "connections": [],
+            "failure_reasons": ["fewer_than_two_valid_room_reconstructions"],
+        }
+        (output_dir / "property.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+        placeholder = render_property_debug_svg(
+            [], [], scan_id=capture_id, drift_status="NOT EVALUABLE",
+            output_path=output_dir / "property_debug.svg",
+        )
+        (output_dir / "property_debug.svg").write_text(placeholder, encoding="utf-8")
+        (output_dir / "room_alignment.svg").write_text(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="300">'
+            '<text x="20" y="40">PROPERTY_STITCH_NOT_EVALUABLE: fewer than two valid rooms</text>'
+            '</svg>',
+            encoding="utf-8",
+        )
+        return report
     transforms, missing = solve_alignment_graph(list(local_rooms), evidence_edges)
     if missing or len(transforms) != len(local_rooms):
         report = {"capture_id": capture_id, "tier": "photo", "status": "PROPERTY_STITCH_NOT_EVALUABLE", "rooms": [], "connections": [], "failure_reasons": ["disconnected_alignment_evidence"], "unaligned_rooms": missing}
         (output_dir / "property.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
-        render_property_debug_svg([], [], scan_id=capture_id, drift_status="NOT EVALUABLE", output_path=output_dir / "property_debug.svg")
+        placeholder = render_property_debug_svg(
+            [], [], scan_id=capture_id, drift_status="NOT EVALUABLE",
+            output_path=output_dir / "property_debug.svg",
+        )
+        (output_dir / "property_debug.svg").write_text(placeholder, encoding="utf-8")
         (output_dir / "room_alignment.svg").write_text('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="300"><text x="20" y="40">PROPERTY_STITCH_NOT_EVALUABLE: disconnected alignment evidence</text></svg>', encoding="utf-8")
         return report
     global_rooms = [transform_room_to_global(local_rooms[room_id], transforms[room_id]) for room_id in sorted(local_rooms)]
@@ -299,7 +325,7 @@ def run_photo_property_pipeline(input_dir: Path, output_dir: Path, capture_id: s
             if registration.get("accepted"):
                 evidence.append(registration)
     property_dir = output_dir / "property"
-    result = assemble_stitched_property(capture_id, local_rooms, evidence, property_dir) if len(local_rooms) >= 2 else {"capture_id": capture_id, "tier": "photo", "status": "PROPERTY_STITCH_NOT_EVALUABLE", "failure_reasons": ["fewer_than_two_valid_room_reconstructions"]}
+    result = assemble_stitched_property(capture_id, local_rooms, evidence, property_dir)
     result["room_results"] = room_summaries
     result["pairwise_alignment_evidence"] = evidence
     result["runtime_seconds"] = round(time.time() - started, 3)

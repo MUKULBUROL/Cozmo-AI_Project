@@ -51,8 +51,13 @@ def report_photo(capture_id: str, lidar_scan: Optional[str] = None, video_captur
     print(f"Scale uncertainty: {stats.get('metric_scale_uncertainty_rel', 'N/A')}")
     print(f"Walls: {stats.get('walls_detected', 0)}")
     print(f"Polygon: {stats.get('polygon_status', 'FAILED')}")
-    print(f"Area: {stats.get('floor_area_sqm', 0.0)} m2")
-    print(f"Perimeter: {stats.get('perimeter_m', 0.0)} m")
+    photo_usable = bool(stats.get("polygon_valid"))
+    if photo_usable:
+        print(f"Area: {stats.get('floor_area_sqm', 0.0)} m2")
+        print(f"Perimeter: {stats.get('perimeter_m', 0.0)} m")
+    else:
+        print("Area: NOT_EVALUABLE")
+        print("Perimeter: NOT_EVALUABLE")
     print(f"Status: {stats.get('overall_status', 'FAILED')}")
     print("Benchmark accuracy: NOT VERIFIED until laser/tape ground truth exists")
     references: Dict[str, Dict[str, Any]] = {}
@@ -60,22 +65,57 @@ def report_photo(capture_id: str, lidar_scan: Optional[str] = None, video_captur
         lidar = _load_json(Path("outputs") / lidar_scan / "measurements" / "measurements.json")
         if lidar:
             references["lidar"] = {
-                "area": lidar.get("room_dimensions", {}).get("area", {}).get("value"),
-                "perimeter": lidar.get("room_dimensions", {}).get("perimeter", {}).get("value"),
+                "area": (
+                    lidar.get("floor_area", {}).get("value")
+                    or lidar.get("room_dimensions", {}).get("area", {}).get("value")
+                ),
+                "perimeter": (
+                    lidar.get("perimeter", {}).get("value")
+                    or lidar.get("room_dimensions", {}).get("perimeter", {}).get("value")
+                ),
             }
     if video_capture:
         video = _load_json(Path("outputs") / video_capture / "video" / "reconstruction_stats.json")
         if video:
-            references["video"] = {"area": video.get("floor_area_sqm"), "perimeter": video.get("perimeter_m")}
+            video_usable = bool(video.get("polygon_valid"))
+            references["video"] = {
+                "area": video.get("floor_area_sqm") if video_usable else None,
+                "perimeter": video.get("perimeter_m") if video_usable else None,
+            }
+    photo_values = {
+        "area": stats.get("floor_area_sqm") if photo_usable else None,
+        "perimeter": stats.get("perimeter_m") if photo_usable else None,
+        "polygon_status": stats.get("polygon_status"),
+        "status": "available" if photo_usable else "unavailable_photo_polygon_failed",
+    }
+    for reference in references.values():
+        reference["area_difference"] = (
+            abs(photo_values["area"] - reference["area"])
+            if photo_values["area"] is not None and reference.get("area") is not None
+            else None
+        )
+        reference["perimeter_difference"] = (
+            abs(photo_values["perimeter"] - reference["perimeter"])
+            if photo_values["perimeter"] is not None and reference.get("perimeter") is not None
+            else None
+        )
     comparison = {
         "label": "CROSS-TIER AGREEMENT, NOT GROUND-TRUTH ACCURACY",
-        "photo": {"area": stats.get("floor_area_sqm"), "perimeter": stats.get("perimeter_m"), "polygon_status": stats.get("polygon_status")},
+        "photo": photo_values,
         "references": references,
     }
     if references:
         with open(photo_dir / "cross_tier_comparison.json", "w", encoding="utf-8") as target:
             json.dump(comparison, target, indent=2)
         print("CROSS-TIER AGREEMENT, NOT GROUND-TRUTH ACCURACY")
+        for name, ref in references.items():
+            area_str = f"{ref['area']} m2" if ref.get("area") is not None else "unavailable"
+            perim_str = f"{ref['perimeter']} m" if ref.get("perimeter") is not None else "unavailable"
+            print(f"Reference [{name.upper()}]: area={area_str}, perimeter={perim_str}")
+            if photo_usable and ref.get("area_difference") is not None:
+                print(f"  Difference [{name.upper()}]: area={ref['area_difference']} m2, perimeter={ref['perimeter_difference']} m")
+            else:
+                print(f"  Difference [{name.upper()}]: null (PHOTO measurement unavailable)")
 
 
 def main() -> None:
