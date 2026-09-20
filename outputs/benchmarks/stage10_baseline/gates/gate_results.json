@@ -83,7 +83,7 @@
     "evidence_level": "INTERNAL_CONSISTENCY",
     "reasons": [
       "Multi-room loop closure, pose graph optimization, and drift ablation study verified in Stage 6/6.1.",
-      "Verified significant reduction in endpoint trajectory drift and loop-closure residuals."
+      "Verified 96.4% reduction in loop-closure residuals (loop-closure residual improved from 0.0906m to 0.0033m across 5 accepted loop constraints; endpoint gap 0.389m -> 0.448m)."
     ]
   },
   {

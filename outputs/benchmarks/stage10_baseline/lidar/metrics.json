@@ -154,13 +154,16 @@
     }
   ],
   "failures": [],
-  "runtime": 22.2,
+  "runtime": 31.7,
   "coverage": 1.0,
   "gates": [],
   "details": {
     "floor_area": 6.998,
     "wall_count": 7,
     "perimeter": 10.799,
+    "point_count": "15,189,493",
+    "filtered_points": "408,108",
+    "single_room_polygon_valid": true,
     "opening_count": 1,
     "property_rooms": 4,
     "property_status": "VALID"

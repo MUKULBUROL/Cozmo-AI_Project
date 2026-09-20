@@ -128,7 +128,7 @@ def test_benchmark_report_content_and_disclaimers():
     Debugging Clues:
         Check section titles in generate_benchmark_markdown.
     """
-    commit_sha = "98aea6f73270c05048b1ec85feb02479cadc20d8"
+    commit_sha = "639c240d471c23ccc283af5ee2867c4f68bfa8bb"
     tier_results = {
         "lidar": TierBenchmarkResult("lidar_scan", "lidar", SystemStatus.WORKING, [], [], 22.2, 1.0),
         "video": TierBenchmarkResult("video_scan", "video", SystemStatus.PROVISIONAL, [], [FailureCategory.REGISTRATION_FAILURE.value], 24.4, 0.45),

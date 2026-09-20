@@ -2,18 +2,52 @@
   "capture_id": "video_single_and_multi_room",
   "tier": "video",
   "status": "PROVISIONAL",
-  "measurements": [],
+  "measurements": [
+    {
+      "measurement_id": "floor_area_video_single_room",
+      "room_id": "room_01",
+      "type": "floor_area",
+      "predicted_value": null,
+      "reference_value": null,
+      "unit": "m2",
+      "absolute_error": null,
+      "relative_error": null,
+      "evidence_level": "NOT_EVALUABLE",
+      "status": "NOT_EVALUABLE",
+      "uncertainty_lower": null,
+      "uncertainty_upper": null,
+      "details": {}
+    },
+    {
+      "measurement_id": "perimeter_video_single_room",
+      "room_id": "room_01",
+      "type": "perimeter",
+      "predicted_value": null,
+      "reference_value": null,
+      "unit": "m",
+      "absolute_error": null,
+      "relative_error": null,
+      "evidence_level": "NOT_EVALUABLE",
+      "status": "NOT_EVALUABLE",
+      "uncertainty_lower": null,
+      "uncertainty_upper": null,
+      "details": {}
+    }
+  ],
   "failures": [
     "REGISTRATION_FAILURE",
     "NOT_EVALUABLE"
   ],
-  "runtime": 24.4,
+  "runtime": 2769.55,
   "coverage": 0.45,
   "gates": [],
   "details": {
     "single_room_registered": "4/25",
     "scale_factor": 0.18774021542015626,
     "scale_uncertainty": 0.019223550828913378,
+    "single_room_polygon_valid": false,
+    "floor_area": null,
+    "perimeter": null,
     "multi_room_registered": "4/40",
     "registration_percentage": 10.0,
     "multi_room_status": "NOT_EVALUABLE"

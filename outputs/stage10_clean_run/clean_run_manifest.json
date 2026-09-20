@@ -1,0 +1,39 @@
+{
+  "scan_id": "c00a170fe1",
+  "input_archive": "sample data/single_room.zip",
+  "baseline_commit": "c80cd79a7e0c35ad34392f4447cd5a2b6805c5d3",
+  "stage_9_reference_commit": "639c240d471c23ccc283af5ee2867c4f68bfa8bb",
+  "commands_executed": [
+    "python3 -m scripts.reconstruct_lidar --scan c00a170fe1 --archive \"sample data/single_room.zip\" --output-dir outputs/stage10_clean_run/c00a170fe1",
+    "python3 -m scripts.extract_structure --scan stage10_clean_run/c00a170fe1 --ply-path outputs/stage10_clean_run/c00a170fe1/baseline_filtered.ply --output-dir outputs/stage10_clean_run/c00a170fe1/structure",
+    "python3 -m scripts.build_room_polygon --scan stage10_clean_run/c00a170fe1",
+    "python3 -m scripts.measure_room --scan stage10_clean_run/c00a170fe1",
+    "python3 -m scripts.detect_openings --scan c00a170fe1 --dataset-root \"sample data/single_room.zip\" --outputs-root outputs/stage10_clean_run"
+  ],
+  "resulting_artifact_paths": [
+    "outputs/stage10_clean_run/c00a170fe1/baseline_raw.ply",
+    "outputs/stage10_clean_run/c00a170fe1/baseline_filtered.ply",
+    "outputs/stage10_clean_run/c00a170fe1/reconstruction_stats.json",
+    "outputs/stage10_clean_run/c00a170fe1/trajectory.json",
+    "outputs/stage10_clean_run/c00a170fe1/structure/structure.json",
+    "outputs/stage10_clean_run/c00a170fe1/structure/structural_planes.json",
+    "outputs/stage10_clean_run/c00a170fe1/structure/structure_debug.ply",
+    "outputs/stage10_clean_run/c00a170fe1/floorplan_geometry/room_polygon.json",
+    "outputs/stage10_clean_run/c00a170fe1/floorplan_geometry/polygon_stats.json",
+    "outputs/stage10_clean_run/c00a170fe1/floorplan_geometry/floorplan_debug.svg",
+    "outputs/stage10_clean_run/c00a170fe1/measurements/measurements.json",
+    "outputs/stage10_clean_run/c00a170fe1/measurements/measurement_stats.json",
+    "outputs/stage10_clean_run/c00a170fe1/measurements/uncertainty.json",
+    "outputs/stage10_clean_run/c00a170fe1/openings/openings.json",
+    "outputs/stage10_clean_run/c00a170fe1/openings/opening_stats.json",
+    "outputs/stage10_clean_run/c00a170fe1/openings/opening_debug.svg"
+  ],
+  "reconstruction_chain": [
+    {"stage": "metric_cloud", "status": "SUCCESS", "points": 408108},
+    {"stage": "structure", "status": "SUCCESS", "walls_accepted": 11, "dominant_walls": 8},
+    {"stage": "polygon", "status": "SUCCESS", "polygon_valid": true, "polygon_closed": true, "floor_area_m2": 7.30},
+    {"stage": "measurements", "status": "SUCCESS", "floor_area_m2": 7.30, "perimeter_m": 15.64},
+    {"stage": "openings", "status": "SUCCESS", "accepted_openings": 1, "door_width_m": 1.567}
+  ],
+  "status": "SUCCESS"
+}
