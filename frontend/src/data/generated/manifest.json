@@ -1,0 +1,55 @@
+{
+  "syncedAt": "2026-09-20T18:47:31.574Z",
+  "fixtures": [
+    {
+      "id": "c7d28f72c6",
+      "name": "Residential Property (Multi-Room)",
+      "tier": "lidar",
+      "status": "COMPLETE",
+      "roomCount": 4,
+      "totalAreaM2": 72,
+      "fileName": "lidar-property-c7d28f72c6.json",
+      "description": "ARKIt pose-graph optimized LiDAR reconstruction with 4 rooms, shared walls, and verified bounds."
+    },
+    {
+      "id": "c00a170fe1",
+      "name": "Single Room Scan with Defect Scope",
+      "tier": "lidar",
+      "status": "PROVISIONAL",
+      "roomCount": 1,
+      "totalAreaM2": 7.554,
+      "fileName": "lidar-room-c00a170fe1.json",
+      "description": "Single-room LiDAR scan with polygon geometry, doorway openings, water stain damage, and Stage 9 repair scope."
+    },
+    {
+      "id": "stage11-video",
+      "name": "Stage 11 Video Multi-Room Recovery",
+      "tier": "video",
+      "status": "PROVISIONAL",
+      "roomCount": 1,
+      "totalAreaM2": 18.97,
+      "fileName": "video-stage11-provisional.json",
+      "description": "RGB video SfM reconstruction with metric depth scale. Improved 4/40 -> 31/40 registered views. Strictly PROVISIONAL."
+    },
+    {
+      "id": "video-multi-room-failure",
+      "name": "Video Multi-Room Sparse Drift Failure",
+      "tier": "video",
+      "status": "NOT_EVALUABLE",
+      "roomCount": 0,
+      "totalAreaM2": null,
+      "fileName": "video-not-evaluable.json",
+      "description": "Sparse video track with insufficient keyframe registration (<30% threshold). Documents explicit failure reasons."
+    },
+    {
+      "id": "photo-property-failure",
+      "name": "Uncalibrated Photo Property Failure",
+      "tier": "photo",
+      "status": "NOT_EVALUABLE",
+      "roomCount": 0,
+      "totalAreaM2": null,
+      "fileName": "photo-not-evaluable.json",
+      "description": "Photo tier property reconstruction failure showing unaligned room components."
+    }
+  ]
+}

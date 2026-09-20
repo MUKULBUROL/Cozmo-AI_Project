@@ -1,0 +1,88 @@
+/**
+ * @file tokens.css
+ * @purpose Centralized design tokens for the Spatial Pro theme.
+ * @stage Frontend Stage 2 (Spatial Pro Product UI + Property Workspace)
+ * @inputs CSS custom properties.
+ * @outputs Global theme tokens for color, typography, borders, and spacing.
+ * @dependencies None
+ * @assumptions Light mode default. No gradients, glassmorphism, or decorative purple AI blobs.
+ * @failureModes Unresolved CSS variables fall back to browser defaults.
+ * @firstDebuggingPoints Verify that tokens.css is imported in globals.css or root layout.
+ */
+
+:root {
+  /* Surface & Background */
+  --background: #F7F7F5;
+  --surface: #FFFFFF;
+  --surface-subtle: #F3F3F0;
+  --surface-hover: #ECECE9;
+  --canvas-background: #FFFFFF;
+
+  /* Typography Colors */
+  --text-primary: #161616;
+  --text-secondary: #737373;
+  --text-muted: #9A9A95;
+  --text-on-primary: #FFFFFF;
+
+  /* Borders & Dividers */
+  --border: #E6E6E3;
+  --border-strong: #D6D6D2;
+  --border-focus: #4F46E5;
+
+  /* Brand & Accents */
+  --primary: #4F46E5;
+  --primary-hover: #4338CA;
+  --primary-subtle: #EEF2FF;
+  --primary-border: #C7D2FE;
+
+  /* Semantic Status Tokens */
+  --success: #22C55E;
+  --success-text: #15803D;
+  --success-subtle: #F0FDF4;
+  --success-border: #BBF7D0;
+
+  --warning: #F59E0B;
+  --warning-text: #B45309;
+  --warning-subtle: #FFFBEB;
+  --warning-border: #FDE68A;
+
+  --danger: #EF4444;
+  --danger-text: #B91C1C;
+  --danger-subtle: #FEF2F2;
+  --danger-border: #FECACA;
+
+  --neutral-subtle: #F4F4F5;
+  --neutral-text: #52525B;
+  --neutral-border: #E4E4E7;
+
+  /* Spatial Floor Plan Tokens */
+  --wall-stroke: #1E293B;
+  --wall-stroke-strong: #0F172A;
+  --wall-dimension: #475569;
+  --room-fill: #FAFAF9;
+  --room-hover: #F1F5F9;
+  --room-selected-fill: #EEF2FF;
+  --room-selected-stroke: #4F46E5;
+  --damage-stroke: #EF4444;
+  --damage-fill: rgba(239, 68, 68, 0.12);
+  --opening-stroke: #0284C7;
+  --opening-fill: #E0F2FE;
+
+  /* Typography */
+  --font-ui: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Radii (6-10px constrained) */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+
+  /* Elevation (Subtle, strict separation only) */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+
+  /* Layout dimensions */
+  --topbar-height: 52px;
+  --left-nav-width: 220px;
+  --inspector-width: 320px;
+}

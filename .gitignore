@@ -51,6 +51,9 @@ tmp/
 /tmp/
 *.log
 
+# Stage 3 runtime capture data (each upload gets isolated directory)
+runtime/
+
 # Large datasets and archives (keep read-only on disk, do not commit 800MB+ binaries)
 sample data/
 sample_data/

@@ -1,0 +1,980 @@
+{
+  "property_id": "prop_c7d28f72c6",
+  "capture_id": "c7d28f72c6",
+  "tier": "lidar",
+  "rooms": [
+    {
+      "room_id": "room_01",
+      "name": "Room 01",
+      "floor_area": {
+        "value": 24.57,
+        "unit": "m2",
+        "lower_bound": 23.34,
+        "upper_bound": 25.8,
+        "interval": [
+          23.34,
+          25.8
+        ],
+        "confidence": 0.95,
+        "method": "polygon_shoelace_formula"
+      },
+      "perimeter": {
+        "value": 20.1,
+        "unit": "m",
+        "lower_bound": 19.3,
+        "upper_bound": 20.9,
+        "interval": [
+          19.3,
+          20.9
+        ],
+        "confidence": 0.95,
+        "method": "polygon_perimeter_sum"
+      },
+      "ceiling_height": {
+        "value": 3.35,
+        "unit": "m",
+        "lower_bound": 3.31,
+        "upper_bound": 3.39,
+        "interval": [
+          3.31,
+          3.39
+        ],
+        "confidence": 0.95,
+        "method": "lidar_floor_ceiling_separation"
+      },
+      "walls": [
+        {
+          "wall_id": "room_01_w01",
+          "start": {
+            "x": 3.926,
+            "y": 8.179
+          },
+          "end": {
+            "x": 6.596,
+            "y": 6.721
+          },
+          "length": {
+            "value": 3.042,
+            "unit": "m",
+            "lower_bound": 3.012,
+            "upper_bound": 3.072,
+            "interval": [
+              3.012,
+              3.072
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "room_01_w02",
+          "start": {
+            "x": 6.596,
+            "y": 6.721
+          },
+          "end": {
+            "x": 9.066,
+            "y": 5.371
+          },
+          "length": {
+            "value": 2.815,
+            "unit": "m",
+            "lower_bound": 2.785,
+            "upper_bound": 2.845,
+            "interval": [
+              2.785,
+              2.845
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "room_01_w03",
+          "start": {
+            "x": 9.066,
+            "y": 5.371
+          },
+          "end": {
+            "x": 7.055,
+            "y": 1.69
+          },
+          "length": {
+            "value": 4.195,
+            "unit": "m",
+            "lower_bound": 4.165,
+            "upper_bound": 4.225,
+            "interval": [
+              4.165,
+              4.225
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "room_01_w04",
+          "start": {
+            "x": 7.055,
+            "y": 1.69
+          },
+          "end": {
+            "x": 4.585,
+            "y": 3.039
+          },
+          "length": {
+            "value": 2.814,
+            "unit": "m",
+            "lower_bound": 2.784,
+            "upper_bound": 2.844,
+            "interval": [
+              2.784,
+              2.844
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "room_01_w05",
+          "start": {
+            "x": 4.585,
+            "y": 3.039
+          },
+          "end": {
+            "x": 1.915,
+            "y": 4.497
+          },
+          "length": {
+            "value": 3.042,
+            "unit": "m",
+            "lower_bound": 3.012,
+            "upper_bound": 3.072,
+            "interval": [
+              3.012,
+              3.072
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "room_01_w06",
+          "start": {
+            "x": 1.915,
+            "y": 4.497
+          },
+          "end": {
+            "x": 3.926,
+            "y": 8.179
+          },
+          "length": {
+            "value": 4.195,
+            "unit": "m",
+            "lower_bound": 4.165,
+            "upper_bound": 4.225,
+            "interval": [
+              4.165,
+              4.225
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        }
+      ],
+      "openings": [],
+      "damage_regions": []
+    },
+    {
+      "room_id": "room_02",
+      "name": "Room 02",
+      "floor_area": {
+        "value": 16.86,
+        "unit": "m2",
+        "lower_bound": 16.02,
+        "upper_bound": 17.7,
+        "interval": [
+          16.02,
+          17.7
+        ],
+        "confidence": 0.95,
+        "method": "polygon_shoelace_formula"
+      },
+      "perimeter": {
+        "value": 16.63,
+        "unit": "m",
+        "lower_bound": 15.96,
+        "upper_bound": 17.3,
+        "interval": [
+          15.96,
+          17.3
+        ],
+        "confidence": 0.95,
+        "method": "polygon_perimeter_sum"
+      },
+      "ceiling_height": {
+        "value": 3.35,
+        "unit": "m",
+        "lower_bound": 3.31,
+        "upper_bound": 3.39,
+        "interval": [
+          3.31,
+          3.39
+        ],
+        "confidence": 0.95,
+        "method": "lidar_floor_ceiling_separation"
+      },
+      "walls": [
+        {
+          "wall_id": "room_02_w01",
+          "start": {
+            "x": 10.131,
+            "y": 0.01
+          },
+          "end": {
+            "x": 7.825,
+            "y": -4.213
+          },
+          "length": {
+            "value": 4.812,
+            "unit": "m",
+            "lower_bound": 4.782,
+            "upper_bound": 4.842,
+            "interval": [
+              4.782,
+              4.842
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "room_02_w02",
+          "start": {
+            "x": 7.825,
+            "y": -4.213
+          },
+          "end": {
+            "x": 4.749,
+            "y": -2.533
+          },
+          "length": {
+            "value": 3.505,
+            "unit": "m",
+            "lower_bound": 3.475,
+            "upper_bound": 3.535,
+            "interval": [
+              3.475,
+              3.535
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "room_02_w03",
+          "start": {
+            "x": 4.749,
+            "y": -2.533
+          },
+          "end": {
+            "x": 7.055,
+            "y": 1.69
+          },
+          "length": {
+            "value": 4.812,
+            "unit": "m",
+            "lower_bound": 4.782,
+            "upper_bound": 4.842,
+            "interval": [
+              4.782,
+              4.842
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "room_02_w04",
+          "start": {
+            "x": 7.055,
+            "y": 1.69
+          },
+          "end": {
+            "x": 10.131,
+            "y": 0.01
+          },
+          "length": {
+            "value": 3.505,
+            "unit": "m",
+            "lower_bound": 3.475,
+            "upper_bound": 3.535,
+            "interval": [
+              3.475,
+              3.535
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        }
+      ],
+      "openings": [],
+      "damage_regions": []
+    },
+    {
+      "room_id": "room_03",
+      "name": "Room 03",
+      "floor_area": {
+        "value": 17.03,
+        "unit": "m2",
+        "lower_bound": 16.18,
+        "upper_bound": 17.88,
+        "interval": [
+          16.18,
+          17.88
+        ],
+        "confidence": 0.95,
+        "method": "polygon_shoelace_formula"
+      },
+      "perimeter": {
+        "value": 17.28,
+        "unit": "m",
+        "lower_bound": 16.59,
+        "upper_bound": 17.97,
+        "interval": [
+          16.59,
+          17.97
+        ],
+        "confidence": 0.95,
+        "method": "polygon_perimeter_sum"
+      },
+      "ceiling_height": {
+        "value": 3.35,
+        "unit": "m",
+        "lower_bound": 3.31,
+        "upper_bound": 3.39,
+        "interval": [
+          3.31,
+          3.39
+        ],
+        "confidence": 0.95,
+        "method": "lidar_floor_ceiling_separation"
+      },
+      "walls": [
+        {
+          "wall_id": "room_03_w01",
+          "start": {
+            "x": -0.769,
+            "y": -0.417
+          },
+          "end": {
+            "x": -0.391,
+            "y": 0.274
+          },
+          "length": {
+            "value": 0.788,
+            "unit": "m",
+            "lower_bound": 0.758,
+            "upper_bound": 0.818,
+            "interval": [
+              0.758,
+              0.818
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "room_03_w02",
+          "start": {
+            "x": -0.391,
+            "y": 0.274
+          },
+          "end": {
+            "x": 1.915,
+            "y": 4.497
+          },
+          "length": {
+            "value": 4.812,
+            "unit": "m",
+            "lower_bound": 4.782,
+            "upper_bound": 4.842,
+            "interval": [
+              4.782,
+              4.842
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "room_03_w03",
+          "start": {
+            "x": 1.915,
+            "y": 4.497
+          },
+          "end": {
+            "x": 4.585,
+            "y": 3.039
+          },
+          "length": {
+            "value": 3.042,
+            "unit": "m",
+            "lower_bound": 3.012,
+            "upper_bound": 3.072,
+            "interval": [
+              3.012,
+              3.072
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "room_03_w04",
+          "start": {
+            "x": 4.585,
+            "y": 3.039
+          },
+          "end": {
+            "x": 2.279,
+            "y": -1.184
+          },
+          "length": {
+            "value": 4.812,
+            "unit": "m",
+            "lower_bound": 4.782,
+            "upper_bound": 4.842,
+            "interval": [
+              4.782,
+              4.842
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "room_03_w05",
+          "start": {
+            "x": 2.279,
+            "y": -1.184
+          },
+          "end": {
+            "x": 1.901,
+            "y": -1.875
+          },
+          "length": {
+            "value": 0.788,
+            "unit": "m",
+            "lower_bound": 0.758,
+            "upper_bound": 0.818,
+            "interval": [
+              0.758,
+              0.818
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "room_03_w06",
+          "start": {
+            "x": 1.901,
+            "y": -1.875
+          },
+          "end": {
+            "x": -0.769,
+            "y": -0.417
+          },
+          "length": {
+            "value": 3.042,
+            "unit": "m",
+            "lower_bound": 3.012,
+            "upper_bound": 3.072,
+            "interval": [
+              3.012,
+              3.072
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        }
+      ],
+      "openings": [],
+      "damage_regions": []
+    },
+    {
+      "room_id": "connector_01",
+      "name": "Hallway Connector",
+      "floor_area": {
+        "value": 13.54,
+        "unit": "m2",
+        "lower_bound": 12.86,
+        "upper_bound": 14.22,
+        "interval": [
+          12.86,
+          14.22
+        ],
+        "confidence": 0.95,
+        "method": "polygon_shoelace_formula"
+      },
+      "perimeter": {
+        "value": 15.25,
+        "unit": "m",
+        "lower_bound": 14.64,
+        "upper_bound": 15.86,
+        "interval": [
+          14.64,
+          15.86
+        ],
+        "confidence": 0.95,
+        "method": "polygon_perimeter_sum"
+      },
+      "ceiling_height": {
+        "value": 3.35,
+        "unit": "m",
+        "lower_bound": 3.31,
+        "upper_bound": 3.39,
+        "interval": [
+          3.31,
+          3.39
+        ],
+        "confidence": 0.95,
+        "method": "lidar_floor_ceiling_separation"
+      },
+      "walls": [
+        {
+          "wall_id": "connector_01_w01",
+          "start": {
+            "x": 4.749,
+            "y": -2.533
+          },
+          "end": {
+            "x": 7.055,
+            "y": 1.69
+          },
+          "length": {
+            "value": 4.812,
+            "unit": "m",
+            "lower_bound": 4.782,
+            "upper_bound": 4.842,
+            "interval": [
+              4.782,
+              4.842
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "connector_01_w02",
+          "start": {
+            "x": 7.055,
+            "y": 1.69
+          },
+          "end": {
+            "x": 4.585,
+            "y": 3.039
+          },
+          "length": {
+            "value": 2.814,
+            "unit": "m",
+            "lower_bound": 2.784,
+            "upper_bound": 2.844,
+            "interval": [
+              2.784,
+              2.844
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "connector_01_w03",
+          "start": {
+            "x": 4.585,
+            "y": 3.039
+          },
+          "end": {
+            "x": 2.279,
+            "y": -1.184
+          },
+          "length": {
+            "value": 4.812,
+            "unit": "m",
+            "lower_bound": 4.782,
+            "upper_bound": 4.842,
+            "interval": [
+              4.782,
+              4.842
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "connector_01_w04",
+          "start": {
+            "x": 2.279,
+            "y": -1.184
+          },
+          "end": {
+            "x": 4.749,
+            "y": -2.533
+          },
+          "length": {
+            "value": 2.814,
+            "unit": "m",
+            "lower_bound": 2.784,
+            "upper_bound": 2.844,
+            "interval": [
+              2.784,
+              2.844
+            ],
+            "confidence": 0.95,
+            "method": "lidar_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        }
+      ],
+      "openings": [],
+      "damage_regions": []
+    }
+  ],
+  "connections": [
+    {
+      "room_a_id": "room_01",
+      "room_b_id": "room_02",
+      "connecting_opening_id": null,
+      "is_shared_wall": true,
+      "shared_wall_length_meters": 1
+    },
+    {
+      "room_a_id": "room_01",
+      "room_b_id": "room_03",
+      "connecting_opening_id": null,
+      "is_shared_wall": true,
+      "shared_wall_length_meters": 3.44
+    },
+    {
+      "room_a_id": "connector_01",
+      "room_b_id": "room_01",
+      "connecting_opening_id": null,
+      "is_shared_wall": true,
+      "shared_wall_length_meters": 3.22
+    },
+    {
+      "room_a_id": "connector_01",
+      "room_b_id": "room_02",
+      "connecting_opening_id": null,
+      "is_shared_wall": true,
+      "shared_wall_length_meters": 5.19
+    },
+    {
+      "room_a_id": "connector_01",
+      "room_b_id": "room_03",
+      "connecting_opening_id": null,
+      "is_shared_wall": true,
+      "shared_wall_length_meters": 5.21
+    }
+  ],
+  "total_floor_area": {
+    "value": 72,
+    "unit": "m2",
+    "lower_bound": 68.4,
+    "upper_bound": 75.6,
+    "interval": [
+      68.4,
+      75.6
+    ],
+    "confidence": 0.95,
+    "method": "sum_of_room_areas"
+  },
+  "exterior_footprint": null,
+  "capture_metadata": {
+    "coordinate_frame": "ARKit Y-up, right-handed (XZ horizontal floor)",
+    "unit": "meters",
+    "drift_correction_status": "improved"
+  },
+  "reconstruction_method": "arkit_lidar_pose_graph_optimized",
+  "stitching_residual_meters": 0.0033
+}
