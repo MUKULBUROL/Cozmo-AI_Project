@@ -1,4 +1,51 @@
-"""End-to-end structural extraction orchestrator identifying floor, ceiling, and walls."""
+"""End-to-end structural extraction orchestrator identifying floor, ceiling, and walls.
+
+1. Purpose:
+    Segments dominant architectural surfaces (horizontal floor/ceiling planes and vertical walls)
+    from a filtered metric 3D point cloud using surface normal orientation gating and iterative
+    RANSAC plane fitting, with deterministic random number seeding for bit-level reproducibility.
+
+2. Stage:
+    Stage 2 (Architectural Structural Plane Extraction) & Stage 10.2 (Deterministic Baseline).
+
+3. Inputs:
+    Filtered point cloud PLY file (e.g. outputs/<scan_id>/baseline_filtered.ply),
+    StructuralConfig configuration dataclass with geometric thresholds and RNG seed.
+
+4. Outputs:
+    outputs/<scan_id>/structure/
+      ├── floor.ply
+      ├── ceiling.ply (or placeholder text if absent)
+      ├── walls.ply
+      ├── unclassified.ply
+      ├── structure_debug.ply
+      ├── structure.json
+      └── extraction_stats.json
+
+5. Coordinate systems / units:
+    Metric coordinates (meters). Standard camera/world coordinate frame:
+    Y-axis represents the vertical gravity direction (upward positive).
+    XZ-plane represents the horizontal ground/floor plane.
+
+6. Dependencies:
+    os, json, time, dataclasses, typing, numpy, open3d,
+    backend.app.core.determinism (configure_determinism, DEFAULT_SEED),
+    backend.app.geometry (preprocessing, normals, plane_detection, plane_classification, metrics).
+
+7. Assumptions:
+    Input point cloud is metric and approximately upright (Y vertical).
+    Floor is planar and dominant horizontal lower surface.
+    Walls are vertical planar surfaces with normals roughly orthogonal to Y axis.
+
+8. Failure modes:
+    Missing input PLY path raises FileNotFoundError or Open3D read error.
+    Extremely sparse points (< min_floor_inliers or min_wall_inliers) yields empty extractions.
+    Invalid normal estimation if point density is inadequate for search radius.
+
+9. First debugging points:
+    Inspect `extraction_stats.json` for inlier counts, failure reasons, and random_seed.
+    Inspect `structure_debug.ply` in 3D viewer (CloudCompare/Open3D) for color-coded plane assignments.
+"""
 
 import os
 import json
@@ -8,6 +55,7 @@ from typing import Dict, Any, Optional, List
 import numpy as np
 import open3d as o3d
 
+from backend.app.core import configure_determinism, DEFAULT_SEED
 from .preprocessing import load_and_validate_point_cloud
 from .normals import estimate_point_normals, split_horizontal_vertical_masks
 from .plane_detection import extract_planes_iterative, DetectedPlane
@@ -48,6 +96,8 @@ class StructuralConfig:
     min_horizontal_span_m: float = 0.70
     wall_merge_angle_deg: float = 12.0
     wall_merge_distance_m: float = 0.18
+    random_seed: int = DEFAULT_SEED
+    deterministic_mode: bool = True
 
     def __post_init__(self):
         if not self.ply_path:
@@ -56,8 +106,41 @@ class StructuralConfig:
             self.output_dir = os.path.join("outputs", self.scan_id, "structure")
 
 
-def write_ply(filename: str, points: np.ndarray, colors: Optional[np.ndarray] = None):
-    """Saves points and optional colors to PLY format."""
+def write_ply(filename: str, points: np.ndarray, colors: Optional[np.ndarray] = None) -> None:
+    """Saves 3D coordinates and optional RGB color channels to an ASCII PLY file.
+
+    Purpose:
+        Serializes raw, filtered, or classified 3D point cloud arrays into standard PLY
+        files for downstream inspection and 3D visualization.
+
+    Parameters:
+        filename: str
+            Destination filesystem path for output PLY.
+        points: np.ndarray
+            (N, 3) array of 3D point coordinates.
+        colors: Optional[np.ndarray]
+            (N, 3) optional RGB array in [0, 255] uint8 or [0.0, 1.0] float.
+
+    Returns:
+        None.
+
+    Units / coordinates:
+        Metric coordinates (meters). RGB color values scaled to [0.0, 1.0].
+
+    Assumptions:
+        points array is 2D with shape (N, 3).
+        Parent directory is writable.
+
+    Failure conditions:
+        IOError if destination path cannot be written.
+        ValueError if point coordinates contain non-finite numbers.
+
+    Dependencies:
+        os, open3d, numpy.
+
+    Debugging clues:
+        Inspect file size; check whether points array is non-empty before calling.
+    """
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     pcd = o3d.geometry.PointCloud()
     pcd.points = o3d.utility.Vector3dVector(points.astype(np.float64))
@@ -70,14 +153,58 @@ def write_ply(filename: str, points: np.ndarray, colors: Optional[np.ndarray] = 
 
 
 def extract_structure(config: StructuralConfig) -> Dict[str, Any]:
-    """Runs complete structural plane segmentation pipeline."""
+    """Runs complete structural plane segmentation pipeline.
+
+    Purpose:
+        Executes end-to-end extraction of architectural planes (floor, ceiling, and vertical walls)
+        from a preprocessed metric 3D point cloud, applying deterministic random seeding, surface
+        normal gating, iterative RANSAC plane fitting, quality classification, and parallel wall merging.
+
+    Parameters:
+        config: StructuralConfig
+            Configuration dataclass defining scan identity, input/output paths, geometric distance
+            and normal thresholds, minimum inlier criteria, and random seed parameters.
+
+    Returns:
+        Dict[str, Any]:
+            Dictionary containing comprehensive summary statistics of the extraction run, including
+            input point counts, floor/ceiling detection status and metrics, wall candidate counts,
+            inlier counts, execution duration, and deterministic seed metadata.
+
+    Units / coordinates:
+        Distances and residuals in meters (m). Angles in degrees. Coordinates in meters.
+        World coordinate system with Y vertical upward, XZ ground plane.
+
+    Assumptions:
+        Input point cloud is metric and approximately oriented with Y upward.
+        Point density is adequate for normal estimation within normal_radius_m.
+
+    Failure conditions:
+        Raises FileNotFoundError if input point cloud does not exist.
+        Raises ValueError if point cloud contains NaN or invalid vertex coordinates.
+
+    Dependencies:
+        backend.app.core.determinism.configure_determinism,
+        backend.app.geometry (preprocessing, normals, plane_detection, plane_classification, metrics),
+        open3d, numpy.
+
+    Debugging clues:
+        Inspect console logs for normal split percentages and RANSAC candidate counts.
+        Verify extraction_stats.json has floor_detected=True and wall counts >= 4.
+        Inspect structure_debug.ply in CloudCompare to visually verify classified planes.
+    """
     start_time = time.time()
     os.makedirs(config.output_dir, exist_ok=True)
+
+    # 0. Initialize centralized determinism before any RANSAC or sampling occurs
+    if config.deterministic_mode and config.random_seed is not None:
+        configure_determinism(config.random_seed)
 
     print("=" * 60)
     print(f"STRUCTURAL EXTRACTION: {config.scan_id}")
     print(f"Input PLY:   {config.ply_path}")
     print(f"Output Dir:  {config.output_dir}")
+    print(f"Seed:        {config.random_seed} (deterministic={config.deterministic_mode})")
     print("=" * 60)
 
     # 1. Load point cloud
@@ -259,6 +386,8 @@ def extract_structure(config: StructuralConfig) -> Dict[str, Any]:
     # 9. Structure JSON
     structure_json = {
         "scan_id": config.scan_id,
+        "random_seed": config.random_seed,
+        "deterministic_mode": config.deterministic_mode,
         "floor": {
             "detected": floor_detected,
             "plane": {
@@ -299,6 +428,8 @@ def extract_structure(config: StructuralConfig) -> Dict[str, Any]:
     elapsed_time = round(time.time() - start_time, 2)
     stats_json = {
         "scan_id": config.scan_id,
+        "random_seed": config.random_seed,
+        "deterministic_mode": config.deterministic_mode,
         "input_points": total_input_points,
         "floor_detected": floor_detected,
         "floor_inliers": floor_plane.inlier_count if floor_detected else 0,

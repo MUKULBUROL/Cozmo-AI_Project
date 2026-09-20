@@ -94,6 +94,12 @@ def parse_arguments() -> argparse.Namespace:
         default=0.35,
         help="Maximum gap extension allowed at corners in meters (default: 0.35m)",
     )
+    parser.add_argument(
+        "--outputs-root",
+        type=str,
+        default="outputs",
+        help="Root directory for outputs (default: outputs)",
+    )
     return parser.parse_args()
 
 
@@ -109,21 +115,28 @@ def main() -> None:
     Returns:
         None.
 
+    Units / coordinates:
+        Metric units in meters.
+
     Assumptions:
-        Stage 2 outputs reside in outputs/<scan_id>/structure/.
+        Stage 2 outputs reside in <outputs_root>/<scan_id>/structure/.
 
     Failure conditions:
         Prints error and exits with code 1 if Stage 2 input files are missing.
 
-    Debugging:
+    Dependencies:
+        backend.app.geometry.room_footprint.run_stage3_pipeline, Path, sys.
+
+    Debugging clues:
         Inspect printed summary or generated JSON files in output directory.
     """
     args = parse_arguments()
     scan_id = args.scan
+    outputs_root = Path(args.outputs_root)
 
-    struct_json = REPO_ROOT / "outputs" / scan_id / "structure" / "structure.json"
-    walls_ply = REPO_ROOT / "outputs" / scan_id / "structure" / "walls.ply"
-    out_dir = REPO_ROOT / "outputs" / scan_id / "floorplan_geometry"
+    struct_json = outputs_root / scan_id / "structure" / "structure.json"
+    walls_ply = outputs_root / scan_id / "structure" / "walls.ply"
+    out_dir = outputs_root / scan_id / "floorplan_geometry"
 
     if not struct_json.exists():
         print(f"Error: Stage 2 structure.json not found at {struct_json}")

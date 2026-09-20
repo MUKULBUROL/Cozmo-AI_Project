@@ -5,7 +5,7 @@
   "lidar_structure": "NOT_MEASURED",
   "lidar_poly": "NOT_MEASURED",
   "lidar_openings": "NOT_MEASURED",
-  "lidar_total": 31.7,
+  "lidar_total": 26.26,
   "video_ingestion": 0.13,
   "video_sfm": 56.74,
   "video_depth": 27.35,
@@ -33,5 +33,5 @@
   "total_structure": "NOT_MEASURED",
   "total_poly": "NOT_MEASURED",
   "total_analysis": "NOT_MEASURED",
-  "grand_total": 2854.06
+  "grand_total": 2848.62
 }

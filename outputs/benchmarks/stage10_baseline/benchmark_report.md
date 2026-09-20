@@ -1,6 +1,6 @@
 # Stage 10 — Frozen System Benchmark & Systematic Evaluation Report
 
-**Baseline Commit:** `7acb29e273bdcfb2d0ca28284a5549ba65caa460`
+**Baseline Commit:** `ed9a4fcced2d62111542bc0dc631ee5d20fc3d05`
 
 *(Note: Stage 9 baseline commit hash updated from pre-rewrite 98aea6f... to 639c240d... due to repository Git history cleanup; source tree remained byte-for-byte identical)*
 
@@ -38,11 +38,11 @@ Every metric reported in this evaluation adheres strictly to the defined evidenc
 
 ## 4. LiDAR Baseline Results
 - **Tier Status:** `WORKING`
-- **Runtime:** `31.70 s`
+- **Runtime:** `26.26 s`
 - **Engineering Coverage:** `100.0%`
 - **Point Cloud Statistics:** 15,189,493 raw points, 408,108 filtered structural points
 - **Extracted Planes & Walls:** 7 primary bounding walls
-- **Single-Room Polygon:** Closed, valid 2D polygon (Area: ~7.00 m², Perimeter: ~10.80 m)
+- **Single-Room Polygon:** Closed, valid 2D polygon (Area: ~7.55 m², Perimeter: ~11.05 m)
 - **Ceiling Observation:** Unobserved in single-room scan (Status: not_observed; observed in multi-room connector as 3.35 m)
 - **Detected Openings:** 1 opening (doorway clearance width ~1.54m)
 - **Multi-Room Loop Closure & Residual Reduction:** Verified; Pose graph optimization with ICP point-to-plane loop closures improved loop-closure residual by 96.4% (from 9.1 cm to 0.3 cm across 5 accepted loop constraints in outputs/c7d28f72c6/property/drift_ablation.json; trajectory endpoint gap was 0.389 m -> 0.448 m).
@@ -111,7 +111,7 @@ Every metric reported in this evaluation adheres strictly to the defined evidenc
 ## 11. Uncertainty Interval Audit
 | Tier | Intervals Checked | Integrity Passed | Integrity Violations | Avg Rel Width | Calibration Status |
 |:---|:---:|:---:|:---:|:---:|:---:|
-| LIDAR | 9 | 9 | 0 | 39.8% | `CALIBRATION_NOT_EVALUABLE` |
+| LIDAR | 9 | 9 | 0 | 49.0% | `CALIBRATION_NOT_EVALUABLE` |
 | VIDEO | 0 | 0 | 0 | N/A | `CALIBRATION_NOT_EVALUABLE` |
 | PHOTO | 0 | 0 | 0 | N/A | `CALIBRATION_NOT_EVALUABLE` |
 
@@ -138,7 +138,7 @@ Every metric reported in this evaluation adheres strictly to the defined evidenc
 | Structural Extraction | NOT_MEASURED | 0.86 | 12.99 | N/A | NOT_MEASURED |
 | Polygon & Measurements | NOT_MEASURED | NOT_MEASURED | 0.07 | N/A | NOT_MEASURED |
 | Openings / Topology / Damage | NOT_MEASURED | N/A | 47.82 | NOT_MEASURED | NOT_MEASURED |
-| **Total End-to-End Runtime** | **31.70 s** | **2769.55 s** | **48.41 s** | **4.40 s** | **2854.06 s** |
+| **Total End-to-End Runtime** | **26.26 s** | **2769.55 s** | **48.41 s** | **4.40 s** | **2848.62 s** |
 
 ## 15. System Status Matrix
 | Modality / Tier | Single Room | Multi-Room | Metric Measurements | Openings | Whole Property | Uncertainty | Overall Status |

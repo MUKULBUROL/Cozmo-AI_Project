@@ -86,6 +86,12 @@ def parse_arguments() -> argparse.Namespace:
         default=42,
         help="Random seed for deterministic reproducibility (default: 42)",
     )
+    parser.add_argument(
+        "--outputs-root",
+        type=str,
+        default="outputs",
+        help="Root directory for outputs (default: outputs)",
+    )
     return parser.parse_args()
 
 
@@ -102,21 +108,28 @@ def main() -> None:
     Returns:
         None.
 
+    Units / coordinates:
+        Metric distances in meters, areas in square meters.
+
     Assumptions:
-        Inputs exist in outputs/<scan_id>/.
+        Inputs exist in <outputs_root>/<scan_id>/.
 
     Failure conditions:
         Raises FileNotFoundError if prerequisites are absent.
 
-    Debugging:
+    Dependencies:
+        backend.app.measurements.engine.compute_room_measurements, Path, sys.
+
+    Debugging clues:
         Check console logs for validity status and file output locations.
     """
     args = parse_arguments()
     scan_id = args.scan
+    outputs_root = Path(args.outputs_root)
 
-    stage3_dir = REPO_ROOT / "outputs" / scan_id / "floorplan_geometry"
-    stage2_file = REPO_ROOT / "outputs" / scan_id / "structure" / "structure.json"
-    output_dir = REPO_ROOT / "outputs" / scan_id / "measurements"
+    stage3_dir = outputs_root / scan_id / "floorplan_geometry"
+    stage2_file = outputs_root / scan_id / "structure" / "structure.json"
+    output_dir = outputs_root / scan_id / "measurements"
 
     print("=" * 60)
     print(f"STAGE 4 — METRIC MEASUREMENTS & UNCERTAINTY: {scan_id}")

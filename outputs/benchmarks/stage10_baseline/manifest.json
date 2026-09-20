@@ -1,6 +1,6 @@
 {
   "stage": "Stage 10 (Frozen System Benchmark + Development Evaluation)",
-  "baseline_commit": "7acb29e273bdcfb2d0ca28284a5549ba65caa460",
+  "baseline_commit": "ed9a4fcced2d62111542bc0dc631ee5d20fc3d05",
   "is_production_code_frozen": true,
   "tiers_evaluated": [
     "lidar",
