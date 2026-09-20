@@ -1,0 +1,405 @@
+{
+  "total_keyframes": 40,
+  "keyframes": [
+    {
+      "keyframe_id": 0,
+      "frame_index": 0,
+      "timestamp": 0.0,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000000.jpg",
+      "sharpness_score": 17.071768371539644,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "forced_window"
+    },
+    {
+      "keyframe_id": 1,
+      "frame_index": 413,
+      "timestamp": 9.109026851376774,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000001.jpg",
+      "sharpness_score": 169.07922525935703,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 2,
+      "frame_index": 518,
+      "timestamp": 11.424881135625107,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000002.jpg",
+      "sharpness_score": 200.70818654631506,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 3,
+      "frame_index": 872,
+      "timestamp": 19.232618436805197,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000003.jpg",
+      "sharpness_score": 138.2060415392452,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 4,
+      "frame_index": 1068,
+      "timestamp": 23.555546434068752,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000004.jpg",
+      "sharpness_score": 51.739444721974266,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 5,
+      "frame_index": 1287,
+      "timestamp": 28.38575679835813,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000005.jpg",
+      "sharpness_score": 155.18955074560378,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 6,
+      "frame_index": 1583,
+      "timestamp": 34.91426030442962,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000006.jpg",
+      "sharpness_score": 181.30051104625065,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 7,
+      "frame_index": 1720,
+      "timestamp": 37.93589875149649,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000007.jpg",
+      "sharpness_score": 171.82570685763886,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 8,
+      "frame_index": 2101,
+      "timestamp": 46.339141440054725,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000008.jpg",
+      "sharpness_score": 202.6558590016259,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 9,
+      "frame_index": 2221,
+      "timestamp": 48.985832050624246,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000009.jpg",
+      "sharpness_score": 121.47884271408715,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 10,
+      "frame_index": 2546,
+      "timestamp": 56.15395245425004,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000010.jpg",
+      "sharpness_score": 227.67206332583962,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 11,
+      "frame_index": 2680,
+      "timestamp": 59.109423636052675,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000011.jpg",
+      "sharpness_score": 90.90214689123367,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 12,
+      "frame_index": 2944,
+      "timestamp": 64.93214297930562,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000012.jpg",
+      "sharpness_score": 174.6756566361745,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 13,
+      "frame_index": 3293,
+      "timestamp": 72.62960150504531,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000013.jpg",
+      "sharpness_score": 200.60041309431924,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 14,
+      "frame_index": 3547,
+      "timestamp": 78.23176329741747,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000014.jpg",
+      "sharpness_score": 40.92636718711854,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 15,
+      "frame_index": 3893,
+      "timestamp": 85.86305455789294,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000015.jpg",
+      "sharpness_score": 136.0046408420139,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 16,
+      "frame_index": 4031,
+      "timestamp": 88.90674876004788,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000016.jpg",
+      "sharpness_score": 204.98158352593313,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 17,
+      "frame_index": 4368,
+      "timestamp": 96.33953822473062,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000017.jpg",
+      "sharpness_score": 168.37067025119995,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 18,
+      "frame_index": 4591,
+      "timestamp": 101.25797160937232,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000018.jpg",
+      "sharpness_score": 130.92364759842556,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 19,
+      "frame_index": 4806,
+      "timestamp": 105.99995895330939,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000019.jpg",
+      "sharpness_score": 290.24646766229205,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 20,
+      "frame_index": 5115,
+      "timestamp": 112.8151872755259,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000020.jpg",
+      "sharpness_score": 141.41810134277344,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 21,
+      "frame_index": 5357,
+      "timestamp": 118.15268000684111,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000021.jpg",
+      "sharpness_score": 145.63639280531143,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 22,
+      "frame_index": 5578,
+      "timestamp": 123.02700188130665,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000022.jpg",
+      "sharpness_score": 172.87872393797767,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 23,
+      "frame_index": 5760,
+      "timestamp": 127.0411493073371,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000023.jpg",
+      "sharpness_score": 158.12776693912082,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 24,
+      "frame_index": 6005,
+      "timestamp": 132.44480930391654,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000024.jpg",
+      "sharpness_score": 30.533743244764544,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 25,
+      "frame_index": 6192,
+      "timestamp": 136.56923550538738,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000025.jpg",
+      "sharpness_score": 180.2838176457723,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 26,
+      "frame_index": 6529,
+      "timestamp": 144.00202497007012,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000026.jpg",
+      "sharpness_score": 64.98755052083334,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 27,
+      "frame_index": 6589,
+      "timestamp": 145.32537027535489,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000027.jpg",
+      "sharpness_score": 73.89144365351996,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 28,
+      "frame_index": 6982,
+      "timestamp": 153.99328202497006,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000028.jpg",
+      "sharpness_score": 172.3206803270022,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 29,
+      "frame_index": 7302,
+      "timestamp": 161.05112365315546,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000029.jpg",
+      "sharpness_score": 90.79633197774888,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 30,
+      "frame_index": 7416,
+      "timestamp": 163.5654797331965,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000030.jpg",
+      "sharpness_score": 63.30432285864088,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 31,
+      "frame_index": 7769,
+      "timestamp": 171.3511612792885,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000031.jpg",
+      "sharpness_score": 63.619001278305056,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 32,
+      "frame_index": 7826,
+      "timestamp": 172.60833931930904,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000032.jpg",
+      "sharpness_score": 46.059670157867004,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 33,
+      "frame_index": 8056,
+      "timestamp": 177.6811629895673,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000033.jpg",
+      "sharpness_score": 56.9154584479332,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 34,
+      "frame_index": 8524,
+      "timestamp": 188.00325637078842,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000034.jpg",
+      "sharpness_score": 43.8206329758962,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 35,
+      "frame_index": 8640,
+      "timestamp": 190.56172396100564,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000035.jpg",
+      "sharpness_score": 191.96561463918687,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 36,
+      "frame_index": 8781,
+      "timestamp": 193.67158542842483,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000036.jpg",
+      "sharpness_score": 121.51746262731554,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 37,
+      "frame_index": 9214,
+      "timestamp": 203.22172738156317,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000037.jpg",
+      "sharpness_score": 37.91713375498454,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 38,
+      "frame_index": 9400,
+      "timestamp": 207.32409782794593,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000038.jpg",
+      "sharpness_score": 95.70321846634546,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    },
+    {
+      "keyframe_id": 39,
+      "frame_index": 9684,
+      "timestamp": 213.58793227296047,
+      "image_path": "/home/devcontainers/Projects/Active/CosmoAIProject/outputs/video_multi_room/video/keyframes/frame_000039.jpg",
+      "sharpness_score": 85.09740558200411,
+      "width": 1920,
+      "height": 1440,
+      "selection_reason": "sharpest_in_window"
+    }
+  ]
+}

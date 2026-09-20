@@ -44,6 +44,8 @@ venv.bak/
 outputs/*
 !outputs/benchmarks/
 !outputs/benchmarks/**
+!outputs/fix_loop/
+!outputs/fix_loop/**
 logs/
 tmp/
 /tmp/

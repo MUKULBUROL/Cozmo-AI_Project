@@ -1,0 +1,16 @@
+{
+  "ablation_title": "Stage 7 RGB Video Trajectory Drift Evaluation",
+  "status": "NOT_EVALUABLE",
+  "correction_applied": false,
+  "reason": "No independently measured raw/optimized loop pair is available from the sparse SfM trajectory.",
+  "endpoint_displacement_is_not_assumed_to_be_drift": true,
+  "accepted_loop_closures": 0,
+  "evidence": {
+    "input_provenance": "RGB_VIDEO_ONLY",
+    "registered_views": 4,
+    "total_keyframes": 40,
+    "registration_ratio": 0.1,
+    "temporal_coverage_ratio": 0.5137,
+    "largest_registered_time_gap_seconds": 106.066
+  }
+}

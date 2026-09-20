@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600" style="background:#0f172a;">
+  <text x="60" y="35" fill="#f8fafc" font-size="16" font-weight="bold">Reconstructed Visual Camera Trajectory</text>
+  <text x="60" y="55" fill="#94a3b8" font-size="12">Span: 1.51m x 1.60m | 4 Keyframes</text>
+  <path d="M 477.5 187.6 L 60.0 540.0 L 540.0 60.0 L 456.1 232.7" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="477.5" cy="187.6" r="5" fill="#22c55e" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="60.0" cy="540.0" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="540.0" cy="60.0" r="5" fill="#f59e0b" stroke="#ffffff" stroke-width="1"/>
+  <circle cx="456.1" cy="232.7" r="5" fill="#ef4444" stroke="#ffffff" stroke-width="1"/>
+</svg>

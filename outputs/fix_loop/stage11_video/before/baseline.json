@@ -1,0 +1,30 @@
+{
+  "capture_id": "c7d28f72c6",
+  "tier": "video",
+  "commit": "c10d1dd",
+  "keyframes_total": 40,
+  "registered_views": 4,
+  "registration_ratio": 0.10,
+  "status": "NOT_EVALUABLE",
+  "failure": "VIDEO_MULTIROOM_SFM_REGISTRATION_FAILURE",
+  "exact_command": "python3 -m scripts.reconstruct_video --archive \"sample data/single_scan_with_ceiling.zip\" --scan c7d28f72c6 --capture-id video_multi_room --multiroom",
+  "config": {
+    "max_keyframes": 40,
+    "multiroom": true,
+    "camera_model": "SIMPLE_RADIAL"
+  },
+  "runtime_seconds": 289.2,
+  "sparse_point_count": 60,
+  "mean_reprojection_error_px": 0.7321,
+  "median_reprojection_error_px": 0.6662,
+  "metric_scale_factor": 0.2342,
+  "metric_scale_uncertainty_rel": 0.00607,
+  "floor_area_sqm": 1.681,
+  "walls_detected": 7,
+  "largest_gap_seconds": 106.066,
+  "gate_reasons": [
+    "only_4_registered_views_minimum_20",
+    "registration_ratio_0.100_below_0.30",
+    "largest_registered_time_gap_106.066s_exceeds_continuity_limit"
+  ]
+}

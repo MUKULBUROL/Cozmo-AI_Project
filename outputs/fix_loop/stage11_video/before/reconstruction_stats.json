@@ -1,0 +1,65 @@
+{
+  "capture_id": "video_multi_room",
+  "input_video": "/tmp/tmpi57_dokw/video.mp4",
+  "video_duration_seconds": 214.9333333333333,
+  "total_video_frames": 9745,
+  "extracted_keyframes": 40,
+  "registered_keyframes": 4,
+  "sfm_status": "PROVISIONAL",
+  "mean_reprojection_error_px": 0.7320726819907619,
+  "median_reprojection_error_px": 0.6662211715672337,
+  "sparse_point_count": 60,
+  "registration_percentage": 10.0,
+  "trajectory_continuous": false,
+  "pose_jump_warnings": [
+    "Registration gap 7->26: 18 intervening keyframes are unregistered"
+  ],
+  "metric_scale_factor": 0.23421017332406188,
+  "metric_scale_uncertainty_rel": 0.0060711746174353836,
+  "metric_scale_status": "GOOD",
+  "raw_points_count": 1224248,
+  "filtered_points_count": 32790,
+  "metric_bounding_box": {
+    "min_x": -2.5211944580078125,
+    "max_x": 0.6520284849863786,
+    "min_y": -1.2559612194697063,
+    "max_y": 0.5113283214361771,
+    "min_z": 0.04063780406086715,
+    "max_z": 3.28476529651218
+  },
+  "voxel_size_m": 0.03,
+  "outlier_filter": {
+    "method": "statistical",
+    "nb_neighbors": 20,
+    "std_ratio": 2.0
+  },
+  "walls_detected": 7,
+  "polygon_valid": true,
+  "polygon_status": "VALID",
+  "floor_area_sqm": 1.6812785010504891,
+  "perimeter_m": 6.901623559535363,
+  "overall_status": "PROVISIONAL",
+  "benchmark_accuracy": "NOT VERIFIED (pending laser/tape ground truth)",
+  "timings": {
+    "video_decode_seconds": 0.123,
+    "keyframe_extraction_seconds": 186.56,
+    "sfm_seconds": 77.669,
+    "metric_depth_seconds": 22.691,
+    "scale_recovery_seconds": 0.006,
+    "fusion_seconds": 1.359,
+    "geometry_processing_seconds": 0.704,
+    "multiroom_seconds": 0.084,
+    "total_seconds": 289.2
+  },
+  "multiroom": {
+    "status": "NOT_EVALUABLE",
+    "room_count": 0,
+    "topology_valid": false,
+    "failure_reasons": [
+      "only_4_registered_views_minimum_20",
+      "registration_ratio_0.100_below_0.30",
+      "largest_registered_time_gap_106.066s_exceeds_continuity_limit"
+    ],
+    "drift_status": "NOT_EVALUABLE"
+  }
+}
