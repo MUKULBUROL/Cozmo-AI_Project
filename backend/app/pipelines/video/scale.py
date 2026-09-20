@@ -62,6 +62,7 @@ def estimate_metric_scale(
     intrinsics: VideoCameraIntrinsics,
     output_dir: Optional[Path] = None,
     min_correspondences: int = 15,
+    depth_masks: Optional[Dict[int, np.ndarray]] = None,
 ) -> MetricScaleEstimate:
     """Robustly recovers the global metric scale factor relating arbitrary SfM to meters.
 
@@ -76,6 +77,7 @@ def estimate_metric_scale(
         intrinsics: Camera intrinsic parameters (fx, fy, cx, cy).
         output_dir: Target directory to save `metric_scale.json`.
         min_correspondences: Minimum inlier matches required to declare scale valid.
+        depth_masks: Optional per-keyframe boolean quality masks; masked pixels never support scale.
 
     Returns:
         MetricScaleEstimate with global scale factor and scale uncertainty.
@@ -129,6 +131,10 @@ def estimate_metric_scale(
 
             # Bounds check
             if 0 <= u < depth_map.shape[1] and 0 <= v < depth_map.shape[0]:
+                if depth_masks is not None:
+                    frame_mask = depth_masks.get(kf_id)
+                    if frame_mask is None or not bool(frame_mask[v, u]):
+                        continue
                 z_metric = float(depth_map[v, u])
                 if 0.20 <= z_metric <= 6.50 and np.isfinite(z_metric):
                     ratio = z_metric / z_sfm
