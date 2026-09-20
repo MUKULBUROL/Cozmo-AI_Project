@@ -1,0 +1,509 @@
+{
+  "timestamp": "2026-09-20T23:17:24Z",
+  "baseline_commit": "3cb70b562ae8a82bf13fed96cd8bde6f2d05eab1",
+  "runtime_seconds": 0.003,
+  "physical_ground_truth_status": "GROUND_TRUTH_NOT_AVAILABLE",
+  "lidar": {
+    "measurements_count": 9,
+    "measurements": [
+      {
+        "measurement_id": "wall_01",
+        "room_id": "room_01",
+        "type": "wall_length",
+        "predicted_value": 1.39,
+        "reference_value": null,
+        "unit": "m",
+        "absolute_error": null,
+        "relative_error": null,
+        "evidence_level": "NOT_EVALUABLE",
+        "status": "EVALUATED",
+        "uncertainty_lower": 1.23,
+        "uncertainty_upper": 1.551,
+        "details": {
+          "edge_index": 0
+        }
+      },
+      {
+        "measurement_id": "wall_03",
+        "room_id": "room_01",
+        "type": "wall_length",
+        "predicted_value": 2.544,
+        "reference_value": null,
+        "unit": "m",
+        "absolute_error": null,
+        "relative_error": null,
+        "evidence_level": "NOT_EVALUABLE",
+        "status": "EVALUATED",
+        "uncertainty_lower": 2.416,
+        "uncertainty_upper": 2.673,
+        "details": {
+          "edge_index": 1
+        }
+      },
+      {
+        "measurement_id": "wall_05",
+        "room_id": "room_01",
+        "type": "wall_length",
+        "predicted_value": 1.314,
+        "reference_value": null,
+        "unit": "m",
+        "absolute_error": null,
+        "relative_error": null,
+        "evidence_level": "NOT_EVALUABLE",
+        "status": "EVALUATED",
+        "uncertainty_lower": 1.179,
+        "uncertainty_upper": 1.449,
+        "details": {
+          "edge_index": 2
+        }
+      },
+      {
+        "measurement_id": "wall_02",
+        "room_id": "room_01",
+        "type": "wall_length",
+        "predicted_value": 0.076,
+        "reference_value": null,
+        "unit": "m",
+        "absolute_error": null,
+        "relative_error": null,
+        "evidence_level": "NOT_EVALUABLE",
+        "status": "EVALUATED",
+        "uncertainty_lower": 0.01,
+        "uncertainty_upper": 0.262,
+        "details": {
+          "edge_index": 3
+        }
+      },
+      {
+        "measurement_id": "wall_08",
+        "room_id": "room_01",
+        "type": "wall_length",
+        "predicted_value": 1.665,
+        "reference_value": null,
+        "unit": "m",
+        "absolute_error": null,
+        "relative_error": null,
+        "evidence_level": "NOT_EVALUABLE",
+        "status": "EVALUATED",
+        "uncertainty_lower": 1.543,
+        "uncertainty_upper": 1.788,
+        "details": {
+          "edge_index": 4
+        }
+      },
+      {
+        "measurement_id": "wall_04",
+        "room_id": "room_01",
+        "type": "wall_length",
+        "predicted_value": 2.409,
+        "reference_value": null,
+        "unit": "m",
+        "absolute_error": null,
+        "relative_error": null,
+        "evidence_level": "NOT_EVALUABLE",
+        "status": "EVALUATED",
+        "uncertainty_lower": 2.316,
+        "uncertainty_upper": 2.502,
+        "details": {
+          "edge_index": 5
+        }
+      },
+      {
+        "measurement_id": "wall_01",
+        "room_id": "room_01",
+        "type": "wall_length",
+        "predicted_value": 1.656,
+        "reference_value": null,
+        "unit": "m",
+        "absolute_error": null,
+        "relative_error": null,
+        "evidence_level": "NOT_EVALUABLE",
+        "status": "EVALUATED",
+        "uncertainty_lower": 1.504,
+        "uncertainty_upper": 1.809,
+        "details": {
+          "edge_index": 6
+        }
+      },
+      {
+        "measurement_id": "floor_area_room_01",
+        "room_id": "room_01",
+        "type": "floor_area",
+        "predicted_value": 7.554,
+        "reference_value": null,
+        "unit": "m2",
+        "absolute_error": null,
+        "relative_error": null,
+        "evidence_level": "NOT_EVALUABLE",
+        "status": "EVALUATED",
+        "uncertainty_lower": 7.349,
+        "uncertainty_upper": 7.784,
+        "details": {}
+      },
+      {
+        "measurement_id": "opening_01",
+        "room_id": "room_01",
+        "type": "door_width",
+        "predicted_value": 1.5682,
+        "reference_value": null,
+        "unit": "m",
+        "absolute_error": null,
+        "relative_error": null,
+        "evidence_level": "NOT_EVALUABLE",
+        "status": "EVALUATED",
+        "uncertainty_lower": 1.4949,
+        "uncertainty_upper": 1.6415,
+        "details": {}
+      }
+    ],
+    "repeatability": {
+      "tier": "lidar",
+      "capture_a": "single_scan_floor_only",
+      "capture_b": "single_scan_with_ceiling",
+      "status": "EVALUATED",
+      "wall_differences": [
+        {
+          "measurement_id": "rep_lidar_3",
+          "room_id": "room_01",
+          "type": "wall_length",
+          "predicted_value": 0.076,
+          "reference_value": 0.076,
+          "unit": "m",
+          "absolute_error": 0.0,
+          "relative_error": 0.0,
+          "evidence_level": "INTERNAL_CONSISTENCY",
+          "status": "EVALUATED",
+          "uncertainty_lower": null,
+          "uncertainty_upper": null,
+          "details": {
+            "candidate_a": "wall_02",
+            "candidate_b": "wall_02"
+          }
+        }
+      ],
+      "walls_within_gate_count": 1,
+      "total_compared_walls": 1,
+      "gate_pass_ratio": 1.0,
+      "summary_statistics": {
+        "count": 1,
+        "mean": 0.0,
+        "median": 0.0,
+        "rmse": 0.0,
+        "std": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "reasons": [],
+      "note": "REPEATABILITY EVALUATES INTER-SCAN STABILITY, NOT PHYSICAL ACCURACY. REPEATABILITY DOES NOT MEASURE ABSOLUTE BIAS."
+    }
+  },
+  "video": {
+    "measurements_count": 2,
+    "measurements": [
+      {
+        "measurement_id": "floor_area_video_single_room",
+        "room_id": "room_01",
+        "type": "floor_area",
+        "predicted_value": null,
+        "reference_value": null,
+        "unit": "m2",
+        "absolute_error": null,
+        "relative_error": null,
+        "evidence_level": "NOT_EVALUABLE",
+        "status": "NOT_EVALUABLE",
+        "uncertainty_lower": null,
+        "uncertainty_upper": null,
+        "details": {}
+      },
+      {
+        "measurement_id": "perimeter_video_single_room",
+        "room_id": "room_01",
+        "type": "perimeter",
+        "predicted_value": null,
+        "reference_value": null,
+        "unit": "m",
+        "absolute_error": null,
+        "relative_error": null,
+        "evidence_level": "NOT_EVALUABLE",
+        "status": "NOT_EVALUABLE",
+        "uncertainty_lower": null,
+        "uncertainty_upper": null,
+        "details": {}
+      }
+    ],
+    "stage11_registration_recovery": {
+      "before_registrations": "4/40",
+      "after_registrations": "31/40",
+      "before_max_gap_s": 80.867,
+      "after_max_gap_s": 21.085,
+      "status": "PROVISIONAL_VIDEO_TRACKING"
+    }
+  },
+  "photo": {
+    "measurements_count": 2,
+    "measurements": [
+      {
+        "measurement_id": "floor_area_photo_single_room",
+        "room_id": "room_01",
+        "type": "floor_area",
+        "predicted_value": null,
+        "reference_value": null,
+        "unit": "m2",
+        "absolute_error": null,
+        "relative_error": null,
+        "evidence_level": "NOT_EVALUABLE",
+        "status": "NOT_EVALUABLE",
+        "uncertainty_lower": null,
+        "uncertainty_upper": null,
+        "details": {}
+      },
+      {
+        "measurement_id": "perimeter_photo_single_room",
+        "room_id": "room_01",
+        "type": "perimeter",
+        "predicted_value": null,
+        "reference_value": null,
+        "unit": "m",
+        "absolute_error": null,
+        "relative_error": null,
+        "evidence_level": "NOT_EVALUABLE",
+        "status": "NOT_EVALUABLE",
+        "uncertainty_lower": null,
+        "uncertainty_upper": null,
+        "details": {}
+      }
+    ]
+  },
+  "multiroom": {
+    "property_id": "prop_multiroom_01",
+    "room_count": 5,
+    "adjacency_graph": {
+      "expected_edges": 4,
+      "correct_edges": 4,
+      "missing_edges": 0,
+      "false_edges": 0,
+      "topology_status": "VALID_CONNECTED_GRAPH"
+    },
+    "impossible_overlap": {
+      "overlap_area_m2": 0.0,
+      "overlap_percentage": 0.0,
+      "overlap_status": "ZERO_IMPOSSIBLE_OVERLAP"
+    },
+    "gross_footprint_m2": 88.5,
+    "drift_ablation": {
+      "drift_correction_off": {
+        "pose_graph_residual_m": 0.182,
+        "loop_closure_gap_m": 0.415,
+        "status": "ACCUMULATING_DRIFT"
+      },
+      "drift_correction_on": {
+        "pose_graph_residual_m": 0.012,
+        "loop_closure_gap_m": 0.0,
+        "status": "CLOSED_LOOP_OPTIMIZED"
+      },
+      "distinction_note": "Pose-graph optimization residual (0.012m) is an internal mathematical convergence metric and is NOT physical room accuracy."
+    }
+  },
+  "damage": {
+    "sample_data_status": "NO ANNOTATED REAL DAMAGE AVAILABLE",
+    "synthetic_fixtures_status": "EVALUATED",
+    "evidence_level": "SYNTHETIC_GROUND_TRUTH",
+    "fixture_measurements": [
+      {
+        "measurement_id": "dev_water_stain_01_area",
+        "room_id": "dev_damage_fixture",
+        "type": "damage_area",
+        "predicted_value": 1.15,
+        "reference_value": 1.2,
+        "unit": "m2",
+        "absolute_error": 0.05,
+        "relative_error": 0.0417,
+        "evidence_level": "SYNTHETIC_GROUND_TRUTH",
+        "status": "EVALUATED",
+        "uncertainty_lower": null,
+        "uncertainty_upper": null,
+        "details": {
+          "class": "water_stain",
+          "target_surface": "wall"
+        }
+      },
+      {
+        "measurement_id": "dev_crack_01_length",
+        "room_id": "dev_damage_fixture",
+        "type": "damage_length",
+        "predicted_value": 1.48,
+        "reference_value": 1.5,
+        "unit": "m",
+        "absolute_error": 0.02,
+        "relative_error": 0.0133,
+        "evidence_level": "SYNTHETIC_GROUND_TRUTH",
+        "status": "EVALUATED",
+        "uncertainty_lower": null,
+        "uncertainty_upper": null,
+        "details": {
+          "class": "surface_crack",
+          "target_surface": "wall"
+        }
+      },
+      {
+        "measurement_id": "dev_hole_01_area",
+        "room_id": "dev_damage_fixture",
+        "type": "damage_area",
+        "predicted_value": 0.34,
+        "reference_value": 0.35,
+        "unit": "m2",
+        "absolute_error": 0.01,
+        "relative_error": 0.0286,
+        "evidence_level": "SYNTHETIC_GROUND_TRUTH",
+        "status": "EVALUATED",
+        "uncertainty_lower": null,
+        "uncertainty_upper": null,
+        "details": {
+          "class": "hole_or_missing_material",
+          "target_surface": "wall"
+        }
+      },
+      {
+        "measurement_id": "dev_mold_01_area",
+        "room_id": "dev_damage_fixture",
+        "type": "damage_area",
+        "predicted_value": 0.58,
+        "reference_value": 0.6,
+        "unit": "m2",
+        "absolute_error": 0.02,
+        "relative_error": 0.0333,
+        "evidence_level": "SYNTHETIC_GROUND_TRUTH",
+        "status": "EVALUATED",
+        "uncertainty_lower": null,
+        "uncertainty_upper": null,
+        "details": {
+          "class": "mold_like_discoloration",
+          "target_surface": "ceiling"
+        }
+      }
+    ],
+    "class_accuracy": 1.0,
+    "mean_area_relative_error": 0.0345,
+    "mean_length_relative_error": 0.0133,
+    "concealed_risk_evaluated": true,
+    "scope_generated": true,
+    "disclaimer": "REAL SAMPLE ROOMS CONTAIN NO CERTIFIED FORENSIC DAMAGE LABELS. FIXTURE METRICS REFLECT DETERMINISTIC SYNTHETIC GROUND TRUTH ONLY."
+  },
+  "uncertainty": {
+    "lidar": {
+      "tier": "lidar",
+      "total_intervals_checked": 9,
+      "valid_integrity_count": 9,
+      "integrity_violations": [],
+      "average_relative_interval_width": 0.4903,
+      "min_relative_interval_width": 0.0576,
+      "max_relative_interval_width": 3.3158,
+      "is_calibrated": false,
+      "calibration_status": "CALIBRATION_NOT_EVALUABLE",
+      "empirical_coverage": null,
+      "notes": "UNCERTAINTY CALIBRATION REQUIRES INDEPENDENT PHYSICAL GROUND TRUTH. CALIBRATION NOT EVALUABLE ON UNLABELED REFERENCE DATA."
+    },
+    "video": {
+      "tier": "video",
+      "total_intervals_checked": 0,
+      "valid_integrity_count": 0,
+      "integrity_violations": [],
+      "average_relative_interval_width": null,
+      "min_relative_interval_width": null,
+      "max_relative_interval_width": null,
+      "is_calibrated": false,
+      "calibration_status": "CALIBRATION_NOT_EVALUABLE",
+      "empirical_coverage": null,
+      "notes": "UNCERTAINTY CALIBRATION REQUIRES INDEPENDENT PHYSICAL GROUND TRUTH. CALIBRATION NOT EVALUABLE ON UNLABELED REFERENCE DATA."
+    },
+    "photo": {
+      "tier": "photo",
+      "total_intervals_checked": 0,
+      "valid_integrity_count": 0,
+      "integrity_violations": [],
+      "average_relative_interval_width": null,
+      "min_relative_interval_width": null,
+      "max_relative_interval_width": null,
+      "is_calibrated": false,
+      "calibration_status": "CALIBRATION_NOT_EVALUABLE",
+      "empirical_coverage": null,
+      "notes": "UNCERTAINTY CALIBRATION REQUIRES INDEPENDENT PHYSICAL GROUND TRUTH. CALIBRATION NOT EVALUABLE ON UNLABELED REFERENCE DATA."
+    }
+  },
+  "incumbent": {
+    "status": "INCUMBENT_COMPARISON_NOT_EVALUABLE",
+    "shared_dimensions_count": 0,
+    "beat_count": 0,
+    "tie_count": 0,
+    "loss_count": 0,
+    "beat_tie_ratio": null,
+    "cozmo_mae": null,
+    "incumbent_mae": null,
+    "reasons": [
+      "No incumbent benchmark measurements provided in benchmark inputs."
+    ],
+    "details": []
+  },
+  "tier_concordance": [
+    {
+      "tier_a": "lidar",
+      "tier_b": "video",
+      "matched_measurements": [],
+      "shared_dimensions_count": 0,
+      "unmatched_a_count": 9,
+      "unmatched_b_count": 0,
+      "room_count_a": 1,
+      "room_count_b": 1,
+      "statistics": {
+        "count": 0,
+        "mean": null,
+        "median": null,
+        "rmse": null,
+        "std": null,
+        "min": null,
+        "max": null
+      },
+      "disclaimer": "CROSS-TIER AGREEMENT, NOT GROUND-TRUTH ACCURACY"
+    },
+    {
+      "tier_a": "lidar",
+      "tier_b": "photo",
+      "matched_measurements": [],
+      "shared_dimensions_count": 0,
+      "unmatched_a_count": 9,
+      "unmatched_b_count": 0,
+      "room_count_a": 1,
+      "room_count_b": 1,
+      "statistics": {
+        "count": 0,
+        "mean": null,
+        "median": null,
+        "rmse": null,
+        "std": null,
+        "min": null,
+        "max": null
+      },
+      "disclaimer": "CROSS-TIER AGREEMENT, NOT GROUND-TRUTH ACCURACY"
+    },
+    {
+      "tier_a": "video",
+      "tier_b": "photo",
+      "matched_measurements": [],
+      "shared_dimensions_count": 0,
+      "unmatched_a_count": 0,
+      "unmatched_b_count": 0,
+      "room_count_a": 1,
+      "room_count_b": 1,
+      "statistics": {
+        "count": 0,
+        "mean": null,
+        "median": null,
+        "rmse": null,
+        "std": null,
+        "min": null,
+        "max": null
+      },
+      "disclaimer": "CROSS-TIER AGREEMENT, NOT GROUND-TRUTH ACCURACY"
+    }
+  ]
+}
