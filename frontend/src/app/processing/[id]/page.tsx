@@ -230,6 +230,12 @@ export default function ProcessingPage() {
           </p>
         )}
 
+        {!isTerminal && (
+          <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '16px' }}>
+            Reconstruction can take several minutes depending on capture size.
+          </p>
+        )}
+
         {/* Error Detail */}
         {status?.error && isFailed && (
           <div

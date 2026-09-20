@@ -1,7 +1,7 @@
 /**
  * @file InspectorPanel.tsx
- * @purpose Right inspector pane detailing selected room measurements, openings, damage detections, and scope.
- * @stage Frontend Stage 2 (Spatial Pro Product UI + Property Workspace)
+ * @purpose Right inspector pane detailing property summary, room measurements, openings, damage detections, scope, and status explanations.
+ * @stage Frontend Stage 4 — Exports + Final Product Polish.
  * @inputs PropertyViewModel, selectedRoom (RoomViewModel | null), onSelectRoom.
  * @outputs Accessible inspector panel matching Spatial Pro typography and technical fidelity.
  * @dependencies ../../domain/types, ../ui/StatusBadge, ../ui/MeasurementStatus
@@ -10,7 +10,9 @@
  * @firstDebuggingPoints Verify selectedRoom object propagation; check ceilingHeight null handling.
  */
 
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import { PropertyViewModel, RoomViewModel } from '../../domain/types';
 import { StatusBadge } from '../ui/StatusBadge';
 import { MeasurementStatus } from '../ui/MeasurementStatus';
@@ -21,11 +23,55 @@ interface InspectorPanelProps {
   onSelectRoom: (roomId: string) => void;
 }
 
+/**
+ * Returns user-friendly status explanation message based on honest reconstruction quality.
+ */
+function getStatusExplanation(status: string, failureReasons?: string[]): { title: string; desc: string; type: 'success' | 'warning' | 'danger' } {
+  switch (status) {
+    case 'COMPLETE':
+      return {
+        title: 'Complete Reconstruction',
+        desc: 'Reconstruction completed successfully.',
+        type: 'success',
+      };
+    case 'PROVISIONAL':
+      return {
+        title: 'Provisional Reconstruction',
+        desc: 'Reconstruction completed with limitations. Review measurements and confidence information before use.',
+        type: 'warning',
+      };
+    case 'NOT_EVALUABLE':
+      return {
+        title: 'Not Evaluable',
+        desc: 'Insufficient reconstruction quality to produce a reliable property result.',
+        type: 'danger',
+      };
+    case 'FAILED':
+      return {
+        title: 'Processing Failed',
+        desc: failureReasons && failureReasons.length > 0 ? failureReasons[0] : 'Processing failed.',
+        type: 'danger',
+      };
+    default:
+      return {
+        title: status,
+        desc: 'Reconstruction state recorded.',
+        type: 'warning',
+      };
+  }
+}
+
 export function InspectorPanel({
   property,
   selectedRoom,
   onSelectRoom,
 }: InspectorPanelProps) {
+  const [showMetadata, setShowMetadata] = useState<boolean>(false);
+
+  const totalOpenings = property.rooms.reduce((acc, r) => acc + (r.openings?.length || 0), 0);
+  const totalDamages = property.rooms.reduce((acc, r) => acc + (r.damages?.length || 0), 0);
+  const statusInfo = getStatusExplanation(property.status, property.statusReasons);
+
   // If no room is selected or property has no rooms, show property overview
   if (!selectedRoom) {
     return (
@@ -41,6 +87,7 @@ export function InspectorPanel({
           userSelect: 'text',
         }}
       >
+        {/* Header */}
         <div style={{ marginBottom: '16px' }}>
           <div
             style={{
@@ -65,7 +112,51 @@ export function InspectorPanel({
           </h2>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+        {/* Status Explanation Card */}
+        <div
+          style={{
+            padding: '12px',
+            borderRadius: 'var(--radius-md)',
+            backgroundColor:
+              statusInfo.type === 'success'
+                ? 'var(--success-subtle)'
+                : statusInfo.type === 'warning'
+                ? 'var(--warning-subtle)'
+                : 'var(--danger-subtle)',
+            border: `1px solid ${
+              statusInfo.type === 'success'
+                ? 'var(--success-border)'
+                : statusInfo.type === 'warning'
+                ? 'var(--warning-border)'
+                : 'var(--danger-border)'
+            }`,
+            marginBottom: '16px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
+            <span
+              style={{
+                fontSize: '12px',
+                fontWeight: 700,
+                color:
+                  statusInfo.type === 'success'
+                    ? 'var(--success-text)'
+                    : statusInfo.type === 'warning'
+                    ? 'var(--warning-text)'
+                    : 'var(--danger-text)',
+              }}
+            >
+              {statusInfo.title}
+            </span>
+            <StatusBadge status={property.status} size="sm" />
+          </div>
+          <p style={{ fontSize: '11.5px', color: 'var(--text-secondary)', lineHeight: 1.45, margin: 0 }}>
+            {statusInfo.desc}
+          </p>
+        </div>
+
+        {/* Compact Property Summary Grid (Real Data Only) */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
           <div
             style={{
               padding: '12px',
@@ -82,27 +173,90 @@ export function InspectorPanel({
             </div>
             {property.totalFloorArea?.interval && (
               <div className="mono" style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                Confidence interval: {property.totalFloorArea.interval[0].toFixed(2)} –{' '}
-                {property.totalFloorArea.interval[1].toFixed(2)} m²
+                95% CI: [{property.totalFloorArea.interval[0].toFixed(2)} – {property.totalFloorArea.interval[1].toFixed(2)} m²]
               </div>
             )}
           </div>
 
           <div
             style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '8px',
+            }}
+          >
+            <div
+              style={{
+                padding: '10px 12px',
+                backgroundColor: 'var(--surface-subtle)',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border)',
+              }}
+            >
+              <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '2px' }}>
+                Rooms
+              </div>
+              <div className="mono" style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                {property.rooms.length}
+              </div>
+            </div>
+
+            <div
+              style={{
+                padding: '10px 12px',
+                backgroundColor: 'var(--surface-subtle)',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--border)',
+              }}
+            >
+              <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '2px' }}>
+                Openings
+              </div>
+              <div className="mono" style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                {totalOpenings}
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              padding: '10px 12px',
+              backgroundColor: 'var(--surface-subtle)',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid var(--border)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
+          >
+            <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)' }}>Damage Findings</span>
+            <span
+              className="mono"
+              style={{
+                fontSize: '13px',
+                fontWeight: 600,
+                color: totalDamages > 0 ? 'var(--danger-text)' : 'var(--success-text)',
+              }}
+            >
+              {totalDamages} {totalDamages === 1 ? 'finding' : 'findings'}
+            </span>
+          </div>
+        </div>
+
+        {/* Room List Selector */}
+        {property.rooms.length > 0 && (
+          <div
+            style={{
               padding: '12px',
               backgroundColor: 'var(--surface-subtle)',
               borderRadius: 'var(--radius-md)',
               border: '1px solid var(--border)',
+              marginBottom: '16px',
             }}
           >
-            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '4px' }}>
-              Reconstructed Rooms
+            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+              Select Room to Inspect
             </div>
-            <div style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
-              {property.rooms.length} {property.rooms.length === 1 ? 'room' : 'rooms'} detected
-            </div>
-
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               {property.rooms.map((room) => (
                 <button
@@ -118,6 +272,65 @@ export function InspectorPanel({
               ))}
             </div>
           </div>
+        )}
+
+        {/* Expandable Capture Metadata Accordion */}
+        <div style={{ marginBottom: '16px' }}>
+          <button
+            onClick={() => setShowMetadata((prev) => !prev)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '100%',
+              padding: '8px 10px',
+              backgroundColor: 'transparent',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-sm)',
+              fontSize: '11.5px',
+              fontWeight: 600,
+              color: 'var(--text-secondary)',
+              cursor: 'pointer',
+            }}
+          >
+            <span>Capture Details</span>
+            <span style={{ transform: showMetadata ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s ease' }}>
+              ▾
+            </span>
+          </button>
+
+          {showMetadata && (
+            <div
+              style={{
+                marginTop: '6px',
+                padding: '10px 12px',
+                backgroundColor: 'var(--surface-subtle)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-sm)',
+                fontSize: '11px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '6px',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Capture ID</span>
+                <span className="mono" style={{ color: 'var(--text-primary)' }}>{property.captureId}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Sensor Tier</span>
+                <span style={{ color: 'var(--text-primary)', textTransform: 'uppercase' }}>{property.tier}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Status</span>
+                <span style={{ color: 'var(--text-primary)' }}>{property.status}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Reconstruction</span>
+                <span style={{ color: 'var(--text-primary)' }}>{property.reconstructionMethod || 'Spatial Pro Fusion'}</span>
+              </div>
+            </div>
+          )}
         </div>
 
         <div style={{ marginTop: 'auto' }}>
@@ -127,6 +340,7 @@ export function InspectorPanel({
     );
   }
 
+  // Selected Room Inspection View
   return (
     <aside
       aria-label={`Room Inspector: ${selectedRoom.name}`}
@@ -284,7 +498,7 @@ export function InspectorPanel({
 
                 {wall.length.interval && (
                   <div className="mono" style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                    Confidence interval: {wall.length.interval[0].toFixed(3)} – {wall.length.interval[1].toFixed(3)} m
+                    95% CI: {wall.length.interval[0].toFixed(3)} – {wall.length.interval[1].toFixed(3)} m
                   </div>
                 )}
               </div>
@@ -323,7 +537,7 @@ export function InspectorPanel({
                   Status: <span style={{ textTransform: 'capitalize' }}>{op.status}</span>
                   {!op.calibrated && (
                     <span style={{ color: 'var(--text-muted)', marginLeft: '4px' }}>
-                      (Awaiting GT benchmark)
+                      (Uncalibrated)
                     </span>
                   )}
                 </div>

@@ -471,6 +471,48 @@ export function FloorPlanCanvas({
           )}
       </svg>
 
+      {/* Unobtrusive Canvas Legend */}
+      <div
+        aria-label="Floor Plan Legend"
+        style={{
+          position: 'absolute',
+          top: '16px',
+          left: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          padding: '6px 12px',
+          backgroundColor: 'var(--surface-subtle)',
+          border: '1px solid var(--border)',
+          borderRadius: 'var(--radius-sm)',
+          fontSize: '11px',
+          color: 'var(--text-secondary)',
+          pointerEvents: 'none',
+          userSelect: 'none',
+          backdropFilter: 'blur(4px)',
+          zIndex: 5,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <div style={{ width: '10px', height: '10px', backgroundColor: 'var(--room-fill-selected)', border: '1px solid var(--room-stroke-selected)', borderRadius: '2px' }} />
+          <span>Room</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <div style={{ width: '14px', height: '3px', backgroundColor: 'var(--wall-stroke)' }} />
+          <span>Wall</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+          <div style={{ width: '14px', height: '2px', borderTop: '2px dashed var(--opening-stroke)' }} />
+          <span>Opening</span>
+        </div>
+        {(showDamageOverlay || property.rooms.some((r) => r.damages.length > 0)) && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--damage-fill)', border: '1px solid var(--damage-stroke)' }} />
+            <span style={{ color: 'var(--danger-text)' }}>Damage</span>
+          </div>
+        )}
+      </div>
+
       {/* Floating View Controls */}
       <CanvasControls
         onZoomIn={handleZoomIn}
