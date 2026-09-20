@@ -1,30 +1,43 @@
 /**
  * @file ViewSwitcher.tsx
- * @purpose Bottom workspace control bar switching between Plan, Measurements, Damage, and Scope modes, plus disabled Export notice.
- * @stage Frontend Stage 2 (Spatial Pro Product UI + Property Workspace)
- * @inputs activeTab, onTabChange.
- * @outputs Accessible bottom bar with clear active indicator and truthful stage-3 notices.
- * @dependencies ./SideNavigation
- * @assumptions Export is scheduled for Stage 3; button is visibly disabled with clear tooltip/notice.
+ * @purpose Bottom workspace control bar switching between Plan, Measurements, Damage, and Scope modes, plus live Export controls.
+ * @stage Frontend Stage 4 — Exports + Final Product Polish.
+ * @inputs activeTab, onTabChange, captureId, property.
+ * @outputs Accessible bottom bar with clear active indicator and functional Export menu.
+ * @dependencies ./SideNavigation, ../ui/ExportMenu, ../../domain/types.
+ * @assumptions Live export triggered directly via ExportMenu for JSON, SVG, PDF, and DXF deliverables.
  * @failureModes None.
- * @firstDebuggingPoints Verify tab switching callback triggers correctly.
+ * @firstDebuggingPoints Verify tab switching and export trigger callbacks.
  */
+
+'use client';
 
 import React from 'react';
 import { WorkspaceTab } from './SideNavigation';
+import { ExportMenu } from '../ui/ExportMenu';
+import { PropertyViewModel } from '../../domain/types';
 
 interface ViewSwitcherProps {
   activeTab: WorkspaceTab;
   onTabChange: (tab: WorkspaceTab) => void;
+  captureId?: string;
+  property?: PropertyViewModel | null;
 }
 
-export function ViewSwitcher({ activeTab, onTabChange }: ViewSwitcherProps) {
+export function ViewSwitcher({
+  activeTab,
+  onTabChange,
+  captureId,
+  property,
+}: ViewSwitcherProps) {
   const tabs: Array<{ id: WorkspaceTab; label: string }> = [
     { id: 'plan', label: 'Floor Plan' },
     { id: 'rooms', label: 'Measurements' },
     { id: 'damage', label: 'Damage Overlay' },
     { id: 'scope', label: 'Repair Scope' },
   ];
+
+  const targetCaptureId = captureId || property?.captureId || 'default';
 
   return (
     <footer
@@ -65,34 +78,8 @@ export function ViewSwitcher({ activeTab, onTabChange }: ViewSwitcherProps) {
         })}
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span
-          style={{
-            fontSize: '11px',
-            color: 'var(--text-muted)',
-            fontStyle: 'italic',
-          }}
-        >
-          Export integration coming in Stage 3
-        </span>
-        <button
-          disabled
-          aria-disabled="true"
-          title="Export integration coming in Stage 3"
-          style={{
-            padding: '5px 12px',
-            borderRadius: 'var(--radius-sm)',
-            fontSize: '12px',
-            fontWeight: 500,
-            color: 'var(--text-muted)',
-            backgroundColor: 'var(--surface-subtle)',
-            border: '1px solid var(--border)',
-            cursor: 'not-allowed',
-            opacity: 0.7,
-          }}
-        >
-          Export DXF / PDF
-        </button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <ExportMenu captureId={targetCaptureId} property={property} />
       </div>
     </footer>
   );
