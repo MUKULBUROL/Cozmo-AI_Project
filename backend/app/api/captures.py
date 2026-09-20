@@ -53,9 +53,16 @@ import threading
 from pathlib import Path
 from typing import Optional
 
-from fastapi import APIRouter, File, Form, UploadFile, HTTPException
+from fastapi import APIRouter, File, Form, UploadFile, HTTPException, Response
+from fastapi.responses import FileResponse
 
 from backend.app.models.capture import CaptureTier
+from backend.app.export import (
+    export_property_json,
+    export_property_svg,
+    export_property_pdf,
+    export_property_dxf,
+)
 from .jobs import CaptureStatus, JobStore, TERMINAL_STATUSES
 from .validators import validate_upload
 
@@ -246,6 +253,170 @@ async def get_capture_result(capture_id: str):
             status_code=500,
             detail=f"Failed to read result: {exc}",
         )
+
+
+def _validate_capture_id(capture_id: str) -> None:
+    """Security check ensuring capture_id does not attempt directory traversal.
+
+    Purpose:
+        Protects against path traversal attacks (e.g. '../', absolute paths).
+
+    Parameters:
+        capture_id: The identifier string to check.
+
+    Failure Conditions:
+        Raises 400 Bad Request if capture_id contains invalid characters.
+    """
+    if not capture_id or ".." in capture_id or "/" in capture_id or "\\" in capture_id:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid capture ID. Path traversal is strictly forbidden.",
+        )
+
+
+def _get_capture_result_payload(capture_id: str) -> dict:
+    """Helper to fetch verified result data for a terminal capture.
+
+    Purpose:
+        Retrieves the reconstruction JSON payload for export rendering.
+
+    Parameters:
+        capture_id: The capture ID.
+
+    Returns:
+        Result dictionary populated with capture_id and honest status.
+    """
+    _validate_capture_id(capture_id)
+    job = job_store.get_job(capture_id)
+    if not job:
+        raise HTTPException(status_code=404, detail=f"Capture '{capture_id}' not found.")
+
+    if job.status not in TERMINAL_STATUSES:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Capture is still {job.status.value}. Poll status until terminal.",
+        )
+
+    result_json = _find_result_json(job)
+    if result_json is None:
+        return {
+            "property_id": capture_id,
+            "capture_id": capture_id,
+            "tier": job.tier.value,
+            "status": job.status.value,
+            "rooms": [],
+            "connections": [],
+            "total_floor_area": None,
+            "reconstruction_method": None,
+            "failure_reasons": [job.error or "No result artifacts generated."],
+        }
+
+    try:
+        with open(result_json, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        data["capture_id"] = capture_id
+        data["property_id"] = capture_id
+        if job.status == CaptureStatus.NOT_EVALUABLE:
+            data["status"] = "NOT_EVALUABLE"
+        elif job.status == CaptureStatus.PROVISIONAL:
+            data["status"] = "PROVISIONAL"
+        return data
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500, detail=f"Failed to read result data: {exc}"
+        )
+
+
+@router.get("/{capture_id}/exports/json")
+async def export_json_endpoint(capture_id: str):
+    """Retrieve or download machine-readable property JSON export.
+
+    Purpose:
+        Provides the standard JSON deliverable for the specified capture.
+    """
+    data = _get_capture_result_payload(capture_id)
+    job = job_store.get_job(capture_id)
+    exports_dir = Path(job.output_path).parent / "exports"
+    exports_dir.mkdir(parents=True, exist_ok=True)
+    out_file = exports_dir / f"cozmo_{capture_id}_property.json"
+
+    json_str = export_property_json(data, capture_id, output_path=out_file)
+    return Response(
+        content=json_str,
+        media_type="application/json",
+        headers={
+            "Content-Disposition": f'attachment; filename="cozmo_{capture_id}_property.json"'
+        },
+    )
+
+
+@router.get("/{capture_id}/exports/svg")
+async def export_svg_endpoint(capture_id: str):
+    """Retrieve or download architectural vector floor plan SVG export.
+
+    Purpose:
+        Provides the standalone 2D vector floor plan SVG for the specified capture.
+    """
+    data = _get_capture_result_payload(capture_id)
+    job = job_store.get_job(capture_id)
+    exports_dir = Path(job.output_path).parent / "exports"
+    exports_dir.mkdir(parents=True, exist_ok=True)
+    out_file = exports_dir / f"cozmo_{capture_id}_floorplan.svg"
+
+    svg_str = export_property_svg(data, capture_id, output_path=out_file)
+    return Response(
+        content=svg_str,
+        media_type="image/svg+xml",
+        headers={
+            "Content-Disposition": f'attachment; filename="cozmo_{capture_id}_floorplan.svg"'
+        },
+    )
+
+
+@router.get("/{capture_id}/exports/pdf")
+async def export_pdf_endpoint(capture_id: str):
+    """Retrieve or download multi-page property reconstruction PDF report.
+
+    Purpose:
+        Provides the complete engineering report PDF with vector drawing and schedules.
+    """
+    data = _get_capture_result_payload(capture_id)
+    job = job_store.get_job(capture_id)
+    exports_dir = Path(job.output_path).parent / "exports"
+    exports_dir.mkdir(parents=True, exist_ok=True)
+    out_file = exports_dir / f"cozmo_{capture_id}_report.pdf"
+
+    pdf_bytes = export_property_pdf(data, capture_id, output_path=out_file)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="cozmo_{capture_id}_report.pdf"'
+        },
+    )
+
+
+@router.get("/{capture_id}/exports/dxf")
+async def export_dxf_endpoint(capture_id: str):
+    """Retrieve or download standard CAD 2D DXF floor plan export.
+
+    Purpose:
+        Provides the metric CAD-compatible DXF deliverable with structured layers.
+    """
+    data = _get_capture_result_payload(capture_id)
+    job = job_store.get_job(capture_id)
+    exports_dir = Path(job.output_path).parent / "exports"
+    exports_dir.mkdir(parents=True, exist_ok=True)
+    out_file = exports_dir / f"cozmo_{capture_id}_floorplan.dxf"
+
+    dxf_str = export_property_dxf(data, capture_id, output_path=out_file)
+    return Response(
+        content=dxf_str,
+        media_type="application/dxf",
+        headers={
+            "Content-Disposition": f'attachment; filename="cozmo_{capture_id}_floorplan.dxf"'
+        },
+    )
 
 
 def _find_result_json(job) -> Optional[str]:

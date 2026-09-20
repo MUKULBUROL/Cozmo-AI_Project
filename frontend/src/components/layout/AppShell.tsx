@@ -191,8 +191,13 @@ export function AppShell({ property }: AppShellProps) {
         />
       </div>
 
-      {/* Bottom Switcher */}
-      <ViewSwitcher activeTab={activeTab} onTabChange={setActiveTab} />
+      {/* Bottom Switcher with Real Multi-Format Exports */}
+      <ViewSwitcher
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        captureId={property.captureId}
+        property={property}
+      />
     </div>
   );
 }

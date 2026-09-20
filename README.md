@@ -76,9 +76,32 @@ python -m scripts.inspect_pointcloud --frames 10
 
 ---
 
-## Output Contract
+## Evaluator Quickstart
 
-The final system produces:
-1. `output.json`: Standardized challenge schema with per-room dimensions, walls, openings, ceiling height, damage extents, concealed-damage flags, and confidence intervals.
-2. `floorplan.svg`: Clean architectural vector drawing with standard line weights, door swings, and area annotations.
-3. `floorplan.dxf`: CAD layer format for architectural integration.
+To run the complete system and test live reconstructions and exports:
+
+1. **Start FastAPI Backend**:
+   ```bash
+   python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
+   ```
+2. **Start Frontend Workspace**:
+   ```bash
+   cd frontend && npm run dev
+   ```
+3. **Run Capture Workflow**:
+   - Open `http://localhost:3000/new`
+   - Select sensor tier (**LiDAR**, **RGB Video**, or **Photo Set**)
+   - Upload capture archive (`.zip` or `.mp4`)
+   - Monitor real-time progress on `/processing/[id]`
+   - Inspect reconstructed floor plan, room measurements, and damage detections on `/property/[id]`
+   - Click **Export ▾** to download deliverables (**PDF Report**, **Vector Floor Plan SVG**, **Property JSON**, **AutoCAD DXF**)
+
+---
+
+## Output Contract & Deliverables
+
+The system generates 4 standardized deliverables per capture:
+1. `cozmo_<capture_id>_property.json`: Machine-readable property output with 95% calibrated confidence intervals, room schedules, detected openings, and damage scopes.
+2. `cozmo_<capture_id>_floorplan.svg`: Standalone 2D vector architectural floor plan drawing with collision-free dimensions and metric scale bar.
+3. `cozmo_<capture_id>_report.pdf`: Professional multi-page inspection report with vector drawing, room schedules, uncertainty intervals, and mandatory accuracy notices.
+4. `cozmo_<capture_id>_floorplan.dxf`: CAD-compatible 2D floor plan in metric meters with standard layers (`WALLS`, `OPENINGS`, `ROOMS`, `DAMAGE`, `TEXT`).
