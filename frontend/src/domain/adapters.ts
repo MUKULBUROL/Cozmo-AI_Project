@@ -94,8 +94,7 @@ function normalizeValueWithConfidence(
  */
 export function normalizeStatus(
   rawStatus: unknown,
-  tier: ReconstructionTier,
-  captureId?: string
+  tier: ReconstructionTier
 ): ReconstructionStatus {
   // Video Stage 11 must strictly remain PROVISIONAL as required
   if (tier === 'video') {
@@ -115,10 +114,12 @@ export function normalizeStatus(
     if (s === 'FAILED' || s === 'INVALID' || s === 'REJECTED') return 'FAILED';
   }
 
-  // Fallback heuristic based on verified capture ID
-  if (captureId === 'c7d28f72c6') return 'COMPLETE';
-  if (captureId === 'c00a170fe1') return 'PROVISIONAL';
+  // LiDAR outputs without explicit status field default to COMPLETE
+  if (tier === 'lidar') {
+    return 'COMPLETE';
+  }
 
+  // Default to PROVISIONAL for other unknown status — never hardcode by capture ID.
   return 'PROVISIONAL';
 }
 
