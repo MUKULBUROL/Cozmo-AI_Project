@@ -1,0 +1,1575 @@
+{
+  "scan_id": "c00a170fe1",
+  "tier": "lidar",
+  "status": "provisional",
+  "room_polygon": {
+    "scan_id": "c00a170fe1",
+    "coordinate_system": {
+      "vertical_axis": "Y",
+      "floor_plane": "XZ",
+      "unit": "m"
+    },
+    "walls": [
+      {
+        "wall_id": "wall_01",
+        "line": [
+          -0.9215788960849168,
+          -0.3881911105253523,
+          2.3714456945153866
+        ],
+        "start": [
+          0.27652467603787745,
+          5.452485467706061
+        ],
+        "end": [
+          2.5878515833298126,
+          -0.03468320246459122
+        ],
+        "length_m": 5.954,
+        "inlier_count": 39130,
+        "confidence": 0.64
+      },
+      {
+        "wall_id": "wall_02",
+        "line": [
+          -0.37230430013950006,
+          0.9281107197407198,
+          -3.570641241144504
+        ],
+        "start": [
+          0.9556170874981766,
+          4.230553002559606
+        ],
+        "end": [
+          -4.527615445162204,
+          2.030997489242658
+        ],
+        "length_m": 5.908,
+        "inlier_count": 35346,
+        "confidence": 0.64
+      },
+      {
+        "wall_id": "wall_03",
+        "line": [
+          0.40008954579675077,
+          -0.9164760527936068,
+          4.889572237146644
+        ],
+        "start": [
+          -2.0860528704065926,
+          4.424517453955617
+        ],
+        "end": [
+          0.2866837671607685,
+          5.460340616738707
+        ],
+        "length_m": 2.589,
+        "inlier_count": 22546,
+        "confidence": 0.64
+      },
+      {
+        "wall_id": "wall_04",
+        "line": [
+          -0.3736825400912118,
+          0.9275566609275037,
+          -1.9110107101105567
+        ],
+        "start": [
+          1.4846320515080667,
+          2.6583732186810747
+        ],
+        "end": [
+          -4.538365488808484,
+          0.23190256234612994
+        ],
+        "length_m": 6.493,
+        "inlier_count": 17730,
+        "confidence": 0.764
+      },
+      {
+        "wall_id": "wall_05",
+        "line": [
+          -0.935094684001832,
+          -0.3543979852531807,
+          -0.35039800799298676
+        ],
+        "start": [
+          -2.063970264793113,
+          4.457163077336456
+        ],
+        "end": [
+          0.08254702632745753,
+          -1.2065172808092703
+        ],
+        "length_m": 6.057,
+        "inlier_count": 12780,
+        "confidence": 0.698
+      },
+      {
+        "wall_id": "wall_06",
+        "line": [
+          -0.39980087956290256,
+          0.9166020165266545,
+          1.1226024697281503
+        ],
+        "start": [
+          2.5977774169507946,
+          -0.09165239875962528
+        ],
+        "end": [
+          -0.5408327782961344,
+          -1.4606425319253706
+        ],
+        "length_m": 3.424,
+        "inlier_count": 10822,
+        "confidence": 0.565
+      },
+      {
+        "wall_id": "wall_07",
+        "line": [
+          -0.9205665288095077,
+          -0.390585798558542,
+          -1.0611614168723111
+        ],
+        "start": [
+          -2.3978465653615273,
+          2.9346071379206906
+        ],
+        "end": [
+          -0.5362585575616962,
+          -1.4529451405752758
+        ],
+        "length_m": 4.766,
+        "inlier_count": 9050,
+        "confidence": 0.469
+      },
+      {
+        "wall_id": "wall_08",
+        "line": [
+          0.8946870360787701,
+          0.44669352745768026,
+          -0.08559875968295821
+        ],
+        "start": [
+          0.5188505751813006,
+          -0.8475836346870602
+        ],
+        "end": [
+          -2.111809501234645,
+          4.421392345544296
+        ],
+        "length_m": 5.889,
+        "inlier_count": 7945,
+        "confidence": 0.534
+      }
+    ],
+    "corners": [
+      {
+        "id": "corner_01",
+        "x": 0.8149932157761244,
+        "z": 4.174142844772602,
+        "wall_ids": [
+          "wall_01",
+          "wall_02"
+        ],
+        "distance_to_wall_a_extent_m": 0,
+        "distance_to_wall_b_extent_m": 0,
+        "distance_to_segment_a_m": 4.440892098500626e-16,
+        "distance_to_segment_b_m": 9.930136612989092e-16,
+        "angle_deg": 89.01580806264074,
+        "is_near_orthogonal": true,
+        "inferred": false,
+        "extension_wall_a_m": 0,
+        "extension_wall_b_m": 0,
+        "status": "accepted",
+        "rejection_reasons": []
+      },
+      {
+        "id": "corner_02",
+        "x": 0.2753077852047696,
+        "z": 5.455374407921909,
+        "wall_ids": [
+          "wall_01",
+          "wall_03"
+        ],
+        "distance_to_wall_a_extent_m": 0.0031347725388695125,
+        "distance_to_wall_b_extent_m": 0,
+        "distance_to_segment_a_m": 0.003134772538868629,
+        "distance_to_segment_b_m": 2.220446049250313e-16,
+        "angle_deg": 89.25821521064871,
+        "is_near_orthogonal": true,
+        "inferred": false,
+        "extension_wall_a_m": 0.0031347725388695125,
+        "extension_wall_b_m": 0,
+        "status": "accepted",
+        "rejection_reasons": []
+      },
+      {
+        "id": "corner_03",
+        "x": 1.4579923825924688,
+        "z": 2.6476409587912957,
+        "wall_ids": [
+          "wall_01",
+          "wall_04"
+        ],
+        "distance_to_wall_a_extent_m": 0,
+        "distance_to_wall_b_extent_m": 0,
+        "distance_to_segment_a_m": 6.280369834735101e-16,
+        "distance_to_segment_b_m": 0,
+        "angle_deg": 89.10091740787335,
+        "is_near_orthogonal": true,
+        "inferred": false,
+        "extension_wall_a_m": 0,
+        "extension_wall_b_m": 0,
+        "status": "accepted",
+        "rejection_reasons": []
+      },
+      {
+        "id": "corner_04",
+        "x": 2.6096643989726913,
+        "z": -0.08646756850394732,
+        "wall_ids": [
+          "wall_01",
+          "wall_06"
+        ],
+        "distance_to_wall_a_extent_m": 0.05619092001710135,
+        "distance_to_wall_b_extent_m": 0.012968531388291016,
+        "distance_to_segment_a_m": 0.05619092001710102,
+        "distance_to_segment_b_m": 0.012968531388291047,
+        "angle_deg": 89.27626065784219,
+        "is_near_orthogonal": true,
+        "inferred": true,
+        "extension_wall_a_m": 0.05619092001710135,
+        "extension_wall_b_m": 0.012968531388291016,
+        "status": "accepted",
+        "rejection_reasons": []
+      },
+      {
+        "id": "corner_05",
+        "x": -1.5909300635422094,
+        "z": 3.2090256840246054,
+        "wall_ids": [
+          "wall_02",
+          "wall_05"
+        ],
+        "distance_to_wall_a_extent_m": 0,
+        "distance_to_wall_b_extent_m": 0,
+        "distance_to_segment_a_m": 1.1102230246251565e-15,
+        "distance_to_segment_b_m": 0,
+        "angle_deg": 88.89875299521759,
+        "is_near_orthogonal": true,
+        "inferred": false,
+        "extension_wall_a_m": 0,
+        "extension_wall_b_m": 0,
+        "status": "accepted",
+        "rejection_reasons": []
+      },
+      {
+        "id": "corner_06",
+        "x": -2.3799824858092764,
+        "z": 2.892503523901741,
+        "wall_ids": [
+          "wall_02",
+          "wall_07"
+        ],
+        "distance_to_wall_a_extent_m": 0,
+        "distance_to_wall_b_extent_m": 0,
+        "distance_to_segment_a_m": 0,
+        "distance_to_segment_b_m": 4.440892098500626e-16,
+        "angle_deg": 88.86684540376241,
+        "is_near_orthogonal": true,
+        "inferred": false,
+        "extension_wall_a_m": 0,
+        "extension_wall_b_m": 0,
+        "status": "accepted",
+        "rejection_reasons": []
+      },
+      {
+        "id": "corner_07",
+        "x": -1.5205938635234337,
+        "z": 3.237240496293746,
+        "wall_ids": [
+          "wall_02",
+          "wall_08"
+        ],
+        "distance_to_wall_a_extent_m": 0,
+        "distance_to_wall_b_extent_m": 0,
+        "distance_to_segment_a_m": 6.280369834735101e-16,
+        "distance_to_segment_b_m": 4.440892098500626e-16,
+        "angle_deg": 85.32605863944912,
+        "is_near_orthogonal": true,
+        "inferred": false,
+        "extension_wall_a_m": 0,
+        "extension_wall_b_m": 0,
+        "status": "accepted",
+        "rejection_reasons": []
+      },
+      {
+        "id": "corner_08",
+        "x": -2.0564890626998147,
+        "z": 4.437423596305297,
+        "wall_ids": [
+          "wall_03",
+          "wall_05"
+        ],
+        "distance_to_wall_a_extent_m": 0,
+        "distance_to_wall_b_extent_m": 0,
+        "distance_to_segment_a_m": 0,
+        "distance_to_segment_b_m": 4.440892098500626e-16,
+        "angle_deg": 87.17277626850704,
+        "is_near_orthogonal": true,
+        "inferred": false,
+        "extension_wall_a_m": 0,
+        "extension_wall_b_m": 0,
+        "status": "accepted",
+        "rejection_reasons": []
+      },
+      {
+        "id": "corner_09",
+        "x": -2.108481307651829,
+        "z": 4.4147262725679255,
+        "wall_ids": [
+          "wall_03",
+          "wall_08"
+        ],
+        "distance_to_wall_a_extent_m": 0.02447247495105856,
+        "distance_to_wall_b_extent_m": 0,
+        "distance_to_segment_a_m": 0.02447247495105859,
+        "distance_to_segment_b_m": 9.930136612989092e-16,
+        "angle_deg": 87.05203536615966,
+        "is_near_orthogonal": true,
+        "inferred": true,
+        "extension_wall_a_m": 0.02447247495105856,
+        "extension_wall_b_m": 0,
+        "status": "accepted",
+        "rejection_reasons": []
+      },
+      {
+        "id": "corner_10",
+        "x": -1.0024872428338494,
+        "z": 1.6563933994749789,
+        "wall_ids": [
+          "wall_04",
+          "wall_05"
+        ],
+        "distance_to_wall_a_extent_m": 0,
+        "distance_to_wall_b_extent_m": 0,
+        "distance_to_segment_a_m": 6.661338147750939e-16,
+        "distance_to_segment_b_m": 0,
+        "angle_deg": 88.81364364998497,
+        "is_near_orthogonal": true,
+        "inferred": false,
+        "extension_wall_a_m": 0,
+        "extension_wall_b_m": 0,
+        "status": "accepted",
+        "rejection_reasons": []
+      },
+      {
+        "id": "corner_11",
+        "x": -1.7309905640253023,
+        "z": 1.362903003690971,
+        "wall_ids": [
+          "wall_04",
+          "wall_07"
+        ],
+        "distance_to_wall_a_extent_m": 0,
+        "distance_to_wall_b_extent_m": 0,
+        "distance_to_segment_a_m": 4.440892098500626e-16,
+        "distance_to_segment_b_m": 2.220446049250313e-16,
+        "angle_deg": 88.95195474899504,
+        "is_near_orthogonal": true,
+        "inferred": false,
+        "extension_wall_a_m": 0,
+        "extension_wall_b_m": 0,
+        "status": "accepted",
+        "rejection_reasons": []
+      },
+      {
+        "id": "corner_12",
+        "x": -0.7767282241335055,
+        "z": 1.747344396982869,
+        "wall_ids": [
+          "wall_04",
+          "wall_08"
+        ],
+        "distance_to_wall_a_extent_m": 0,
+        "distance_to_wall_b_extent_m": 0,
+        "distance_to_segment_a_m": 2.482534153247273e-16,
+        "distance_to_segment_b_m": 5.551115123125783e-16,
+        "angle_deg": 85.41116798468174,
+        "is_near_orthogonal": true,
+        "inferred": false,
+        "extension_wall_a_m": 0,
+        "extension_wall_b_m": 0,
+        "status": "accepted",
+        "rejection_reasons": []
+      },
+      {
+        "id": "corner_13",
+        "x": 0.07676478109600499,
+        "z": -1.1912605722428729,
+        "wall_ids": [
+          "wall_05",
+          "wall_06"
+        ],
+        "distance_to_wall_a_extent_m": 0,
+        "distance_to_wall_b_extent_m": 0,
+        "distance_to_segment_a_m": 4.47545209131181e-16,
+        "distance_to_segment_b_m": 4.996003610813204e-16,
+        "angle_deg": 87.19082171570051,
+        "is_near_orthogonal": true,
+        "inferred": false,
+        "extension_wall_a_m": 0,
+        "extension_wall_b_m": 0,
+        "status": "accepted",
+        "rejection_reasons": []
+      },
+      {
+        "id": "corner_14",
+        "x": -0.534216992946606,
+        "z": -1.457756877351138,
+        "wall_ids": [
+          "wall_06",
+          "wall_07"
+        ],
+        "distance_to_wall_a_extent_m": 0,
+        "distance_to_wall_b_extent_m": 0.005226929966794636,
+        "distance_to_segment_a_m": 4.002966042486721e-16,
+        "distance_to_segment_b_m": 0.005226929966794563,
+        "angle_deg": 89.42522331672052,
+        "is_near_orthogonal": true,
+        "inferred": false,
+        "extension_wall_a_m": 0,
+        "extension_wall_b_m": 0.005226929966794636,
+        "status": "accepted",
+        "rejection_reasons": []
+      },
+      {
+        "id": "corner_15",
+        "x": 0.5806971509423888,
+        "z": -0.9714567740052729,
+        "wall_ids": [
+          "wall_06",
+          "wall_08"
+        ],
+        "distance_to_wall_a_extent_m": 0,
+        "distance_to_wall_b_extent_m": 0.1384541569542832,
+        "distance_to_segment_a_m": 2.482534153247273e-16,
+        "distance_to_segment_b_m": 0.1384541569542834,
+        "angle_deg": 87.03398991896618,
+        "is_near_orthogonal": true,
+        "inferred": true,
+        "extension_wall_a_m": 0,
+        "extension_wall_b_m": 0.1384541569542832,
+        "status": "accepted",
+        "rejection_reasons": []
+      }
+    ],
+    "polygon": {
+      "vertices": [
+        [
+          0.8149932157761244,
+          4.174142844772602
+        ],
+        [
+          0.2753077852047696,
+          5.455374407921909
+        ],
+        [
+          -2.0564890626998147,
+          4.437423596305297
+        ],
+        [
+          -1.5909300635422094,
+          3.2090256840246054
+        ],
+        [
+          -1.5205938635234337,
+          3.237240496293746
+        ],
+        [
+          -0.7767282241335055,
+          1.747344396982869
+        ],
+        [
+          1.4579923825924688,
+          2.6476409587912957
+        ],
+        [
+          0.8149932157761244,
+          4.174142844772602
+        ]
+      ],
+      "closed": true,
+      "valid": true,
+      "area_sqm": 7.554,
+      "perimeter_m": 11.055,
+      "corner_ids": [
+        "corner_01",
+        "corner_02",
+        "corner_08",
+        "corner_05",
+        "corner_07",
+        "corner_12",
+        "corner_03"
+      ],
+      "wall_ids": [
+        "wall_01",
+        "wall_03",
+        "wall_05",
+        "wall_02",
+        "wall_08",
+        "wall_04",
+        "wall_01"
+      ]
+    },
+    "quality": {
+      "boundary_support_ratio": 1,
+      "mean_wall_rmse_m": 0.0274,
+      "mean_wall_confidence": 0.6509,
+      "inferred_corner_count": 0,
+      "inferred_corner_ratio": 0,
+      "avg_corner_extension_m": 0.0004,
+      "max_corner_extension_m": 0.0031,
+      "composite_quality_score": 0.8676
+    }
+  },
+  "measurements": {
+    "scan_id": "c00a170fe1",
+    "status": "provisional",
+    "status_reasons": [
+      "corridor_doorway_t_junction_detected",
+      "elevated_wall_fitting_residual"
+    ],
+    "walls": [
+      {
+        "id": "wall_01",
+        "edge_index": 0,
+        "start_corner": "corner_01",
+        "end_corner": "corner_02",
+        "length": {
+          "value": 1.39,
+          "unit": "m",
+          "lower_bound": 1.23,
+          "upper_bound": 1.551,
+          "interval": [
+            1.23,
+            1.551
+          ],
+          "confidence": 0.511,
+          "method": "stage3_polygon_edge"
+        },
+        "has_inferred_corner": false
+      },
+      {
+        "id": "wall_03",
+        "edge_index": 1,
+        "start_corner": "corner_02",
+        "end_corner": "corner_08",
+        "length": {
+          "value": 2.544,
+          "unit": "m",
+          "lower_bound": 2.416,
+          "upper_bound": 2.673,
+          "interval": [
+            2.416,
+            2.673
+          ],
+          "confidence": 0.507,
+          "method": "stage3_polygon_edge"
+        },
+        "has_inferred_corner": false
+      },
+      {
+        "id": "wall_05",
+        "edge_index": 2,
+        "start_corner": "corner_08",
+        "end_corner": "corner_05",
+        "length": {
+          "value": 1.314,
+          "unit": "m",
+          "lower_bound": 1.179,
+          "upper_bound": 1.449,
+          "interval": [
+            1.179,
+            1.449
+          ],
+          "confidence": 0.624,
+          "method": "stage3_polygon_edge"
+        },
+        "has_inferred_corner": false
+      },
+      {
+        "id": "wall_02",
+        "edge_index": 3,
+        "start_corner": "corner_05",
+        "end_corner": "corner_07",
+        "length": {
+          "value": 0.076,
+          "unit": "m",
+          "lower_bound": 0.01,
+          "upper_bound": 0.262,
+          "interval": [
+            0.01,
+            0.262
+          ],
+          "confidence": 0.415,
+          "method": "stage3_polygon_edge"
+        },
+        "has_inferred_corner": false
+      },
+      {
+        "id": "wall_08",
+        "edge_index": 4,
+        "start_corner": "corner_07",
+        "end_corner": "corner_12",
+        "length": {
+          "value": 1.665,
+          "unit": "m",
+          "lower_bound": 1.543,
+          "upper_bound": 1.788,
+          "interval": [
+            1.543,
+            1.788
+          ],
+          "confidence": 0.485,
+          "method": "stage3_polygon_edge"
+        },
+        "has_inferred_corner": false
+      },
+      {
+        "id": "wall_04",
+        "edge_index": 5,
+        "start_corner": "corner_12",
+        "end_corner": "corner_03",
+        "length": {
+          "value": 2.409,
+          "unit": "m",
+          "lower_bound": 2.316,
+          "upper_bound": 2.502,
+          "interval": [
+            2.316,
+            2.502
+          ],
+          "confidence": 0.674,
+          "method": "stage3_polygon_edge"
+        },
+        "has_inferred_corner": false
+      },
+      {
+        "id": "wall_01",
+        "edge_index": 6,
+        "start_corner": "corner_03",
+        "end_corner": "corner_01",
+        "length": {
+          "value": 1.656,
+          "unit": "m",
+          "lower_bound": 1.504,
+          "upper_bound": 1.809,
+          "interval": [
+            1.504,
+            1.809
+          ],
+          "confidence": 0.511,
+          "method": "stage3_polygon_edge"
+        },
+        "has_inferred_corner": false
+      }
+    ],
+    "floor_area": {
+      "value": 7.554,
+      "unit": "m2",
+      "lower_bound": 7.349,
+      "upper_bound": 7.784,
+      "interval": [
+        7.349,
+        7.784
+      ],
+      "confidence": 0.479,
+      "method": "polygon_monte_carlo_integration"
+    },
+    "perimeter": {
+      "value": 11.055,
+      "unit": "m",
+      "lower_bound": 10.907,
+      "upper_bound": 11.298,
+      "interval": [
+        10.907,
+        11.298
+      ],
+      "confidence": 0.532,
+      "method": "polygon_edge_sum"
+    },
+    "ceiling_height": null,
+    "ceiling_status": "not_observed",
+    "inferred_corner_count": 0,
+    "wall_count": 7,
+    "metadata": {
+      "coordinate_system": {
+        "vertical": "Y",
+        "floor_plane": "XZ",
+        "units": "meters"
+      },
+      "uncertainty_coverage": "95% (k=1.96)",
+      "uncertainty_calibrated": false,
+      "calibration_status": "awaiting_ground_truth_benchmark",
+      "monte_carlo_samples": 1000,
+      "random_seed": 42,
+      "ground_truth_verified": false
+    }
+  },
+  "openings": {
+    "scan_id": "c00a170fe1",
+    "openings_count": 1,
+    "openings": [
+      {
+        "id": "opening_01",
+        "type": "doorway",
+        "wall_id": "wall_02",
+        "status": "accepted",
+        "width": {
+          "value": 1.5682,
+          "unit": "m",
+          "interval": [
+            1.4949,
+            1.6415
+          ],
+          "half_width_uncertainty_m": 0.0733,
+          "confidence": 0.086,
+          "method": "high_quality_multi_frame_rgb_depth_wall_projection",
+          "width_fusion_strategy": "high_quality_median",
+          "high_quality_frames_used": 1,
+          "total_observations": 3,
+          "calibrated": false,
+          "calibration_status": "awaiting_ground_truth_benchmark"
+        },
+        "supporting_frames": 3,
+        "supporting_frame_ids": [
+          686,
+          707,
+          728
+        ],
+        "high_quality_frames": 1,
+        "best_frame_id": 686,
+        "detector_confidence": 0.129,
+        "geometry_verified": true,
+        "calibrated": false,
+        "left_jamb_3d": [
+          -2.7231,
+          -0.9739,
+          2.7549
+        ],
+        "right_jamb_3d": [
+          -1.2676,
+          -0.7834,
+          3.3387
+        ],
+        "centroid_3d": [
+          -1.9954,
+          -0.8786,
+          3.0468
+        ],
+        "measurement_spread_m": 0,
+        "raw_measurement_spread_m": 0.1018,
+        "frame_quality_audit": [
+          {
+            "frame_id": 686,
+            "measured_width_m": 1.5682,
+            "is_high_quality": true,
+            "cos_incidence_angle": 0.923,
+            "sharpness_score": 275.8,
+            "rejection_reasons": [],
+            "quality_score": 1.2731,
+            "jamb_clipped": false
+          },
+          {
+            "frame_id": 707,
+            "measured_width_m": 1.365,
+            "is_high_quality": false,
+            "cos_incidence_angle": 0.944,
+            "sharpness_score": 276.9,
+            "rejection_reasons": [
+              "left_jamb_clipped_outside_image"
+            ],
+            "quality_score": 0.9805,
+            "jamb_clipped": true
+          },
+          {
+            "frame_id": 728,
+            "measured_width_m": 1.4545,
+            "is_high_quality": false,
+            "cos_incidence_angle": 0.935,
+            "sharpness_score": 273.4,
+            "rejection_reasons": [
+              "left_jamb_clipped_outside_image"
+            ],
+            "quality_score": 0.959,
+            "jamb_clipped": true
+          }
+        ],
+        "affects_polygon": false,
+        "polygon_refinement_recommended": false,
+        "ground_truth": {
+          "width_m": null,
+          "detected": null,
+          "absolute_error_m": null,
+          "pass_2cm_benchmark": null
+        }
+      }
+    ],
+    "provisional_openings_count": 2,
+    "provisional_openings": [
+      {
+        "id": "opening_02",
+        "type": "doorway",
+        "wall_id": "wall_03",
+        "status": "provisional",
+        "width": {
+          "value": 0.5992,
+          "unit": "m",
+          "interval": [
+            0.5259,
+            0.6725
+          ],
+          "half_width_uncertainty_m": 0.0733,
+          "confidence": 0.062,
+          "method": "high_quality_multi_frame_rgb_depth_wall_projection",
+          "width_fusion_strategy": "fallback_top_quality_ranked",
+          "high_quality_frames_used": 1,
+          "total_observations": 2,
+          "calibrated": false,
+          "calibration_status": "awaiting_ground_truth_benchmark"
+        },
+        "supporting_frames": 2,
+        "supporting_frame_ids": [
+          777,
+          798
+        ],
+        "high_quality_frames": 0,
+        "best_frame_id": 777,
+        "detector_confidence": 0.117,
+        "geometry_verified": true,
+        "calibrated": false,
+        "left_jamb_3d": [
+          -1.104,
+          -1.3388,
+          4.8532
+        ],
+        "right_jamb_3d": [
+          -0.5549,
+          -1.3995,
+          5.0929
+        ],
+        "centroid_3d": [
+          -0.8295,
+          -1.3691,
+          4.9731
+        ],
+        "measurement_spread_m": 0,
+        "raw_measurement_spread_m": 0.3796,
+        "frame_quality_audit": [
+          {
+            "frame_id": 777,
+            "measured_width_m": 0.5992,
+            "is_high_quality": false,
+            "cos_incidence_angle": 0.74,
+            "sharpness_score": 139.8,
+            "rejection_reasons": [
+              "right_jamb_clipped_outside_image"
+            ],
+            "quality_score": 0.3877,
+            "jamb_clipped": true
+          },
+          {
+            "frame_id": 798,
+            "measured_width_m": 1.1361,
+            "is_high_quality": false,
+            "cos_incidence_angle": 0.766,
+            "sharpness_score": 113.9,
+            "rejection_reasons": [
+              "right_jamb_clipped_outside_image"
+            ],
+            "quality_score": 0.3274,
+            "jamb_clipped": true
+          }
+        ],
+        "affects_polygon": false,
+        "polygon_refinement_recommended": false,
+        "ground_truth": {
+          "width_m": null,
+          "detected": null,
+          "absolute_error_m": null,
+          "pass_2cm_benchmark": null
+        }
+      },
+      {
+        "id": "opening_05",
+        "type": "window",
+        "wall_id": "wall_02",
+        "status": "provisional",
+        "width": {
+          "value": 2.0858,
+          "unit": "m",
+          "interval": [
+            2.0125,
+            2.1591
+          ],
+          "half_width_uncertainty_m": 0.0733,
+          "confidence": 0.059,
+          "method": "high_quality_multi_frame_rgb_depth_wall_projection",
+          "width_fusion_strategy": "fallback_top_quality_ranked",
+          "high_quality_frames_used": 1,
+          "total_observations": 2,
+          "calibrated": false,
+          "calibration_status": "awaiting_ground_truth_benchmark"
+        },
+        "supporting_frames": 2,
+        "supporting_frame_ids": [
+          931,
+          994
+        ],
+        "high_quality_frames": 0,
+        "best_frame_id": 994,
+        "detector_confidence": 0.103,
+        "geometry_verified": true,
+        "calibrated": false,
+        "left_jamb_3d": [
+          -0.6493,
+          -0.1538,
+          3.5867
+        ],
+        "right_jamb_3d": [
+          1.2865,
+          -0.6044,
+          4.3633
+        ],
+        "centroid_3d": [
+          0.3186,
+          -0.3791,
+          3.975
+        ],
+        "measurement_spread_m": 0,
+        "raw_measurement_spread_m": 0.1924,
+        "frame_quality_audit": [
+          {
+            "frame_id": 931,
+            "measured_width_m": 1.8137,
+            "is_high_quality": false,
+            "cos_incidence_angle": 0.107,
+            "sharpness_score": 60.5,
+            "rejection_reasons": [
+              "camera_too_oblique",
+              "blurry_frame",
+              "right_jamb_clipped_outside_image"
+            ],
+            "quality_score": 0.0081,
+            "jamb_clipped": true
+          },
+          {
+            "frame_id": 994,
+            "measured_width_m": 2.0858,
+            "is_high_quality": false,
+            "cos_incidence_angle": 0.111,
+            "sharpness_score": 592.7,
+            "rejection_reasons": [
+              "camera_too_oblique",
+              "right_jamb_clipped_outside_image"
+            ],
+            "quality_score": 0.164,
+            "jamb_clipped": true
+          }
+        ],
+        "affects_polygon": false,
+        "polygon_refinement_recommended": false,
+        "ground_truth": {
+          "width_m": null,
+          "detected": null,
+          "absolute_error_m": null,
+          "pass_2cm_benchmark": null
+        }
+      }
+    ],
+    "uncertain_openings_count": 4,
+    "uncertain_openings": [
+      {
+        "id": "opening_03",
+        "type": "window",
+        "wall_id": "wall_08",
+        "status": "uncertain",
+        "width": {
+          "value": 0.5571,
+          "unit": "m",
+          "interval": [
+            0.4838,
+            0.6304
+          ],
+          "half_width_uncertainty_m": 0.0733,
+          "confidence": 0.031,
+          "method": "high_quality_multi_frame_rgb_depth_wall_projection",
+          "width_fusion_strategy": "fallback_top_quality_ranked",
+          "high_quality_frames_used": 1,
+          "total_observations": 1,
+          "calibrated": false,
+          "calibration_status": "awaiting_ground_truth_benchmark"
+        },
+        "supporting_frames": 1,
+        "supporting_frame_ids": [
+          847
+        ],
+        "high_quality_frames": 0,
+        "best_frame_id": 847,
+        "detector_confidence": 0.072,
+        "geometry_verified": true,
+        "calibrated": false,
+        "left_jamb_3d": [
+          -1.6345,
+          -0.5587,
+          3.4653
+        ],
+        "right_jamb_3d": [
+          -1.3856,
+          -0.2989,
+          2.9669
+        ],
+        "centroid_3d": [
+          -1.5101,
+          -0.4288,
+          3.2161
+        ],
+        "measurement_spread_m": 0,
+        "raw_measurement_spread_m": 0,
+        "frame_quality_audit": [
+          {
+            "frame_id": 847,
+            "measured_width_m": 0.5571,
+            "is_high_quality": false,
+            "cos_incidence_angle": 0.348,
+            "sharpness_score": 71.8,
+            "rejection_reasons": [
+              "camera_too_oblique",
+              "blurry_frame",
+              "left_jamb_clipped_outside_image"
+            ],
+            "quality_score": 0.0312,
+            "jamb_clipped": true
+          }
+        ],
+        "affects_polygon": false,
+        "polygon_refinement_recommended": false,
+        "ground_truth": {
+          "width_m": null,
+          "detected": null,
+          "absolute_error_m": null,
+          "pass_2cm_benchmark": null
+        }
+      },
+      {
+        "id": "opening_04",
+        "type": "window",
+        "wall_id": "wall_02",
+        "status": "uncertain",
+        "width": {
+          "value": 0.8083,
+          "unit": "m",
+          "interval": [
+            0.735,
+            0.8816
+          ],
+          "half_width_uncertainty_m": 0.0733,
+          "confidence": 0.038,
+          "method": "high_quality_multi_frame_rgb_depth_wall_projection",
+          "width_fusion_strategy": "fallback_top_quality_ranked",
+          "high_quality_frames_used": 1,
+          "total_observations": 1,
+          "calibrated": false,
+          "calibration_status": "awaiting_ground_truth_benchmark"
+        },
+        "supporting_frames": 1,
+        "supporting_frame_ids": [
+          882
+        ],
+        "high_quality_frames": 0,
+        "best_frame_id": 882,
+        "detector_confidence": 0.084,
+        "geometry_verified": true,
+        "calibrated": false,
+        "left_jamb_3d": [
+          -0.6782,
+          -0.3466,
+          3.5752
+        ],
+        "right_jamb_3d": [
+          0.072,
+          -0.5266,
+          3.8761
+        ],
+        "centroid_3d": [
+          -0.3031,
+          -0.4366,
+          3.7256
+        ],
+        "measurement_spread_m": 0,
+        "raw_measurement_spread_m": 0,
+        "frame_quality_audit": [
+          {
+            "frame_id": 882,
+            "measured_width_m": 0.8083,
+            "is_high_quality": false,
+            "cos_incidence_angle": 0.327,
+            "sharpness_score": 69.9,
+            "rejection_reasons": [
+              "camera_too_oblique",
+              "blurry_frame",
+              "right_jamb_clipped_outside_image"
+            ],
+            "quality_score": 0.0285,
+            "jamb_clipped": true
+          }
+        ],
+        "affects_polygon": false,
+        "polygon_refinement_recommended": false,
+        "ground_truth": {
+          "width_m": null,
+          "detected": null,
+          "absolute_error_m": null,
+          "pass_2cm_benchmark": null
+        }
+      },
+      {
+        "id": "opening_06",
+        "type": "doorway",
+        "wall_id": "wall_02",
+        "status": "uncertain",
+        "width": {
+          "value": 1.8172,
+          "unit": "m",
+          "interval": [
+            1.7439,
+            1.8905
+          ],
+          "half_width_uncertainty_m": 0.0733,
+          "confidence": 0.034,
+          "method": "high_quality_multi_frame_rgb_depth_wall_projection",
+          "width_fusion_strategy": "fallback_top_quality_ranked",
+          "high_quality_frames_used": 1,
+          "total_observations": 1,
+          "calibrated": false,
+          "calibration_status": "awaiting_ground_truth_benchmark"
+        },
+        "supporting_frames": 1,
+        "supporting_frame_ids": [
+          931
+        ],
+        "high_quality_frames": 0,
+        "best_frame_id": 931,
+        "detector_confidence": 0.07,
+        "geometry_verified": true,
+        "calibrated": false,
+        "left_jamb_3d": [
+          -0.3452,
+          -0.2973,
+          3.7087
+        ],
+        "right_jamb_3d": [
+          1.3413,
+          -0.7409,
+          4.3853
+        ],
+        "centroid_3d": [
+          0.498,
+          -0.5191,
+          4.047
+        ],
+        "measurement_spread_m": 0,
+        "raw_measurement_spread_m": 0,
+        "frame_quality_audit": [
+          {
+            "frame_id": 931,
+            "measured_width_m": 1.8172,
+            "is_high_quality": false,
+            "cos_incidence_angle": 0.106,
+            "sharpness_score": 60.5,
+            "rejection_reasons": [
+              "camera_too_oblique",
+              "blurry_frame",
+              "right_jamb_clipped_outside_image"
+            ],
+            "quality_score": 0.008,
+            "jamb_clipped": true
+          }
+        ],
+        "affects_polygon": false,
+        "polygon_refinement_recommended": false,
+        "ground_truth": {
+          "width_m": null,
+          "detected": null,
+          "absolute_error_m": null,
+          "pass_2cm_benchmark": null
+        }
+      },
+      {
+        "id": "opening_07",
+        "type": "doorway",
+        "wall_id": "wall_04",
+        "status": "uncertain",
+        "width": {
+          "value": 0.4967,
+          "unit": "m",
+          "interval": [
+            0.4234,
+            0.57
+          ],
+          "half_width_uncertainty_m": 0.0733,
+          "confidence": 0.026,
+          "method": "high_quality_multi_frame_rgb_depth_wall_projection",
+          "width_fusion_strategy": "fallback_top_quality_ranked",
+          "high_quality_frames_used": 1,
+          "total_observations": 1,
+          "calibrated": false,
+          "calibration_status": "awaiting_ground_truth_benchmark"
+        },
+        "supporting_frames": 1,
+        "supporting_frame_ids": [
+          1099
+        ],
+        "high_quality_frames": 0,
+        "best_frame_id": 1099,
+        "detector_confidence": 0.062,
+        "geometry_verified": true,
+        "calibrated": false,
+        "left_jamb_3d": [
+          1.6744,
+          -0.2952,
+          2.7348
+        ],
+        "right_jamb_3d": [
+          1.2137,
+          -0.2214,
+          2.5492
+        ],
+        "centroid_3d": [
+          1.4441,
+          -0.2583,
+          2.642
+        ],
+        "measurement_spread_m": 0,
+        "raw_measurement_spread_m": 0,
+        "frame_quality_audit": [
+          {
+            "frame_id": 1099,
+            "measured_width_m": 0.4967,
+            "is_high_quality": false,
+            "cos_incidence_angle": 0.755,
+            "sharpness_score": 127,
+            "rejection_reasons": [
+              "right_jamb_clipped_outside_image"
+            ],
+            "quality_score": 0.3598,
+            "jamb_clipped": true
+          }
+        ],
+        "affects_polygon": false,
+        "polygon_refinement_recommended": false,
+        "ground_truth": {
+          "width_m": null,
+          "detected": null,
+          "absolute_error_m": null,
+          "pass_2cm_benchmark": null
+        }
+      }
+    ],
+    "polygon_refinement_candidates": [],
+    "calibration_status": "awaiting_ground_truth_benchmark"
+  },
+  "damages": [
+    {
+      "damage_id": "dmg_c00a170fe1_01",
+      "damage_class": "water_stain",
+      "class_confidence": 0.9,
+      "host_surface_id": "wall_01",
+      "host_surface_type": "wall",
+      "host_room_id": null,
+      "centroid_3d": [
+        0.1101,
+        1.4601,
+        2.8101
+      ],
+      "polygon_3d": null,
+      "polygon_on_surface": null,
+      "metric_area": {
+        "value": 1.195,
+        "unit": "m2",
+        "lower_bound": 1.11,
+        "upper_bound": 1.28,
+        "interval": [
+          1.11,
+          1.28
+        ],
+        "confidence": 0.9,
+        "method": "multi_view_fused_surface_area"
+      },
+      "metric_length": null,
+      "status": "ACCEPTED",
+      "supporting_observations": [
+        "obs_c00_01",
+        "obs_c00_02"
+      ],
+      "supporting_images": [
+        "frame_000000.jpg",
+        "frame_000056.jpg"
+      ],
+      "measurement_spread_m2": 0.015,
+      "best_image_id": "frame_000056.jpg",
+      "concealed_flags": [
+        {
+          "rule_id": "RULE_WATER_STAIN_WALL_CAVITY",
+          "damage_id": "dmg_c00a170fe1_01",
+          "suspected_issue": "Possible concealed moisture accumulation behind wall finish and insulation dampness",
+          "evidence": "Observed water_stain on wall (wall_01) spanning 1.20 m²",
+          "confidence": 0.88,
+          "requires_inspection": true,
+          "inspection_recommendation": "Perform pinless and pin-probe moisture metering of wall cavity and inspect plumbing supply/drain runs",
+          "is_risk_flag_only": true
+        }
+      ],
+      "scope_line_items": [
+        {
+          "line_item_id": "dmg_c00a170fe1_01_item_01_diag",
+          "damage_id": "dmg_c00a170fe1_01",
+          "action": "Moisture mapping and non-invasive cavity moisture survey of wall",
+          "target_surface": "wall (wall_01)",
+          "quantity": 1,
+          "unit": "inspection",
+          "basis": "dmg_c00a170fe1_01: visible water_stain",
+          "confidence": 0.9,
+          "inspection_required": true
+        },
+        {
+          "line_item_id": "dmg_c00a170fe1_01_item_03_remed",
+          "damage_id": "dmg_c00a170fe1_01",
+          "action": "Controlled removal and bagging of water-saturated wall finish and insulation",
+          "target_surface": "wall (wall_01)",
+          "quantity": 1.195,
+          "unit": "m2",
+          "basis": "dmg_c00a170fe1_01: verified physical defect extent",
+          "confidence": 0.9,
+          "inspection_required": true
+        },
+        {
+          "line_item_id": "dmg_c00a170fe1_01_item_04_finish",
+          "damage_id": "dmg_c00a170fe1_01",
+          "action": "Install new gypsum board to match existing thickness, tape, 3-coat finish, primer, and 2-coat paint on wall",
+          "target_surface": "wall (wall_01)",
+          "quantity": 1.195,
+          "unit": "m2",
+          "basis": "dmg_c00a170fe1_01: surface restoration to match existing",
+          "confidence": 0.9,
+          "inspection_required": false
+        }
+      ]
+    },
+    {
+      "damage_id": "dmg_c00a170fe1_02",
+      "damage_class": "crack_structural",
+      "class_confidence": 0.86,
+      "host_surface_id": "wall_02",
+      "host_surface_type": "wall",
+      "host_room_id": null,
+      "centroid_3d": [
+        1.8,
+        1.2,
+        1.1
+      ],
+      "polygon_3d": null,
+      "polygon_on_surface": null,
+      "metric_area": null,
+      "metric_length": {
+        "value": 1.45,
+        "unit": "m",
+        "lower_bound": 1.35,
+        "upper_bound": 1.55,
+        "interval": [
+          1.35,
+          1.55
+        ],
+        "confidence": 0.9,
+        "method": "multi_view_fused_crack_length"
+      },
+      "status": "ACCEPTED",
+      "supporting_observations": [
+        "obs_c00_03"
+      ],
+      "supporting_images": [
+        "frame_000105.jpg"
+      ],
+      "measurement_spread_m2": 0,
+      "best_image_id": "frame_000105.jpg",
+      "concealed_flags": [
+        {
+          "rule_id": "RULE_CRACK_STRUCTURAL_SHEAR",
+          "damage_id": "dmg_c00a170fe1_02",
+          "suspected_issue": "Potential structural settlement, foundation movement, or lateral load-bearing shear compromise",
+          "evidence": "Observed crack_structural on wall (wall_02) spanning 1.45 m",
+          "confidence": 0.9,
+          "requires_inspection": true,
+          "inspection_recommendation": "Retain licensed structural engineer to evaluate foundation integrity, framing load paths, and plumbness",
+          "is_risk_flag_only": true
+        }
+      ],
+      "scope_line_items": [
+        {
+          "line_item_id": "dmg_c00a170fe1_02_item_01_diag",
+          "damage_id": "dmg_c00a170fe1_02",
+          "action": "Structural crack monitoring gauge installation and substrate assessment on wall",
+          "target_surface": "wall (wall_02)",
+          "quantity": 1,
+          "unit": "inspection",
+          "basis": "dmg_c00a170fe1_02: visible crack_structural",
+          "confidence": 0.86,
+          "inspection_required": true
+        },
+        {
+          "line_item_id": "dmg_c00a170fe1_02_item_03_remed",
+          "damage_id": "dmg_c00a170fe1_02",
+          "action": "V-groove mechanical chase routing and substrate crack preparation along wall",
+          "target_surface": "wall (wall_02)",
+          "quantity": 1.45,
+          "unit": "linear_m",
+          "basis": "dmg_c00a170fe1_02: verified physical defect extent",
+          "confidence": 0.86,
+          "inspection_required": true
+        },
+        {
+          "line_item_id": "dmg_c00a170fe1_02_item_04_finish",
+          "damage_id": "dmg_c00a170fe1_02",
+          "action": "Apply fiberglass mesh tape, structural elastomeric joint compound, and feather texture on wall",
+          "target_surface": "wall (wall_02)",
+          "quantity": 1.45,
+          "unit": "linear_m",
+          "basis": "dmg_c00a170fe1_02: surface restoration to match existing",
+          "confidence": 0.86,
+          "inspection_required": false
+        }
+      ]
+    }
+  ],
+  "damage_summary": {
+    "capture_id": "c00a170fe1",
+    "tier": "lidar",
+    "images_inspected": 20,
+    "quality_rejected": 0,
+    "raw_candidates_detected": 3,
+    "fused_damages_count": 2,
+    "accepted_count": 2,
+    "provisional_count": 0,
+    "not_evaluable_count": 0,
+    "concealed_flags_count": 2,
+    "scope_line_items_count": 6
+  },
+  "repair_scope": [
+    {
+      "line_item_id": "dmg_c00a170fe1_01_item_01_diag",
+      "damage_id": "dmg_c00a170fe1_01",
+      "action": "Moisture mapping and non-invasive cavity moisture survey of wall",
+      "target_surface": "wall (wall_01)",
+      "quantity": 1,
+      "unit": "inspection",
+      "basis": "dmg_c00a170fe1_01: visible water_stain",
+      "confidence": 0.9,
+      "inspection_required": true
+    },
+    {
+      "line_item_id": "dmg_c00a170fe1_01_item_03_remed",
+      "damage_id": "dmg_c00a170fe1_01",
+      "action": "Controlled removal and bagging of water-saturated wall finish and insulation",
+      "target_surface": "wall (wall_01)",
+      "quantity": 1.195,
+      "unit": "m2",
+      "basis": "dmg_c00a170fe1_01: verified physical defect extent",
+      "confidence": 0.9,
+      "inspection_required": true
+    },
+    {
+      "line_item_id": "dmg_c00a170fe1_01_item_04_finish",
+      "damage_id": "dmg_c00a170fe1_01",
+      "action": "Install new gypsum board to match existing thickness, tape, 3-coat finish, primer, and 2-coat paint on wall",
+      "target_surface": "wall (wall_01)",
+      "quantity": 1.195,
+      "unit": "m2",
+      "basis": "dmg_c00a170fe1_01: surface restoration to match existing",
+      "confidence": 0.9,
+      "inspection_required": false
+    },
+    {
+      "line_item_id": "dmg_c00a170fe1_02_item_01_diag",
+      "damage_id": "dmg_c00a170fe1_02",
+      "action": "Structural crack monitoring gauge installation and substrate assessment on wall",
+      "target_surface": "wall (wall_02)",
+      "quantity": 1,
+      "unit": "inspection",
+      "basis": "dmg_c00a170fe1_02: visible crack_structural",
+      "confidence": 0.86,
+      "inspection_required": true
+    },
+    {
+      "line_item_id": "dmg_c00a170fe1_02_item_03_remed",
+      "damage_id": "dmg_c00a170fe1_02",
+      "action": "V-groove mechanical chase routing and substrate crack preparation along wall",
+      "target_surface": "wall (wall_02)",
+      "quantity": 1.45,
+      "unit": "linear_m",
+      "basis": "dmg_c00a170fe1_02: verified physical defect extent",
+      "confidence": 0.86,
+      "inspection_required": true
+    },
+    {
+      "line_item_id": "dmg_c00a170fe1_02_item_04_finish",
+      "damage_id": "dmg_c00a170fe1_02",
+      "action": "Apply fiberglass mesh tape, structural elastomeric joint compound, and feather texture on wall",
+      "target_surface": "wall (wall_02)",
+      "quantity": 1.45,
+      "unit": "linear_m",
+      "basis": "dmg_c00a170fe1_02: surface restoration to match existing",
+      "confidence": 0.86,
+      "inspection_required": false
+    }
+  ],
+  "stats": {
+    "scan_id": "c00a170fe1",
+    "total_frames": 1715,
+    "frames_processed": 343,
+    "depth_unit_input": "millimeter",
+    "coordinate_unit_output": "meter",
+    "points_generated": 16859136,
+    "points_after_confidence_filter": 15809678,
+    "points_after_depth_filter": 15189493,
+    "points_raw_fused": 15189493,
+    "points_after_downsampling": 419304,
+    "points_final_filtered": 408108,
+    "voxel_size_m": 0.02,
+    "frame_stride": 5,
+    "trajectory_length_m": 14.404,
+    "start_end_displacement_m": 3.178,
+    "scan_duration_s": 37.09,
+    "processing_time_seconds": 26.26,
+    "bounds_meters": {
+      "x": [
+        -5.515,
+        2.63
+      ],
+      "y": [
+        -1.578,
+        0.656
+      ],
+      "z": [
+        -1.462,
+        5.51
+      ]
+    },
+    "spans_meters": {
+      "width_x": 8.145,
+      "height_y": 2.234,
+      "depth_z": 6.972
+    }
+  }
+}

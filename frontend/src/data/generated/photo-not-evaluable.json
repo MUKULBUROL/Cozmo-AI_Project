@@ -1,0 +1,10 @@
+{
+  "capture_id": "photo_property_01",
+  "tier": "photo",
+  "status": "PROPERTY_STITCH_NOT_EVALUABLE",
+  "rooms": [],
+  "connections": [],
+  "failure_reasons": [
+    "fewer_than_two_valid_room_reconstructions"
+  ]
+}

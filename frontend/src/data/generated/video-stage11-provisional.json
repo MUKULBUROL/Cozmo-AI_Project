@@ -1,0 +1,375 @@
+{
+  "property_id": "prop_video_multi_room",
+  "capture_id": "video_multi_room",
+  "tier": "video",
+  "rooms": [
+    {
+      "room_id": "connector_01",
+      "name": "Hallway Connector",
+      "floor_area": {
+        "value": 18.97,
+        "unit": "m2",
+        "lower_bound": 17.07,
+        "upper_bound": 20.87,
+        "interval": [
+          17.07,
+          20.87
+        ],
+        "confidence": 0.7,
+        "method": "polygon_shoelace_formula"
+      },
+      "perimeter": {
+        "value": 23.67,
+        "unit": "m",
+        "lower_bound": 21.3,
+        "upper_bound": 26.04,
+        "interval": [
+          21.3,
+          26.04
+        ],
+        "confidence": 0.7,
+        "method": "polygon_perimeter_sum"
+      },
+      "ceiling_height": null,
+      "walls": [
+        {
+          "wall_id": "connector_01_w01",
+          "start": {
+            "x": -2.331,
+            "y": -6.186
+          },
+          "end": {
+            "x": 2.158,
+            "y": 2.663
+          },
+          "length": {
+            "value": 9.922,
+            "unit": "m",
+            "lower_bound": 9.822,
+            "upper_bound": 10.022,
+            "interval": [
+              9.822,
+              10.022
+            ],
+            "confidence": 0.7,
+            "method": "video_metric_depth_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "connector_01_w02",
+          "start": {
+            "x": 2.158,
+            "y": 2.663
+          },
+          "end": {
+            "x": 0.453,
+            "y": 3.528
+          },
+          "length": {
+            "value": 1.912,
+            "unit": "m",
+            "lower_bound": 1.812,
+            "upper_bound": 2.012,
+            "interval": [
+              1.812,
+              2.012
+            ],
+            "confidence": 0.7,
+            "method": "video_metric_depth_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "connector_01_w03",
+          "start": {
+            "x": 0.453,
+            "y": 3.528
+          },
+          "end": {
+            "x": -4.036,
+            "y": -5.321
+          },
+          "length": {
+            "value": 9.922,
+            "unit": "m",
+            "lower_bound": 9.822,
+            "upper_bound": 10.022,
+            "interval": [
+              9.822,
+              10.022
+            ],
+            "confidence": 0.7,
+            "method": "video_metric_depth_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        },
+        {
+          "wall_id": "connector_01_w04",
+          "start": {
+            "x": -4.036,
+            "y": -5.321
+          },
+          "end": {
+            "x": -2.331,
+            "y": -6.186
+          },
+          "length": {
+            "value": 1.912,
+            "unit": "m",
+            "lower_bound": 1.812,
+            "upper_bound": 2.012,
+            "interval": [
+              1.812,
+              2.012
+            ],
+            "confidence": 0.7,
+            "method": "video_metric_depth_ransac_wall"
+          },
+          "height": null,
+          "thickness": {
+            "value": 0.15,
+            "unit": "m",
+            "lower_bound": 0.1,
+            "upper_bound": 0.2,
+            "interval": [
+              0.1,
+              0.2
+            ],
+            "confidence": 0.9,
+            "method": "standard_architectural_partition"
+          },
+          "openings": []
+        }
+      ],
+      "openings": [],
+      "damage_regions": []
+    }
+  ],
+  "connections": [],
+  "total_floor_area": {
+    "value": 18.97,
+    "unit": "m2",
+    "lower_bound": 17.07,
+    "upper_bound": 20.87,
+    "interval": [
+      17.07,
+      20.87
+    ],
+    "confidence": 0.7,
+    "method": "sum_of_room_areas"
+  },
+  "exterior_footprint": null,
+  "capture_metadata": {
+    "coordinate_frame": "ARKit Y-up, right-handed (XZ horizontal floor)",
+    "unit": "meters",
+    "drift_correction_status": "not_evaluable"
+  },
+  "reconstruction_method": "rgb_video_sfm_metric_depth",
+  "stitching_residual_meters": 0,
+  "damage_regions": [],
+  "concealed_damage_flags": [],
+  "scope_line_items": [],
+  "status": "PROVISIONAL",
+  "comparison": {
+    "capture_id": "c7d28f72c6",
+    "tier": "video",
+    "fix_loop_stage": "Stage 11",
+    "prediction_evaluation": {
+      "predicted_registered_views": "24 / 40",
+      "predicted_registration_ratio": 0.6,
+      "actual_registered_views": "31 / 40",
+      "actual_registration_ratio": 0.775,
+      "prediction_met": true,
+      "prediction_delta_views": 7,
+      "prediction_delta_ratio": 0.175
+    },
+    "fix_loop_status": "MEANINGFUL_IMPROVEMENT",
+    "comparison_table": {
+      "keyframes_total": {
+        "before": 40,
+        "after": 40
+      },
+      "registered_views": {
+        "before": 4,
+        "after": 31
+      },
+      "registration_ratio": {
+        "before": 0.1,
+        "after": 0.775
+      },
+      "largest_tracking_gap_seconds": {
+        "before": 80.867,
+        "after": 21.085
+      },
+      "match_graph_components": {
+        "before": 24,
+        "after": 2
+      },
+      "largest_connected_component_size": {
+        "before": 8,
+        "after": 39
+      },
+      "isolated_nodes_count": {
+        "before": 16,
+        "after": 1
+      },
+      "verified_pairs_count": {
+        "before": 19,
+        "after": 188
+      },
+      "sparse_points": {
+        "before": 60,
+        "after": 877
+      },
+      "reprojection_error_px": {
+        "before": 0.732,
+        "after": 0.837
+      },
+      "metric_scale_factor_m_per_unit": {
+        "before": 0.2342,
+        "after": 0.7207
+      },
+      "metric_scale_status": {
+        "before": "GOOD",
+        "after": "GOOD"
+      },
+      "cloud_points_filtered": {
+        "before": 32790,
+        "after": 462637
+      },
+      "walls_detected": {
+        "before": 7,
+        "after": 9
+      },
+      "property_status": {
+        "before": "NOT_EVALUABLE",
+        "after": "PROVISIONAL"
+      },
+      "room_count": {
+        "before": 0,
+        "after": 1
+      },
+      "topology_valid": {
+        "before": false,
+        "after": true
+      },
+      "runtime_seconds": {
+        "before": 289.2,
+        "after": 449.28
+      }
+    },
+    "rgb_only_isolation": {
+      "lidar_depth_used": false,
+      "arkit_poses_used": false,
+      "imu_used": false,
+      "odometry_used": false
+    }
+  },
+  "reconstruction_stats": {
+    "capture_id": "video_multi_room",
+    "input_video": "/tmp/tmp6rss1liw/video.mp4",
+    "video_duration_seconds": 214.9333333333333,
+    "total_video_frames": 9745,
+    "extracted_keyframes": 40,
+    "registered_keyframes": 31,
+    "sfm_status": "GOOD",
+    "mean_reprojection_error_px": 0.8372752917205022,
+    "median_reprojection_error_px": 0.7185943979363966,
+    "sparse_point_count": 877,
+    "registration_percentage": 77.5,
+    "trajectory_continuous": false,
+    "pose_jump_warnings": [
+      "Pose jump 3->4: 55.9670 SfM units exceeds 5x median step 3.6566",
+      "Pose jump 4->5: 56.3549 SfM units exceeds 5x median step 3.6566",
+      "Pose jump 7->8: 18.9471 SfM units exceeds 5x median step 3.6566",
+      "Pose jump 8->9: 19.6035 SfM units exceeds 5x median step 3.6566",
+      "Pose jump 21->22: 25.1497 SfM units exceeds 5x median step 3.6566",
+      "Pose jump 22->23: 22.8046 SfM units exceeds 5x median step 3.6566"
+    ],
+    "metric_scale_factor": 0.7206712825413001,
+    "metric_scale_uncertainty_rel": 0.02049435486942732,
+    "metric_scale_status": "GOOD",
+    "raw_points_count": 9462592,
+    "filtered_points_count": 462637,
+    "metric_bounding_box": {
+      "min_x": -15.88734649604475,
+      "max_x": 6.833736419677734,
+      "min_y": -2.5970720052719116,
+      "max_y": 35.873787773980034,
+      "min_z": -5.9508055448532104,
+      "max_z": 11.885095596313477
+    },
+    "voxel_size_m": 0.03,
+    "outlier_filter": {
+      "method": "statistical",
+      "nb_neighbors": 20,
+      "std_ratio": 2
+    },
+    "walls_detected": 9,
+    "polygon_valid": false,
+    "polygon_status": "FAILED",
+    "floor_area_sqm": 0,
+    "perimeter_m": 0,
+    "overall_status": "GOOD",
+    "benchmark_accuracy": "NOT VERIFIED (pending laser/tape ground truth)",
+    "geometry_limitation": null,
+    "multiroom": {
+      "status": "PROVISIONAL",
+      "room_count": 1,
+      "topology_valid": true,
+      "topology_warnings": [],
+      "drift_status": "NOT_EVALUABLE"
+    },
+    "timings": {
+      "video_decode_seconds": 0.099,
+      "keyframe_extraction_seconds": 99.487,
+      "sfm_seconds": 267.814,
+      "metric_depth_seconds": 48.367,
+      "scale_recovery_seconds": 0.03,
+      "fusion_seconds": 8.407,
+      "geometry_processing_seconds": 24.514,
+      "multiroom_seconds": 0.026,
+      "total_seconds": 449.28
+    }
+  }
+}
