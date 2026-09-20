@@ -1,13 +1,10 @@
 /**
  * @file processing/[id]/page.tsx
- * @purpose Live processing status page with real backend polling.
- * @stage Frontend Stage 3 — Live FastAPI Integration.
+ * @purpose Evaluator capture processing status page with simple UI and collapsible details.
+ * @stage Frontend Final Polish — Simplified Evaluator UX.
  * @inputs Route param `id` — the capture job identifier (e.g. cap_a1b2c3d4).
  * @outputs Real-time processing status display with automatic redirect on completion.
  * @dependencies next/navigation, ../../../lib/api/captures, ../../../lib/api/schemas.
- * @assumptions FastAPI backend is running. Polling interval: 3 seconds. Stops on terminal status.
- * @failureModes API unreachable → shows connection error with retry. Job not found → 404 message.
- * @firstDebuggingPoints Check capture ID in URL. Verify API is running. Check browser Network tab for GET requests.
  */
 
 'use client';
@@ -24,14 +21,14 @@ const POLL_INTERVAL_MS = 3000;
 /** Maximum polling retries on network error before showing persistent error. */
 const MAX_RETRIES = 5;
 
-/** Human-readable status labels. */
+/** Evaluator-friendly status labels. */
 const STATUS_LABELS: Record<string, string> = {
   UPLOADING: 'Uploading capture…',
   QUEUED: 'Queued for processing…',
-  PROCESSING: 'Processing capture…',
-  COMPLETE: 'Reconstruction complete',
-  PROVISIONAL: 'Reconstruction complete (provisional)',
-  NOT_EVALUABLE: 'Not evaluable',
+  PROCESSING: 'Processing',
+  COMPLETE: 'Complete',
+  PROVISIONAL: 'Completed with limitations',
+  NOT_EVALUABLE: 'Could not produce a reliable plan',
   FAILED: 'Processing failed',
 };
 
@@ -43,6 +40,7 @@ export default function ProcessingPage() {
   const [status, setStatus] = useState<CaptureStatusResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [elapsed, setElapsed] = useState(0);
+  const [showDetails, setShowDetails] = useState(false);
   const retriesRef = useRef(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const elapsedRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -56,7 +54,6 @@ export default function ProcessingPage() {
 
       // Redirect on success statuses
       if (result.status === 'COMPLETE' || result.status === 'PROVISIONAL') {
-        // Small delay to show completion status
         setTimeout(() => {
           router.push(`/property/${captureId}`);
         }, 1500);
@@ -73,7 +70,7 @@ export default function ProcessingPage() {
       retriesRef.current++;
       if (retriesRef.current >= MAX_RETRIES) {
         setError(
-          err instanceof Error ? err.message : 'Lost connection to the API server.'
+          err instanceof Error ? err.message : 'Lost connection to the backend service.'
         );
         if (timerRef.current) {
           clearInterval(timerRef.current);
@@ -150,6 +147,7 @@ export default function ProcessingPage() {
               display: 'flex',
               alignItems: 'center',
               gap: '4px',
+              textDecoration: 'none',
             }}
           >
             ← Back to Workspaces
@@ -164,7 +162,7 @@ export default function ProcessingPage() {
       {/* Main Content */}
       <main
         style={{
-          maxWidth: '600px',
+          maxWidth: '560px',
           width: '100%',
           margin: '60px auto',
           padding: '0 24px',
@@ -185,7 +183,7 @@ export default function ProcessingPage() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            margin: '0 auto 24px auto',
+            margin: '0 auto 20px auto',
           }}
         >
           {isSuccess ? (
@@ -211,30 +209,30 @@ export default function ProcessingPage() {
           )}
         </div>
 
-        {/* Status Text */}
+        {/* Heading & Subtitle */}
         <h1
           style={{
-            fontSize: '20px',
+            fontSize: '22px',
             fontWeight: 700,
             color: 'var(--text-primary)',
-            marginBottom: '8px',
+            marginBottom: '6px',
+            letterSpacing: '-0.01em',
           }}
         >
-          {status ? (STATUS_LABELS[status.status] || status.status) : 'Connecting…'}
+          {isSuccess
+            ? 'Reconstruction Complete'
+            : isFailed
+            ? STATUS_LABELS[status?.status || 'FAILED'] || 'Processing Failed'
+            : 'Processing your capture'}
         </h1>
 
-        {/* Progress Stage */}
-        {status?.progress_stage && !isTerminal && (
-          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
-            {status.progress_stage}
-          </p>
-        )}
-
-        {!isTerminal && (
-          <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '16px' }}>
-            Reconstruction can take several minutes depending on capture size.
-          </p>
-        )}
+        <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '16px', lineHeight: 1.5 }}>
+          {!isTerminal
+            ? 'This may take a few minutes. You can leave this page open while COZMO reconstructs the property.'
+            : isSuccess
+            ? 'Redirecting to your property plan…'
+            : 'COZMO could not complete the reconstruction.'}
+        </p>
 
         {/* Error Detail */}
         {status?.error && isFailed && (
@@ -277,81 +275,101 @@ export default function ProcessingPage() {
           </div>
         )}
 
-        {/* Metadata */}
+        {/* Collapsible Capture Details Accordion */}
         <div
           style={{
             backgroundColor: 'var(--surface)',
             border: '1px solid var(--border)',
             borderRadius: 'var(--radius-md)',
-            padding: '20px 24px',
-            marginTop: '24px',
+            marginTop: '20px',
             textAlign: 'left',
+            overflow: 'hidden',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Capture ID</span>
-            <span className="mono" style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: 500 }}>
-              {captureId}
+          <button
+            onClick={() => setShowDetails((prev) => !prev)}
+            id="toggle-capture-details-btn"
+            style={{
+              width: '100%',
+              padding: '12px 16px',
+              backgroundColor: 'transparent',
+              border: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: 600,
+              color: 'var(--text-secondary)',
+            }}
+          >
+            <span>Capture details</span>
+            <span style={{ transform: showDetails ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s ease' }}>
+              ▾
             </span>
-          </div>
-          {status?.tier && (
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Tier</span>
-              <span style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: 500, textTransform: 'uppercase' }}>
-                {status.tier}
-              </span>
-            </div>
-          )}
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Elapsed</span>
-            <span className="mono" style={{ fontSize: '12px', color: 'var(--text-primary)', fontWeight: 500 }}>
-              {formatElapsed(elapsed)}
-            </span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Status</span>
-            <span
+          </button>
+
+          {showDetails && (
+            <div
               style={{
-                fontSize: '11px',
-                padding: '2px 8px',
-                borderRadius: 'var(--radius-sm)',
-                fontWeight: 500,
-                backgroundColor: isSuccess
-                  ? 'var(--success-subtle, #f0fdf4)'
-                  : isFailed
-                  ? 'var(--danger-subtle, #fef2f2)'
-                  : 'var(--surface-subtle)',
-                color: isSuccess
-                  ? 'var(--success-text, #16a34a)'
-                  : isFailed
-                  ? 'var(--danger-text, #dc2626)'
-                  : 'var(--text-secondary)',
-                border: `1px solid ${
-                  isSuccess
-                    ? 'var(--success-border, #bbf7d0)'
-                    : isFailed
-                    ? 'var(--danger-border, #fecaca)'
-                    : 'var(--border)'
-                }`,
+                padding: '12px 16px',
+                borderTop: '1px solid var(--border-subtle)',
+                backgroundColor: 'var(--surface-subtle)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+                fontSize: '12px',
               }}
             >
-              {status?.status || 'CONNECTING'}
-            </span>
-          </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Capture ID</span>
+                <span className="mono" style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
+                  {captureId}
+                </span>
+              </div>
+              {status?.tier && (
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Sensor Tier</span>
+                  <span style={{ color: 'var(--text-primary)', fontWeight: 500, textTransform: 'uppercase' }}>
+                    {status.tier}
+                  </span>
+                </div>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Elapsed Time</span>
+                <span className="mono" style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
+                  {formatElapsed(elapsed)}
+                </span>
+              </div>
+              {status?.progress_stage && (
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Stage</span>
+                  <span style={{ color: 'var(--text-primary)' }}>{status.progress_stage}</span>
+                </div>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Status</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
+                  {status ? (STATUS_LABELS[status.status] || status.status) : 'Connecting…'}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Actions */}
+        {/* Action Buttons */}
         <div style={{ marginTop: '24px', display: 'flex', gap: '12px', justifyContent: 'center' }}>
           {isFailed && (
             <Link
               href="/new"
               style={{
-                padding: '8px 16px',
+                padding: '8px 18px',
                 borderRadius: 'var(--radius-sm)',
                 backgroundColor: 'var(--primary)',
                 color: 'var(--text-on-primary)',
                 fontSize: '13px',
-                fontWeight: 500,
+                fontWeight: 600,
+                textDecoration: 'none',
               }}
             >
               Try Another Capture
@@ -361,15 +379,16 @@ export default function ProcessingPage() {
             <Link
               href={`/property/${captureId}`}
               style={{
-                padding: '8px 16px',
+                padding: '8px 18px',
                 borderRadius: 'var(--radius-sm)',
                 backgroundColor: 'var(--primary)',
                 color: 'var(--text-on-primary)',
                 fontSize: '13px',
-                fontWeight: 500,
+                fontWeight: 600,
+                textDecoration: 'none',
               }}
             >
-              View Floor Plan →
+              View Property Plan →
             </Link>
           )}
         </div>

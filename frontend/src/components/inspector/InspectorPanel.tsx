@@ -1,13 +1,10 @@
 /**
  * @file InspectorPanel.tsx
- * @purpose Right inspector pane detailing property summary, room measurements, openings, damage detections, scope, and status explanations.
- * @stage Frontend Stage 4 — Exports + Final Product Polish.
+ * @purpose Right inspector pane detailing property summary, room measurements, openings, damage findings, scope, and advanced details.
+ * @stage Frontend Final Polish — Simplified Evaluator UX.
  * @inputs PropertyViewModel, selectedRoom (RoomViewModel | null), onSelectRoom.
- * @outputs Accessible inspector panel matching Spatial Pro typography and technical fidelity.
+ * @outputs Accessible inspector panel with clear human terminology and collapsed advanced technical details.
  * @dependencies ../../domain/types, ../ui/StatusBadge, ../ui/MeasurementStatus
- * @assumptions Renders "Not available" when measurements/ceilings are missing; never invents placeholder values.
- * @failureModes None (handles null room gracefully by displaying property overview).
- * @firstDebuggingPoints Verify selectedRoom object propagation; check ceilingHeight null handling.
  */
 
 'use client';
@@ -24,38 +21,38 @@ interface InspectorPanelProps {
 }
 
 /**
- * Returns user-friendly status explanation message based on honest reconstruction quality.
+ * Returns evaluator-friendly status explanation message based on reconstruction quality.
  */
 function getStatusExplanation(status: string, failureReasons?: string[]): { title: string; desc: string; type: 'success' | 'warning' | 'danger' } {
   switch (status) {
     case 'COMPLETE':
       return {
-        title: 'Complete Reconstruction',
+        title: 'Complete',
         desc: 'Reconstruction completed successfully.',
         type: 'success',
       };
     case 'PROVISIONAL':
       return {
-        title: 'Provisional Reconstruction',
-        desc: 'Reconstruction completed with limitations. Review measurements and confidence information before use.',
+        title: 'Completed with limitations',
+        desc: 'Reconstruction completed with provisional scale or boundary estimates.',
         type: 'warning',
       };
     case 'NOT_EVALUABLE':
       return {
-        title: 'Not Evaluable',
-        desc: 'Insufficient reconstruction quality to produce a reliable property result.',
+        title: 'Could not produce a reliable plan',
+        desc: 'Insufficient reconstruction quality to produce an accurate property plan.',
         type: 'danger',
       };
     case 'FAILED':
       return {
-        title: 'Processing Failed',
+        title: 'Processing failed',
         desc: failureReasons && failureReasons.length > 0 ? failureReasons[0] : 'Processing failed.',
         type: 'danger',
       };
     default:
       return {
         title: status,
-        desc: 'Reconstruction state recorded.',
+        desc: 'Reconstruction status recorded.',
         type: 'warning',
       };
   }
@@ -66,7 +63,7 @@ export function InspectorPanel({
   selectedRoom,
   onSelectRoom,
 }: InspectorPanelProps) {
-  const [showMetadata, setShowMetadata] = useState<boolean>(false);
+  const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
 
   const totalOpenings = property.rooms.reduce((acc, r) => acc + (r.openings?.length || 0), 0);
   const totalDamages = property.rooms.reduce((acc, r) => acc + (r.damages?.length || 0), 0);
@@ -88,7 +85,7 @@ export function InspectorPanel({
         }}
       >
         {/* Header */}
-        <div style={{ marginBottom: '16px' }}>
+        <div style={{ marginBottom: '14px' }}>
           <div
             style={{
               fontSize: '11px',
@@ -96,7 +93,7 @@ export function InspectorPanel({
               textTransform: 'uppercase',
               letterSpacing: '0.06em',
               color: 'var(--text-muted)',
-              marginBottom: '4px',
+              marginBottom: '2px',
             }}
           >
             Property Overview
@@ -155,8 +152,8 @@ export function InspectorPanel({
           </p>
         </div>
 
-        {/* Compact Property Summary Grid (Real Data Only) */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+        {/* Summary Metric Cards */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '18px' }}>
           <div
             style={{
               padding: '12px',
@@ -173,7 +170,7 @@ export function InspectorPanel({
             </div>
             {property.totalFloorArea?.interval && (
               <div className="mono" style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                95% CI: [{property.totalFloorArea.interval[0].toFixed(2)} – {property.totalFloorArea.interval[1].toFixed(2)} m²]
+                Estimated Range: {property.totalFloorArea.interval[0].toFixed(2)} – {property.totalFloorArea.interval[1].toFixed(2)} m²
               </div>
             )}
           </div>
@@ -243,7 +240,7 @@ export function InspectorPanel({
           </div>
         </div>
 
-        {/* Room List Selector */}
+        {/* Room List Selector with Direct Guidance */}
         {property.rooms.length > 0 && (
           <div
             style={{
@@ -254,9 +251,12 @@ export function InspectorPanel({
               marginBottom: '16px',
             }}
           >
-            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '6px' }}>
-              Select Room to Inspect
+            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '2px' }}>
+              Rooms
             </div>
+            <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+              Click a room to view its measurements.
+            </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               {property.rooms.map((room) => (
                 <button
@@ -274,10 +274,11 @@ export function InspectorPanel({
           </div>
         )}
 
-        {/* Expandable Capture Metadata Accordion */}
+        {/* Collapsible Advanced Details Accordion */}
         <div style={{ marginBottom: '16px' }}>
           <button
-            onClick={() => setShowMetadata((prev) => !prev)}
+            onClick={() => setShowAdvanced((prev) => !prev)}
+            id="toggle-advanced-details-btn"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -293,13 +294,13 @@ export function InspectorPanel({
               cursor: 'pointer',
             }}
           >
-            <span>Capture Details</span>
-            <span style={{ transform: showMetadata ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s ease' }}>
+            <span>Advanced Details</span>
+            <span style={{ transform: showAdvanced ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s ease' }}>
               ▾
             </span>
           </button>
 
-          {showMetadata && (
+          {showAdvanced && (
             <div
               style={{
                 marginTop: '6px',
@@ -322,12 +323,16 @@ export function InspectorPanel({
                 <span style={{ color: 'var(--text-primary)', textTransform: 'uppercase' }}>{property.tier}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Status</span>
+                <span style={{ color: 'var(--text-muted)' }}>Internal Status</span>
                 <span style={{ color: 'var(--text-primary)' }}>{property.status}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Reconstruction</span>
+                <span style={{ color: 'var(--text-muted)' }}>Reconstruction Method</span>
                 <span style={{ color: 'var(--text-primary)' }}>{property.reconstructionMethod || 'Spatial Pro Fusion'}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Uncertainty Calibration</span>
+                <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Physical GT Pending</span>
               </div>
             </div>
           )}
@@ -355,19 +360,22 @@ export function InspectorPanel({
       }}
     >
       {/* Header */}
-      <div style={{ marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid var(--border)' }}>
+      <div style={{ marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-          <span
-            className="mono"
+          <button
+            onClick={() => onSelectRoom('')}
             style={{
+              background: 'none',
+              border: 'none',
+              padding: 0,
               fontSize: '11px',
               fontWeight: 600,
-              color: 'var(--text-muted)',
-              textTransform: 'uppercase',
+              color: 'var(--primary)',
+              cursor: 'pointer',
             }}
           >
-            {selectedRoom.id}
-          </span>
+            ← Property Overview
+          </button>
           <StatusBadge status={property.status} size="sm" />
         </div>
 
@@ -383,10 +391,10 @@ export function InspectorPanel({
         </h2>
       </div>
 
-      {/* Primary Dimensional Metrics */}
-      <section aria-labelledby="primary-metrics-heading" style={{ marginBottom: '20px' }}>
-        <h3 id="primary-metrics-heading" style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: '8px' }}>
-          Room Metrics
+      {/* Primary Room Measurements */}
+      <section aria-labelledby="room-measurements-heading" style={{ marginBottom: '18px' }}>
+        <h3 id="room-measurements-heading" style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: '8px' }}>
+          Room Measurements
         </h3>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
@@ -407,7 +415,7 @@ export function InspectorPanel({
             </div>
             {selectedRoom.floorArea?.interval && (
               <div className="mono" style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                [{selectedRoom.floorArea.interval[0].toFixed(2)} – {selectedRoom.floorArea.interval[1].toFixed(2)}]
+                Range: {selectedRoom.floorArea.interval[0].toFixed(2)} – {selectedRoom.floorArea.interval[1].toFixed(2)} m²
               </div>
             )}
           </div>
@@ -436,7 +444,7 @@ export function InspectorPanel({
             </div>
             {selectedRoom.ceilingHeight?.interval && (
               <div className="mono" style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                [{selectedRoom.ceilingHeight.interval[0].toFixed(3)} – {selectedRoom.ceilingHeight.interval[1].toFixed(3)}]
+                Range: {selectedRoom.ceilingHeight.interval[0].toFixed(3)} – {selectedRoom.ceilingHeight.interval[1].toFixed(3)} m
               </div>
             )}
           </div>
@@ -466,7 +474,7 @@ export function InspectorPanel({
 
       {/* Wall Segment Measurements */}
       {selectedRoom.walls && selectedRoom.walls.length > 0 && (
-        <section aria-labelledby="wall-measurements-heading" style={{ marginBottom: '20px' }}>
+        <section aria-labelledby="wall-measurements-heading" style={{ marginBottom: '18px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
             <h3 id="wall-measurements-heading" style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>
               Wall Dimensions
@@ -488,8 +496,8 @@ export function InspectorPanel({
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <span className="mono" style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)' }}>
-                    {wall.id}
+                  <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--text-secondary)' }}>
+                    Wall Length
                   </span>
                   <span className="mono" style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
                     {wall.length.value.toFixed(3)} m
@@ -498,7 +506,7 @@ export function InspectorPanel({
 
                 {wall.length.interval && (
                   <div className="mono" style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                    95% CI: {wall.length.interval[0].toFixed(3)} – {wall.length.interval[1].toFixed(3)} m
+                    Estimated Range: {wall.length.interval[0].toFixed(3)} – {wall.length.interval[1].toFixed(3)} m
                   </div>
                 )}
               </div>
@@ -507,11 +515,11 @@ export function InspectorPanel({
         </section>
       )}
 
-      {/* Doorways / Openings */}
+      {/* Openings & Doorways */}
       {selectedRoom.openings && selectedRoom.openings.length > 0 && (
-        <section aria-labelledby="openings-heading" style={{ marginBottom: '20px' }}>
+        <section aria-labelledby="openings-heading" style={{ marginBottom: '18px' }}>
           <h3 id="openings-heading" style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', marginBottom: '8px' }}>
-            Openings & Doorways
+            Openings
           </h3>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -527,31 +535,28 @@ export function InspectorPanel({
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)', textTransform: 'capitalize' }}>
-                    {op.type} ({op.id})
+                    {op.type}
                   </span>
                   <span className="mono" style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-primary)' }}>
                     {op.width.value.toFixed(3)} m
                   </span>
                 </div>
-                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                  Status: <span style={{ textTransform: 'capitalize' }}>{op.status}</span>
-                  {!op.calibrated && (
-                    <span style={{ color: 'var(--text-muted)', marginLeft: '4px' }}>
-                      (Uncalibrated)
-                    </span>
-                  )}
-                </div>
+                {!op.calibrated && (
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px', fontStyle: 'italic' }}>
+                    Estimate not physically calibrated
+                  </div>
+                )}
               </div>
             ))}
           </div>
         </section>
       )}
 
-      {/* Detected Damages & Concealed Risk */}
+      {/* Damage Findings */}
       {selectedRoom.damages && selectedRoom.damages.length > 0 && (
-        <section aria-labelledby="damage-heading" style={{ marginBottom: '20px' }}>
+        <section aria-labelledby="damage-heading" style={{ marginBottom: '18px' }}>
           <h3 id="damage-heading" style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--danger-text)', marginBottom: '8px' }}>
-            Damage & Risk Detections ({selectedRoom.damages.length})
+            Damage Findings ({selectedRoom.damages.length})
           </h3>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -566,40 +571,29 @@ export function InspectorPanel({
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--danger-text)', textTransform: 'uppercase' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--danger-text)', textTransform: 'capitalize' }}>
                     {dmg.damageClass.replace('_', ' ')}
                   </span>
                   <span className="mono" style={{ fontSize: '11px', color: 'var(--danger-text)' }}>
-                    {(dmg.confidence * 100).toFixed(0)}% conf
+                    {(dmg.confidence * 100).toFixed(0)}% confidence
                   </span>
                 </div>
 
-                <div className="mono" style={{ fontSize: '12px', color: 'var(--text-primary)', marginBottom: '4px' }}>
-                  {dmg.metricArea
-                    ? `Extent: ${dmg.metricArea.value.toFixed(2)} m²`
-                    : dmg.metricLength
-                    ? `Length: ${dmg.metricLength.value.toFixed(2)} m`
-                    : 'Extent: Unquantified'}
+                <div style={{ fontSize: '12px', color: 'var(--text-primary)', marginBottom: '4px' }}>
+                  <span style={{ color: 'var(--text-secondary)' }}>Size: </span>
+                  <strong className="mono">
+                    {dmg.metricArea
+                      ? `${dmg.metricArea.value.toFixed(2)} m²`
+                      : dmg.metricLength
+                      ? `${dmg.metricLength.value.toFixed(2)} m`
+                      : 'Unquantified'}
+                  </strong>
                 </div>
 
-                {dmg.concealedFlags && dmg.concealedFlags.length > 0 && (
-                  <div
-                    style={{
-                      marginTop: '6px',
-                      padding: '6px 8px',
-                      backgroundColor: 'var(--surface)',
-                      borderRadius: 'var(--radius-sm)',
-                      fontSize: '11px',
-                      lineHeight: 1.4,
-                      border: '1px solid var(--border)',
-                    }}
-                  >
-                    <div style={{ fontWeight: 600, color: 'var(--warning-text)', marginBottom: '2px' }}>
-                      Concealed Risk Flag
-                    </div>
-                    <div style={{ color: 'var(--text-secondary)' }}>
-                      {dmg.concealedFlags[0].suspectedIssue}
-                    </div>
+                {dmg.scopeItems && dmg.scopeItems.length > 0 && (
+                  <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', marginTop: '4px' }}>
+                    <span style={{ fontWeight: 600 }}>Recommended action: </span>
+                    {dmg.scopeItems[0].action}
                   </div>
                 )}
               </div>
@@ -607,6 +601,61 @@ export function InspectorPanel({
           </div>
         </section>
       )}
+
+      {/* Collapsible Advanced Details Accordion */}
+      <div style={{ marginBottom: '16px' }}>
+        <button
+          onClick={() => setShowAdvanced((prev) => !prev)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+            padding: '8px 10px',
+            backgroundColor: 'transparent',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-sm)',
+            fontSize: '11.5px',
+            fontWeight: 600,
+            color: 'var(--text-secondary)',
+            cursor: 'pointer',
+          }}
+        >
+          <span>Advanced Details</span>
+          <span style={{ transform: showAdvanced ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.15s ease' }}>
+            ▾
+          </span>
+        </button>
+
+        {showAdvanced && (
+          <div
+            style={{
+              marginTop: '6px',
+              padding: '10px 12px',
+              backgroundColor: 'var(--surface-subtle)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-sm)',
+              fontSize: '11px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--text-muted)' }}>Room ID</span>
+              <span className="mono" style={{ color: 'var(--text-primary)' }}>{selectedRoom.id}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--text-muted)' }}>Polygon Vertices</span>
+              <span className="mono" style={{ color: 'var(--text-primary)' }}>{selectedRoom.polygon.length} points</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--text-muted)' }}>Capture ID</span>
+              <span className="mono" style={{ color: 'var(--text-primary)' }}>{property.captureId}</span>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Mandatory Accuracy Notice */}
       <div style={{ marginTop: 'auto', paddingTop: '16px' }}>

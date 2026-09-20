@@ -1,13 +1,10 @@
 /**
  * @file page.tsx
- * @purpose Home product workspace route displaying available properties and captures.
- * @stage Frontend Stage 2 (Spatial Pro Product UI + Property Workspace)
+ * @purpose Evaluator homepage for COZMO spatial reconstruction platform.
+ * @stage Frontend Final Polish — Simplified Evaluator UX.
  * @inputs None (reads static fixture summaries via getAllFixtureSummaries).
  * @outputs Accessible property directory linking to interactive workspace routes (/property/[id]).
  * @dependencies ../data/fixture-loader, ../components/ui/StatusBadge, ../components/ui/TierBadge, next/link
- * @assumptions Not an analytics dashboard; focuses strictly on spatial property records.
- * @failureModes None.
- * @firstDebuggingPoints Verify fixture manifest is generated and loaded in fixture-loader.ts.
  */
 
 import React from 'react';
@@ -43,8 +40,8 @@ export default function HomePage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div
             style={{
-              width: '24px',
-              height: '24px',
+              width: '26px',
+              height: '26px',
               backgroundColor: 'var(--text-primary)',
               borderRadius: 'var(--radius-sm)',
               display: 'flex',
@@ -52,7 +49,7 @@ export default function HomePage() {
               justifyContent: 'center',
               color: 'var(--surface)',
               fontWeight: 700,
-              fontSize: '13px',
+              fontSize: '14px',
             }}
           >
             C
@@ -60,21 +57,22 @@ export default function HomePage() {
           <span style={{ fontWeight: 700, fontSize: '15px', letterSpacing: '0.04em', color: 'var(--text-primary)' }}>
             COZMO
           </span>
-          <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>— Spatial Intelligence Workspace</span>
         </div>
 
         <Link
           href="/new"
+          id="new-capture-btn-header"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '6px',
-            padding: '7px 14px',
+            padding: '8px 16px',
             borderRadius: 'var(--radius-sm)',
             backgroundColor: 'var(--primary)',
             color: 'var(--text-on-primary)',
             fontSize: '13px',
-            fontWeight: 500,
+            fontWeight: 600,
+            textDecoration: 'none',
             transition: 'background-color 0.15s ease',
           }}
         >
@@ -83,30 +81,96 @@ export default function HomePage() {
         </Link>
       </header>
 
-      {/* Main Container */}
+      {/* Main Hero Container */}
       <main
         style={{
-          maxWidth: '960px',
+          maxWidth: '880px',
           width: '100%',
           margin: '40px auto',
           padding: '0 24px',
         }}
       >
-        <div style={{ marginBottom: '28px' }}>
-          <h1
-            style={{
-              fontSize: '22px',
-              fontWeight: 700,
-              color: 'var(--text-primary)',
-              letterSpacing: '-0.02em',
-              marginBottom: '6px',
-            }}
-          >
-            Property Workspaces
-          </h1>
-          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            Select a verified reconstruction capture to explore floor plans, room metrics, doorway openings, and defect scope.
-          </p>
+        {/* Simple Evaluator Hero Section */}
+        <div
+          style={{
+            backgroundColor: 'var(--surface)',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--radius-lg)',
+            padding: '36px 32px',
+            marginBottom: '32px',
+            boxShadow: 'var(--shadow-sm)',
+          }}
+        >
+          <div style={{ maxWidth: '640px' }}>
+            <h1
+              style={{
+                fontSize: '26px',
+                fontWeight: 700,
+                color: 'var(--text-primary)',
+                letterSpacing: '-0.02em',
+                marginBottom: '10px',
+                lineHeight: 1.25,
+              }}
+            >
+              Turn room captures into measurable floor plans.
+            </h1>
+            <p
+              style={{
+                fontSize: '15px',
+                color: 'var(--text-secondary)',
+                lineHeight: 1.55,
+                marginBottom: '24px',
+              }}
+            >
+              Upload LiDAR, video, or room photos to generate interactive 2D floor plans, room dimensions, doorway openings, defect scopes, and CAD/PDF exports.
+            </p>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+              <Link
+                href="/new"
+                id="new-capture-btn-hero"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '10px 20px',
+                  borderRadius: 'var(--radius-sm)',
+                  backgroundColor: 'var(--primary)',
+                  color: 'var(--text-on-primary)',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  boxShadow: 'var(--shadow-sm)',
+                }}
+              >
+                <span>+</span>
+                <span>New Capture</span>
+              </Link>
+              <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
+                Supports LiDAR ZIP, handheld MP4 video, or photo archives
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Workspaces Section */}
+        <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <h2
+              style={{
+                fontSize: '16px',
+                fontWeight: 700,
+                color: 'var(--text-primary)',
+                letterSpacing: '-0.01em',
+                marginBottom: '2px',
+              }}
+            >
+              Sample Evaluator Workspaces
+            </h2>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+              Select a reconstructed property below to inspect its floor plan, dimensions, and exports.
+            </p>
+          </div>
         </div>
 
         {/* Property Grid / List */}
@@ -127,16 +191,16 @@ export default function HomePage() {
               >
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-                    <h2
+                    <h3
                       style={{
-                        fontSize: '16px',
+                        fontSize: '15px',
                         fontWeight: 600,
                         color: 'var(--text-primary)',
                       }}
                     >
                       {item.name}
-                    </h2>
-                    <span className="mono" style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+                    </h3>
+                    <span className="mono" style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                       ({item.id})
                     </span>
                   </div>
@@ -157,7 +221,7 @@ export default function HomePage() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '16px',
-                  paddingTop: '12px',
+                  paddingTop: '10px',
                   borderTop: '1px solid var(--border)',
                   fontSize: '12px',
                   color: 'var(--text-secondary)',

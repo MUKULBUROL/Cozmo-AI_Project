@@ -1,13 +1,10 @@
 /**
  * @file StatusBadge.tsx
  * @purpose Architectural status indicator badge for COMPLETE, PROVISIONAL, NOT_EVALUABLE, and FAILED states.
- * @stage Frontend Stage 2 (Spatial Pro Product UI + Property Workspace)
+ * @stage Frontend Final Polish — Simplified Evaluator UX.
  * @inputs status (ReconstructionStatus), optional size.
- * @outputs Accessible badge with semantic colors and restrained design.
+ * @outputs Accessible badge with semantic colors and simplified evaluator copy.
  * @dependencies ../../domain/types
- * @assumptions Avoids loud neon colors or giant pill shapes; adheres to Spatial Pro aesthetic.
- * @failureModes Unrecognized status falls back to neutral styling.
- * @firstDebuggingPoints Check status casing (must be COMPLETE, PROVISIONAL, NOT_EVALUABLE, FAILED).
  */
 
 import React from 'react';
@@ -30,21 +27,21 @@ const STATUS_CONFIG: Record<
     dot: 'var(--success)',
   },
   PROVISIONAL: {
-    label: 'Provisional',
+    label: 'Completed with limitations',
     bg: 'var(--warning-subtle)',
     text: 'var(--warning-text)',
     border: 'var(--warning-border)',
     dot: 'var(--warning)',
   },
   NOT_EVALUABLE: {
-    label: 'Not Evaluable',
+    label: 'Could not produce a reliable plan',
     bg: 'var(--neutral-subtle)',
     text: 'var(--neutral-text)',
     border: 'var(--neutral-border)',
     dot: 'var(--text-muted)',
   },
   FAILED: {
-    label: 'Failed',
+    label: 'Processing failed',
     bg: 'var(--danger-subtle)',
     text: 'var(--danger-text)',
     border: 'var(--danger-border)',

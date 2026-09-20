@@ -1,13 +1,10 @@
 /**
  * @file AppShell.tsx
  * @purpose Main 3-pane application shell coordinating navigation, canvas, inspector, and responsive layouts.
- * @stage Frontend Stage 2 (Spatial Pro Product UI + Property Workspace)
+ * @stage Frontend Final Polish — Simplified Evaluator UX.
  * @inputs PropertyViewModel.
  * @outputs Unified interactive workspace supporting desktop, tablet, and mobile layouts.
  * @dependencies ./TopBar, ./SideNavigation, ./ViewSwitcher, ../floorplan/FloorPlanCanvas, ../inspector/InspectorPanel, ../ui/EmptyState
- * @assumptions Primary target is spatial analysis desktop/laptop (>=1200px); handles tablet (<=1100px) and mobile (<=768px).
- * @failureModes None.
- * @firstDebuggingPoints Inspect layout CSS classes (.workspace-grid) and tab state.
  */
 
 'use client';
@@ -77,7 +74,7 @@ export function AppShell({ property }: AppShellProps) {
                   Remediation & Repair Scope
                 </h2>
                 <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                  Stage 9 itemized scope derived from detected physical defects and verified extents.
+                  Itemized repair scope derived from detected surface defects and dimensional extents.
                 </p>
               </div>
 

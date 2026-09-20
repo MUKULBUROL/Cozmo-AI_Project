@@ -1,13 +1,10 @@
 /**
  * @file ExportMenu.tsx
  * @purpose Dropdown control for downloading real JSON, SVG, PDF, and DXF deliverables.
- * @stage Frontend Stage 4 — Exports + Final Product Polish.
+ * @stage Frontend Final Polish — Simplified Evaluator UX.
  * @inputs captureId (string), property (PropertyViewModel | null).
  * @outputs Accessible Spatial Pro dropdown trigger with loading indicators and error feedback.
  * @dependencies ../../lib/api/captures, ../../domain/types.
- * @assumptions Live mode downloads directly from FastAPI export endpoints; static fallback supported.
- * @failureModes Download error displayed inline without full page reload or silent failure.
- * @firstDebuggingPoints Check network tab for GET /api/captures/{id}/exports/{format}.
  */
 
 'use client';
@@ -31,31 +28,31 @@ interface ExportOption {
 
 const EXPORT_OPTIONS: ExportOption[] = [
   {
-    format: 'pdf',
-    label: 'PDF Report',
-    extension: '.pdf',
-    description: 'Multi-page report with vector plan & schedules',
-    icon: '📄',
-  },
-  {
-    format: 'svg',
-    label: 'Vector Floor Plan',
-    extension: '.svg',
-    description: 'Standalone 2D vector architectural drawing',
-    icon: '📐',
-  },
-  {
     format: 'json',
-    label: 'Property JSON',
+    label: 'JSON',
     extension: '.json',
-    description: 'Machine-readable schema with 95% intervals',
+    description: 'raw structured result',
     icon: '{ }',
   },
   {
+    format: 'svg',
+    label: 'SVG Floor Plan',
+    extension: '.svg',
+    description: 'vector floor plan',
+    icon: '📐',
+  },
+  {
+    format: 'pdf',
+    label: 'PDF Report',
+    extension: '.pdf',
+    description: 'inspection report',
+    icon: '📄',
+  },
+  {
     format: 'dxf',
-    label: 'AutoCAD DXF',
+    label: 'DXF CAD',
     extension: '.dxf',
-    description: 'Metric CAD drawing with layered geometry',
+    description: 'CAD drawing',
     icon: '🏛️',
   },
 ];
@@ -115,6 +112,7 @@ export function ExportMenu({ captureId, property }: ExportMenuProps) {
       {/* Dropdown Trigger Button */}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
+        id="export-dropdown-btn"
         aria-haspopup="true"
         aria-expanded={isOpen}
         disabled={loadingFormat !== null}
@@ -162,7 +160,7 @@ export function ExportMenu({ captureId, property }: ExportMenuProps) {
             bottom: '100%',
             right: 0,
             marginBottom: '8px',
-            width: '280px',
+            width: '260px',
             backgroundColor: 'var(--surface)',
             border: '1px solid var(--border)',
             borderRadius: 'var(--radius-md)',
@@ -187,7 +185,7 @@ export function ExportMenu({ captureId, property }: ExportMenuProps) {
               marginBottom: '4px',
             }}
           >
-            Deliverable Formats
+            Export Deliverables
           </div>
 
           {EXPORT_OPTIONS.map((opt) => {
@@ -239,7 +237,7 @@ export function ExportMenu({ captureId, property }: ExportMenuProps) {
                       {opt.extension}
                     </span>
                   </div>
-                  <span style={{ fontSize: '10.5px', color: 'var(--text-secondary)', marginTop: '2px' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px' }}>
                     {isLoading ? 'Preparing download…' : opt.description}
                   </span>
                 </div>

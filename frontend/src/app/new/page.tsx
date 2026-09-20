@@ -1,13 +1,10 @@
 /**
  * @file new/page.tsx
- * @purpose Live capture upload page with tier selection, file validation, and FastAPI submission.
- * @stage Frontend Stage 3 — Live FastAPI Integration.
+ * @purpose Evaluator capture upload page with simplified tier cards and clear workflow.
+ * @stage Frontend Final Polish — Simplified Evaluator UX.
  * @inputs User-selected tier and file upload.
  * @outputs Creates a new capture job via POST /api/captures, redirects to /processing/[id].
  * @dependencies next/navigation, ../../lib/api/captures, ../../lib/api/errors.
- * @assumptions FastAPI backend is running at NEXT_PUBLIC_API_BASE_URL. File validation mirrors backend expectations.
- * @failureModes Network errors show inline error message. Invalid files show validation message before upload.
- * @firstDebuggingPoints Check browser Network tab for POST request. Verify API URL in .env.local. Check console for errors.
  */
 
 'use client';
@@ -32,33 +29,29 @@ export default function NewCapturePage() {
     id: ReconstructionTier;
     title: string;
     description: string;
-    features: string[];
-    badge: string;
+    guidance: string;
     acceptedFormats: string;
   }> = [
     {
       id: 'lidar',
-      title: 'LiDAR Reconstruction',
-      badge: 'High Precision',
-      description: 'Metric unprojection from ARKit depth frames with deterministic RANSAC extraction.',
-      features: ['Sub-cm point cloud resolution', 'Direct metric scale', 'Ceiling & floor height separation'],
-      acceptedFormats: 'ZIP archive with odometry.csv',
+      title: 'LiDAR',
+      description: 'Best for supported iPhone Pro LiDAR captures.',
+      guidance: 'Direct metric depth with sub-centimeter wall accuracy.',
+      acceptedFormats: 'ZIP archive (.zip)',
     },
     {
       id: 'video',
-      title: 'RGB Video SfM',
-      badge: 'Stage 11 Metric Scale',
-      description: 'Continuous video keyframe tracking with Depth Anything v2 metric unprojection.',
-      features: ['Multi-view feature matching', 'Temporal continuity audit', 'Provisional plan topology'],
-      acceptedFormats: 'MP4 video or ZIP with rgb.mp4',
+      title: 'Video',
+      description: 'Upload a handheld room video.',
+      guidance: 'Monocular video walkthrough with automated keyframe tracking.',
+      acceptedFormats: 'MP4 video (.mp4) or ZIP archive (.zip)',
     },
     {
       id: 'photo',
-      title: 'Multi-View Photo Set',
-      badge: 'Sparse Alignment',
-      description: 'Uncalibrated photo set reconstruction with COLMAP structure-from-motion.',
-      features: ['Ordered perspective matching', 'Requires visual overlap > 60%', 'Uncalibrated baseline'],
-      acceptedFormats: 'ZIP archive of JPEG/PNG images',
+      title: 'Photos',
+      description: 'Upload 2–8 overlapping room photos.',
+      guidance: 'Multi-view perspective images with visual overlap.',
+      acceptedFormats: 'ZIP archive (.zip) containing JPG/PNG photos',
     },
   ];
 
@@ -84,7 +77,7 @@ export default function NewCapturePage() {
     const accepted = getAcceptedFileTypes(selectedTier).split(',');
     if (!accepted.includes(ext)) {
       setErrorMessage(
-        `${selectedTier.toUpperCase()} tier does not accept ${ext} files. Accepted: ${accepted.join(', ')}.`
+        `${selectedTier.toUpperCase()} capture does not accept ${ext} files. Accepted formats: ${accepted.join(', ')}.`
       );
       setSelectedFile(null);
       return;
@@ -107,7 +100,7 @@ export default function NewCapturePage() {
     } catch (err) {
       setUploadState('error');
       setErrorMessage(
-        err instanceof Error ? err.message : 'Upload failed. Please check that the API server is running.'
+        err instanceof Error ? err.message : 'Upload failed. Please check that the backend service is running.'
       );
     }
   };
@@ -148,6 +141,7 @@ export default function NewCapturePage() {
               display: 'flex',
               alignItems: 'center',
               gap: '4px',
+              textDecoration: 'none',
             }}
           >
             ← Back to Workspaces
@@ -162,13 +156,13 @@ export default function NewCapturePage() {
       {/* Main Container */}
       <main
         style={{
-          maxWidth: '780px',
+          maxWidth: '740px',
           width: '100%',
-          margin: '40px auto',
+          margin: '36px auto',
           padding: '0 24px',
         }}
       >
-        <div style={{ marginBottom: '28px' }}>
+        <div style={{ marginBottom: '24px' }}>
           <h1
             style={{
               fontSize: '22px',
@@ -178,15 +172,15 @@ export default function NewCapturePage() {
               marginBottom: '6px',
             }}
           >
-            Select Reconstruction Sensor Tier
+            New Capture
           </h1>
           <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-            Choose the capture methodology matching your input data, then upload your capture file for processing.
+            Choose how you captured the space and upload your file.
           </p>
         </div>
 
         {/* Tier Cards */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '28px' }}>
           {tiers.map((t) => {
             const isSelected = selectedTier === t.id;
             return (
@@ -194,7 +188,7 @@ export default function NewCapturePage() {
                 key={t.id}
                 role="radio"
                 aria-checked={isSelected}
-                aria-label={`${t.title} tier`}
+                aria-label={`${t.title} capture`}
                 tabIndex={0}
                 onClick={() => handleTierChange(t.id)}
                 onKeyDown={(e) => {
@@ -207,30 +201,17 @@ export default function NewCapturePage() {
                   backgroundColor: 'var(--surface)',
                   border: isSelected ? '2px solid var(--primary)' : '1px solid var(--border)',
                   borderRadius: 'var(--radius-md)',
-                  padding: '20px 24px',
+                  padding: '18px 20px',
                   cursor: 'pointer',
                   boxShadow: isSelected ? 'var(--shadow-md)' : 'var(--shadow-sm)',
                   transition: 'all 0.15s ease',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     <h2 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>
                       {t.title}
                     </h2>
-                    <span
-                      style={{
-                        fontSize: '11px',
-                        padding: '2px 8px',
-                        borderRadius: 'var(--radius-sm)',
-                        backgroundColor: 'var(--surface-subtle)',
-                        color: 'var(--text-secondary)',
-                        border: '1px solid var(--border)',
-                        fontWeight: 500,
-                      }}
-                    >
-                      {t.badge}
-                    </span>
                   </div>
 
                   <div
@@ -244,29 +225,13 @@ export default function NewCapturePage() {
                   />
                 </div>
 
-                <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '8px', lineHeight: 1.4 }}>
+                <p style={{ fontSize: '13.5px', color: 'var(--text-primary)', marginBottom: '4px', lineHeight: 1.4 }}>
                   {t.description}
                 </p>
 
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '6px' }}>
-                  {t.features.map((feat, idx) => (
-                    <span
-                      key={idx}
-                      style={{
-                        fontSize: '12px',
-                        color: 'var(--text-muted)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                      }}
-                    >
-                      <span style={{ color: 'var(--success)' }}>✓</span> {feat}
-                    </span>
-                  ))}
-                </div>
-
-                <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic' }}>
-                  Accepted: {t.acceptedFormats}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                  <span>{t.guidance}</span>
+                  <span style={{ fontStyle: 'italic' }}>{t.acceptedFormats}</span>
                 </div>
               </div>
             );
@@ -279,7 +244,7 @@ export default function NewCapturePage() {
             backgroundColor: 'var(--surface)',
             border: selectedFile ? '2px solid var(--primary)' : '1px dashed var(--border-strong)',
             borderRadius: 'var(--radius-md)',
-            padding: '32px',
+            padding: '28px',
             textAlign: 'center',
             marginBottom: '16px',
           }}
@@ -295,7 +260,7 @@ export default function NewCapturePage() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  margin: '0 auto 16px auto',
+                  margin: '0 auto 14px auto',
                   color: 'var(--text-muted)',
                 }}
               >
@@ -307,10 +272,10 @@ export default function NewCapturePage() {
               </div>
 
               <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '4px' }}>
-                Upload Capture File
+                Select File
               </h3>
-              <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '20px' }}>
-                Select a {selectedTier.toUpperCase()} capture file to begin reconstruction.
+              <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '18px' }}>
+                Choose the {selectedTier.toUpperCase()} capture file from your device.
               </p>
 
               <input
@@ -323,15 +288,16 @@ export default function NewCapturePage() {
               />
               <button
                 onClick={() => fileInputRef.current?.click()}
+                id="choose-file-btn"
                 aria-label="Choose capture file"
                 style={{
-                  padding: '9px 20px',
+                  padding: '9px 22px',
                   borderRadius: 'var(--radius-sm)',
                   backgroundColor: 'var(--primary)',
                   color: 'var(--text-on-primary)',
                   border: 'none',
                   fontSize: '13px',
-                  fontWeight: 500,
+                  fontWeight: 600,
                   cursor: 'pointer',
                 }}
               >
@@ -341,7 +307,7 @@ export default function NewCapturePage() {
           ) : (
             <>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '16px' }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--success)" strokeWidth="2">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                   <polyline points="14 2 14 8 20 8" />
                 </svg>
@@ -350,7 +316,7 @@ export default function NewCapturePage() {
                     {selectedFile.name}
                   </div>
                   <div className="mono" style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                    {formatFileSize(selectedFile.size)} · {selectedTier.toUpperCase()} tier
+                    {formatFileSize(selectedFile.size)} · {selectedTier.toUpperCase()} capture
                   </div>
                 </div>
               </div>
@@ -378,9 +344,10 @@ export default function NewCapturePage() {
                 <button
                   onClick={handleSubmit}
                   disabled={uploadState === 'uploading'}
-                  aria-label="Submit capture for processing"
+                  id="process-capture-btn"
+                  aria-label="Process Capture"
                   style={{
-                    padding: '8px 20px',
+                    padding: '8px 22px',
                     borderRadius: 'var(--radius-sm)',
                     backgroundColor: uploadState === 'uploading' ? 'var(--surface-subtle)' : 'var(--primary)',
                     color: uploadState === 'uploading' ? 'var(--text-muted)' : 'var(--text-on-primary)',
@@ -390,7 +357,7 @@ export default function NewCapturePage() {
                     cursor: uploadState === 'uploading' ? 'not-allowed' : 'pointer',
                   }}
                 >
-                  {uploadState === 'uploading' ? 'Uploading…' : 'Submit for Processing'}
+                  {uploadState === 'uploading' ? 'Uploading…' : 'Process Capture'}
                 </button>
               </div>
             </>
@@ -423,9 +390,10 @@ export default function NewCapturePage() {
               fontSize: '13px',
               color: 'var(--primary)',
               fontWeight: 500,
+              textDecoration: 'none',
             }}
           >
-            ← Or explore existing benchmark captures
+            ← Or explore existing property workspaces
           </Link>
         </div>
       </main>
