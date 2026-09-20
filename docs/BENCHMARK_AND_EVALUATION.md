@@ -51,6 +51,10 @@ Every metric reported in this evaluation adheres strictly to the defined evidenc
 - **Runtime:** `2769.55 s`
 - **Engineering Coverage:** `45.0%`
 - **Single-Room Reconstruction:** Registered 4/25 keyframes (16.0%), recovered scale via RGB SfM + metric-depth scale recovery (~0.188 m/unit). 2D room polygon generation failed; dependent measurements (area, perimeter) are strictly `NOT_EVALUABLE` (null m²). Status: `PROVISIONAL`.
+- **RGB-Only Provenance & Isolation:** Verified strictly RGB-only reconstruction; zero sensor files (no odometry.csv, IMU, ARKit poses, LiDAR depth, or confidence maps) consumed. Supported standalone CLI executed:
+  ```bash
+  python3 -m scripts.reconstruct_video --input "sample data/video/single_room/rgb.mp4" --capture-id video_single_room --output-dir outputs/video_rgb_isolated_test
+  ```
 - **Multi-Room Reconstruction:** Registered only 4/40 keyframes (10.0%). **`REGISTRATION_FAILURE`** encountered on long hallway trajectory due to rapid camera rotations and feature tracking dropout.
 - **Multi-Room Property Status:** **`NOT_EVALUABLE`** due to insufficient camera registration coverage (4/40 keyframes registered, below minimum threshold of 20).
 
