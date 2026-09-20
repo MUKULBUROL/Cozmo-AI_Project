@@ -1,0 +1,21 @@
+{
+  "capture_id": "video_single_and_multi_room",
+  "tier": "video",
+  "status": "PROVISIONAL",
+  "measurements": [],
+  "failures": [
+    "REGISTRATION_FAILURE",
+    "NOT_EVALUABLE"
+  ],
+  "runtime": 24.4,
+  "coverage": 0.45,
+  "gates": [],
+  "details": {
+    "single_room_registered": "4/25",
+    "scale_factor": 0.18774021542015626,
+    "scale_uncertainty": 0.019223550828913378,
+    "multi_room_registered": "4/40",
+    "registration_percentage": 10.0,
+    "multi_room_status": "NOT_EVALUABLE"
+  }
+}

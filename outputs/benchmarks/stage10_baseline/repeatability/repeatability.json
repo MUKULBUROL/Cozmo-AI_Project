@@ -1,0 +1,16 @@
+{
+  "tier": "lidar",
+  "capture_a": "c00a170fe1",
+  "capture_b": "c00a170fe1",
+  "status": "REPEATABILITY_NOT_EVALUABLE",
+  "note": "REPEATABILITY EVALUATES INTER-SCAN STABILITY, NOT PHYSICAL ACCURACY. REPEATABILITY DOES NOT MEASURE ABSOLUTE BIAS.",
+  "walls_within_gate_count": 0,
+  "total_compared_walls": 0,
+  "gate_pass_ratio": null,
+  "summary_statistics": {},
+  "reasons": [
+    "Independent repeat physical scans do not exist in current sample dataset.",
+    "Processing the same raw capture twice does not constitute repeatability."
+  ],
+  "wall_differences": []
+}

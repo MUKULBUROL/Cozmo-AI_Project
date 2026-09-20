@@ -41,7 +41,9 @@ venv.bak/
 *.swo
 
 # Temporary outputs & logs
-outputs/
+outputs/*
+!outputs/benchmarks/
+!outputs/benchmarks/**
 logs/
 tmp/
 /tmp/

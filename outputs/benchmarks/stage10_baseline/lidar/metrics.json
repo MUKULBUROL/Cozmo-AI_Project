@@ -1,0 +1,168 @@
+{
+  "capture_id": "c00a170fe1_and_c7d28f72c6",
+  "tier": "lidar",
+  "status": "WORKING",
+  "measurements": [
+    {
+      "measurement_id": "wall_01",
+      "room_id": "room_01",
+      "type": "wall_length",
+      "predicted_value": 1.543,
+      "reference_value": null,
+      "unit": "m",
+      "absolute_error": null,
+      "relative_error": null,
+      "evidence_level": "NOT_EVALUABLE",
+      "status": "EVALUATED",
+      "uncertainty_lower": 1.321,
+      "uncertainty_upper": 1.766,
+      "details": {
+        "edge_index": 0
+      }
+    },
+    {
+      "measurement_id": "wall_03",
+      "room_id": "room_01",
+      "type": "wall_length",
+      "predicted_value": 2.109,
+      "reference_value": null,
+      "unit": "m",
+      "absolute_error": null,
+      "relative_error": null,
+      "evidence_level": "NOT_EVALUABLE",
+      "status": "EVALUATED",
+      "uncertainty_lower": 1.894,
+      "uncertainty_upper": 2.323,
+      "details": {
+        "edge_index": 1
+      }
+    },
+    {
+      "measurement_id": "wall_07",
+      "room_id": "room_01",
+      "type": "wall_length",
+      "predicted_value": 1.347,
+      "reference_value": null,
+      "unit": "m",
+      "absolute_error": null,
+      "relative_error": null,
+      "evidence_level": "NOT_EVALUABLE",
+      "status": "EVALUATED",
+      "uncertainty_lower": 1.139,
+      "uncertainty_upper": 1.554,
+      "details": {
+        "edge_index": 2
+      }
+    },
+    {
+      "measurement_id": "wall_02",
+      "room_id": "room_01",
+      "type": "wall_length",
+      "predicted_value": 0.251,
+      "reference_value": null,
+      "unit": "m",
+      "absolute_error": null,
+      "relative_error": null,
+      "evidence_level": "NOT_EVALUABLE",
+      "status": "EVALUATED",
+      "uncertainty_lower": 0.01,
+      "uncertainty_upper": 0.529,
+      "details": {
+        "edge_index": 3
+      }
+    },
+    {
+      "measurement_id": "wall_05",
+      "room_id": "room_01",
+      "type": "wall_length",
+      "predicted_value": 1.628,
+      "reference_value": null,
+      "unit": "m",
+      "absolute_error": null,
+      "relative_error": null,
+      "evidence_level": "NOT_EVALUABLE",
+      "status": "EVALUATED",
+      "uncertainty_lower": 1.458,
+      "uncertainty_upper": 1.799,
+      "details": {
+        "edge_index": 4
+      }
+    },
+    {
+      "measurement_id": "wall_04",
+      "room_id": "room_01",
+      "type": "wall_length",
+      "predicted_value": 2.415,
+      "reference_value": null,
+      "unit": "m",
+      "absolute_error": null,
+      "relative_error": null,
+      "evidence_level": "NOT_EVALUABLE",
+      "status": "EVALUATED",
+      "uncertainty_lower": 2.326,
+      "uncertainty_upper": 2.503,
+      "details": {
+        "edge_index": 5
+      }
+    },
+    {
+      "measurement_id": "wall_01",
+      "room_id": "room_01",
+      "type": "wall_length",
+      "predicted_value": 1.506,
+      "reference_value": null,
+      "unit": "m",
+      "absolute_error": null,
+      "relative_error": null,
+      "evidence_level": "NOT_EVALUABLE",
+      "status": "EVALUATED",
+      "uncertainty_lower": 1.314,
+      "uncertainty_upper": 1.698,
+      "details": {
+        "edge_index": 6
+      }
+    },
+    {
+      "measurement_id": "floor_area_room_01",
+      "room_id": "room_01",
+      "type": "floor_area",
+      "predicted_value": 6.998,
+      "reference_value": null,
+      "unit": "m2",
+      "absolute_error": null,
+      "relative_error": null,
+      "evidence_level": "NOT_EVALUABLE",
+      "status": "EVALUATED",
+      "uncertainty_lower": 6.729,
+      "uncertainty_upper": 7.303,
+      "details": {}
+    },
+    {
+      "measurement_id": "opening_01",
+      "room_id": "room_01",
+      "type": "door_width",
+      "predicted_value": 1.5503,
+      "reference_value": null,
+      "unit": "m",
+      "absolute_error": null,
+      "relative_error": null,
+      "evidence_level": "NOT_EVALUABLE",
+      "status": "EVALUATED",
+      "uncertainty_lower": 1.477,
+      "uncertainty_upper": 1.6236,
+      "details": {}
+    }
+  ],
+  "failures": [],
+  "runtime": 22.2,
+  "coverage": 1.0,
+  "gates": [],
+  "details": {
+    "floor_area": 6.998,
+    "wall_count": 7,
+    "perimeter": 10.799,
+    "opening_count": 1,
+    "property_rooms": 4,
+    "property_status": "VALID"
+  }
+}

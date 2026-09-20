@@ -1,0 +1,17 @@
+{
+  "capture_id": "photo_room_and_property",
+  "tier": "photo",
+  "status": "PROVISIONAL",
+  "measurements": [],
+  "failures": [
+    "TOPOLOGY_FAILURE",
+    "NOT_EVALUABLE"
+  ],
+  "runtime": 23.7,
+  "coverage": 0.55,
+  "gates": [],
+  "details": {
+    "single_room_registered": "5/6",
+    "property_status": "PROPERTY_STITCH_NOT_EVALUABLE"
+  }
+}
