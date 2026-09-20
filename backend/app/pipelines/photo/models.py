@@ -113,3 +113,22 @@ class RoomAlignment(BaseModel):
     evidence: List[str] = Field(default_factory=list)
     inferred: bool = False
     confidence: float = Field(default=0.0, ge=0.0, le=1.0)
+
+
+class PhotoSfmQuality(BaseModel):
+    """Summarize photo-specific pose and sparse-geometry coverage gates.
+
+    Ratios are dimensionless because SfM remains arbitrary-scale at this point. Camera spread is
+    normalized by sparse-scene extent, point occupancy measures a PCA-plane grid, and image
+    coverage combines registration and track support. Failure reasons are stable machine-readable
+    codes. Empty or degenerate geometry produces zero scores rather than fabricated coverage.
+    """
+
+    matching_strategy: str = "exhaustive"
+    connected_components: int = Field(..., ge=0)
+    baseline_spread_ratio: float = Field(..., ge=0.0)
+    point_distribution_score: float = Field(..., ge=0.0, le=1.0)
+    image_coverage_score: float = Field(..., ge=0.0, le=1.0)
+    viewpoint_diversity_score: float = Field(..., ge=0.0, le=1.0)
+    status: str
+    failure_reasons: List[str] = Field(default_factory=list)
