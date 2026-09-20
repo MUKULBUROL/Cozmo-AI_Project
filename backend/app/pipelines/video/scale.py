@@ -148,6 +148,10 @@ def estimate_metric_scale(
             relative_scale_uncertainty=1.0,
             status="FAILED",
             inlier_ratio=0.0,
+            total_correspondences=len(scale_ratios),
+            inlier_count=0,
+            rejected_count=len(scale_ratios),
+            raw_scale_ratios=[float(value) for value in scale_ratios],
         )
         if output_dir:
             with open(Path(output_dir) / "metric_scale.json", "w", encoding="utf-8") as f:
@@ -197,6 +201,10 @@ def estimate_metric_scale(
         relative_scale_uncertainty=rel_uncertainty,
         status=status,
         inlier_ratio=inlier_ratio,
+        total_correspondences=len(ratios_arr),
+        inlier_count=n_inliers,
+        rejected_count=len(ratios_arr) - n_inliers,
+        raw_scale_ratios=[float(value) for value in ratios_arr],
     )
 
     if output_dir:

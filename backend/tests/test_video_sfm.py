@@ -90,11 +90,12 @@ class TestVideoSfM(unittest.TestCase):
             # Create only 1 mock keyframe
             (kfs_dir / "frame_000000.jpg").write_text("fake_image_data")
 
-            report, poses, intrinsics, ply_path = run_visual_sfm(
+            report, poses, intrinsics, sparse_pts = run_visual_sfm(
                 keyframes_dir=kfs_dir,
                 output_sfm_dir=sfm_dir,
                 capture_id="test_fail",
             )
+            self.assertEqual(len(sparse_pts), 0)
 
             self.assertEqual(report.status, VideoReconstructionStatus.FAILED)
             self.assertEqual(report.registered_keyframes, 0)

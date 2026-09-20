@@ -113,18 +113,27 @@ class VideoCameraPose(BaseModel):
     Purpose:
         Represents arbitrary-scale or metric camera pose in world coordinates.
     """
+    model_config = {"extra": "allow"}
+
+    keyframe_id: int = Field(0, description="Keyframe identifier")
     frame_index: int = Field(..., description="Keyframe index")
     timestamp_seconds: float = Field(..., description="Keyframe timestamp")
+    timestamp: float = Field(0.0, description="Capture timestamp in seconds")
     # Translation vector
     tx: float = Field(..., description="Translation X")
     ty: float = Field(..., description="Translation Y")
     tz: float = Field(..., description="Translation Z")
+    t_vec: List[float] = Field(default_factory=list, description="Translation vector [tx, ty, tz]")
+    r_matrix: List[List[float]] = Field(default_factory=list, description="3x3 rotation matrix")
     # Rotation unit quaternion (qw, qx, qy, qz)
     qw: float = Field(..., description="Quaternion W component")
     qx: float = Field(..., description="Quaternion X component")
     qy: float = Field(..., description="Quaternion Y component")
     qz: float = Field(..., description="Quaternion Z component")
+    reprojection_error: float = Field(0.0, description="Mean reprojection error in pixels")
+    inlier_count: int = Field(0, description="Number of triangulated 2D-3D inliers")
     is_metric: bool = Field(default=False, description="True if translation has been scaled into meters")
+
 
 
 class VideoIntrinsics(BaseModel):
@@ -140,14 +149,22 @@ class VideoIntrinsics(BaseModel):
 
 
 class SfMReconstructionReport(BaseModel):
-    """Statistical summary of visual SfM camera pose reconstruction."""
+    """Statistical summary of visual SfM camera pose reconstruction.
+
+    Coordinates remain arbitrary-scale SfM world units at this stage; reprojection values are
+    pixels. Continuity warnings describe chronological camera-center jumps relative to the median
+    step and should be inspected when a model registers only a disconnected part of a capture.
+    """
     capture_id: str
     total_keyframes: int
     registered_keyframes: int
     registration_ratio: float = Field(..., ge=0.0, le=1.0)
     sparse_point_count: int
     mean_reprojection_error: float
+    median_reprojection_error: Optional[float] = None
     track_length_mean: float
+    trajectory_continuous: bool = False
+    pose_jump_warnings: List[str] = Field(default_factory=list)
     status: VideoReconstructionStatus
     reconstruction_time_seconds: float
     warnings: List[str] = Field(default_factory=list)

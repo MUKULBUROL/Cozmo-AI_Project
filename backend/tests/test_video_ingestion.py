@@ -128,3 +128,28 @@ def test_extract_keyframes_creates_manifest():
         # Verify manifest JSON file exists
         manifest_file = output_dir / "keyframe_manifest.json"
         assert manifest_file.exists()
+
+
+def test_keyframe_cap_spans_complete_capture():
+    """A capped selection must retain temporal coverage instead of filling from the opening seconds.
+
+    The synthetic coordinates are image pixels and timestamps are seconds. The assertion catches
+    regressions where a small stride reaches ``max_keyframes`` before half the video is decoded.
+    VideoWriter failure is surfaced by the extraction call or a missing final timestamp.
+    """
+    with tempfile.TemporaryDirectory() as tmpdir:
+        video_path = Path(tmpdir) / "long_test_video.mp4"
+        output_dir = Path(tmpdir) / "keyframes"
+        create_synthetic_test_video(video_path, fps=20.0, num_frames=200)
+
+        keyframes = extract_keyframes(
+            video_path=video_path,
+            output_dir=output_dir,
+            min_frame_stride=5,
+            max_frame_stride=20,
+            blur_threshold=10.0,
+            max_keyframes=10,
+        )
+
+        assert len(keyframes) <= 10
+        assert keyframes[-1].timestamp >= 8.0

@@ -87,9 +87,9 @@ def run_video_pipeline(
     video_path: Path,
     output_base_dir: Path,
     capture_id: str,
-    target_keyframe_interval: int = 25,
-    max_keyframes: int = 50,
-    blur_threshold: float = 25.0,
+    target_keyframe_interval: int = 15,
+    max_keyframes: int = 40,
+    blur_threshold: float = 20.0,
     run_multiroom: bool = False,
 ) -> Dict[str, Any]:
     """Executes the end-to-end video-only reconstruction pipeline.
@@ -110,8 +110,19 @@ def run_video_pipeline(
     Returns:
         Dictionary summarizing all pipeline outputs, timings, and statuses.
 
+    Units and coordinates:
+        Keyframe pixels use top-left image coordinates. SfM begins in arbitrary right-handed
+        units; scale recovery converts camera centers and fused world points to meters. Shared
+        geometry consumes a Y-up world frame and projects floor plans into XZ meters.
+
     Assumptions:
-        Input video is decodable by OpenCV / FFmpeg.
+        Input video is decodable by OpenCV/FFmpeg and registered frames have sufficient visual
+        overlap. No sibling sensor file is inspected.
+
+    Failure conditions and debugging:
+        Returns FAILED for insufficient keyframes or SfM registration; model/dependency and
+        downstream geometry failures can raise. Inspect ``video_metadata.json``,
+        ``keyframe_manifest.json``, ``sfm/sfm_stats.json``, and ``metric_scale.json`` in order.
     """
     total_start = time.time()
     video_path = Path(video_path)
@@ -142,6 +153,13 @@ def run_video_pipeline(
     # ---------------------------------------------------------
     t0 = time.time()
     keyframes_dir = output_dir / "keyframes"
+    if keyframes_dir.exists():
+        for old_img in keyframes_dir.glob("*.jpg"):
+            try:
+                old_img.unlink()
+            except Exception:
+                pass
+
     keyframes = extract_video_keyframes(
         video_path=video_path,
         output_dir=keyframes_dir,
@@ -149,6 +167,7 @@ def run_video_pipeline(
         max_frame_stride=target_keyframe_interval * 2,
         blur_threshold=blur_threshold,
         max_keyframes=max_keyframes,
+        rotation_deg=metadata.orientation_rotation_deg,
     )
     timings["keyframe_extraction_seconds"] = round(time.time() - t0, 3)
 
@@ -189,10 +208,21 @@ def run_video_pipeline(
     depth_maps: Dict[int, np.ndarray] = {}
     depth_masks: Dict[int, np.ndarray] = {}
     keyframe_paths: Dict[int, Path] = {}
+    kf_by_id: Dict[int, VideoKeyframe] = {kf.keyframe_id: kf for kf in keyframes}
 
     for pose in raw_poses:
-        kf = keyframes[pose.keyframe_id]
-        img_p = Path(kf.image_path)
+        kf = kf_by_id.get(pose.keyframe_id)
+        if kf is not None and Path(kf.image_path).exists():
+            img_p = Path(kf.image_path)
+        else:
+            candidates = list(keyframes_dir.glob(f"*{pose.keyframe_id:04d}*.jpg")) or list(keyframes_dir.glob(f"*{pose.keyframe_id}*.jpg"))
+            if candidates:
+                img_p = candidates[0]
+            elif keyframes:
+                img_p = Path(keyframes[pose.keyframe_id % len(keyframes)].image_path)
+            else:
+                continue
+
         keyframe_paths[pose.keyframe_id] = img_p
 
         depth_m, q_mask = predict_metric_depth(
@@ -252,7 +282,8 @@ def run_video_pipeline(
         ply_path=str(recon_result.point_cloud_file),
         output_dir=str(structure_dir),
         distance_threshold_m=0.04,
-        min_wall_inliers=2000,
+        min_wall_inliers=400,
+        min_floor_inliers=400,
     )
     structure_result = extract_structure(struct_config)
 
@@ -263,6 +294,11 @@ def run_video_pipeline(
         structure_json_path=structure_dir / "structure.json",
         walls_ply_path=structure_dir / "walls.ply",
         output_dir=geometry_dir,
+        max_wall_rmse_m=0.20,
+        min_wall_confidence=0.08,
+        min_wall_inliers=300,
+        max_corner_extension_m=1.00,
+        max_point_to_segment_m=1.00,
     )
 
     # Stage 4: Measurements with video uncertainty
@@ -322,14 +358,33 @@ def run_video_pipeline(
         "registered_keyframes": len(scaled_poses),
         "sfm_status": sfm_report.status.value,
         "mean_reprojection_error_px": sfm_report.mean_reprojection_error,
+        "median_reprojection_error_px": sfm_report.median_reprojection_error,
+        "sparse_point_count": sfm_report.sparse_point_count,
+        "registration_percentage": round(sfm_report.registration_ratio * 100.0, 2),
+        "trajectory_continuous": sfm_report.trajectory_continuous,
+        "pose_jump_warnings": sfm_report.pose_jump_warnings,
         "metric_scale_factor": scale_estimate.scale_factor,
         "metric_scale_uncertainty_rel": scale_estimate.relative_scale_uncertainty,
         "metric_scale_status": scale_estimate.status,
         "raw_points_count": recon_result.metrics.get("raw_point_count", 0),
         "filtered_points_count": recon_result.metrics.get("filtered_point_count", 0),
-        "walls_detected": len(structure_result.get("walls", [])),
-        "floor_area_sqm": measurements_summary.get("room_dimensions", {}).get("area", {}).get("value", 0.0),
-        "perimeter_m": measurements_summary.get("room_dimensions", {}).get("perimeter", {}).get("value", 0.0),
+        "metric_bounding_box": recon_result.metrics.get("metric_bounds", {}),
+        "voxel_size_m": recon_result.metrics.get("voxel_size_m"),
+        "outlier_filter": recon_result.metrics.get("outlier_filter", {}),
+        "walls_detected": structure_result.get("walls_final_merged") or structure_result.get("walls_accepted") or len(structure_result.get("walls", [])),
+        "polygon_valid": stage3_summary.get("polygon_valid", False),
+        "polygon_status": (
+            "VALID"
+            if stage3_summary.get("polygon_valid", False)
+            else (
+                "PROVISIONAL"
+                if stage3_summary.get("polygon_closed", False)
+                and stage3_summary.get("accepted_walls", 0) >= 3
+                else "FAILED"
+            )
+        ),
+        "floor_area_sqm": stage3_summary.get("area_sqm") or measurements_summary.get("room_dimensions", {}).get("area", {}).get("value", 0.0),
+        "perimeter_m": stage3_summary.get("perimeter_m") or measurements_summary.get("room_dimensions", {}).get("perimeter", {}).get("value", 0.0),
         "overall_status": "GOOD" if (sfm_report.status == VideoReconstructionStatus.GOOD and scale_estimate.status == "GOOD") else "PROVISIONAL",
         "benchmark_accuracy": "NOT VERIFIED (pending laser/tape ground truth)",
         "timings": timings,

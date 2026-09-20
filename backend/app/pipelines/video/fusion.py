@@ -154,6 +154,14 @@ def fuse_video_metric_pointcloud(
 
     Assumptions:
         Poses are scaled in physical meters and camera coordinate frame matches pinhole unprojection.
+
+    Failure conditions:
+        Raises ValueError when no pose has matching RGB/depth data or all depth pixels are invalid.
+        Open3D I/O failures propagate to the caller.
+
+    Debugging clues:
+        Compare ``keyframes_fused`` against registered poses, inspect metric bounds for scale
+        explosion, and view raw versus filtered PLY files for duplicate depth sheets.
     """
     t_start = time.time()
     output_dir = Path(output_dir)
@@ -281,6 +289,12 @@ def fuse_video_metric_pointcloud(
             "filtered_point_count": len(pts_arr),
             "keyframes_fused": len(trajectory_poses),
             "voxel_size_m": voxel_size_m,
+            "outlier_filter": {
+                "method": "statistical",
+                "nb_neighbors": nb_neighbors,
+                "std_ratio": std_ratio,
+            },
+            "metric_bounds": bounds.model_dump(),
         },
     )
 

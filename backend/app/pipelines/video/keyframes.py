@@ -75,6 +75,11 @@ def compute_laplacian_sharpness(img: np.ndarray) -> float:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     else:
         gray = img
+    # Full-resolution 4K/2K Laplacians dominate CPU time while adding no useful ranking
+    # precision. Preserve aspect ratio and score a bounded thumbnail instead.
+    if gray.shape[1] > 640:
+        target_height = max(1, int(round(gray.shape[0] * 640 / gray.shape[1])))
+        gray = cv2.resize(gray, (640, target_height), interpolation=cv2.INTER_AREA)
     # Compute discrete Laplacian using 64-bit float to prevent overflow
     lap = cv2.Laplacian(gray, cv2.CV_64F)
     return float(np.var(lap))
@@ -161,6 +166,7 @@ def extract_video_keyframes(
     blur_threshold: float = 25.0,
     max_keyframes: int = 60,
     min_motion_delta: float = 3.0,
+    rotation_deg: int = 0,
 ) -> List[VideoKeyframe]:
     """Extracts informative, sharp keyframes from video and saves them to disk.
 
@@ -175,15 +181,19 @@ def extract_video_keyframes(
         blur_threshold: Minimum Laplacian sharpness score.
         max_keyframes: Maximum number of keyframes to extract.
         min_motion_delta: Minimum visual motion difference required relative to previous keyframe.
+        rotation_deg: Clockwise display rotation applied to decoded frames before all quality
+            measurements and JPEG output. Coordinates and dimensions in returned records refer
+            to the normalized display image.
 
     Returns:
         List of VideoKeyframe records.
 
     Assumptions:
-        Video can be decoded with OpenCV VideoCapture.
+        Video can be decoded with OpenCV VideoCapture. Selection spacing is increased when the
+        requested keyframe cap would otherwise be reached before the end of the capture.
 
     Failure conditions:
-        Raises ValueError if video cannot be opened.
+        Raises ValueError if video cannot be opened or rotation is not a multiple of 90 degrees.
 
     Dependencies:
         cv2.VideoCapture, compute_laplacian_sharpness, evaluate_exposure_quality, compute_visual_motion_delta.
@@ -202,57 +212,135 @@ def extract_video_keyframes(
     if fps <= 0:
         fps = 30.0
 
+    frame_count = max(0, int(cap.get(cv2.CAP_PROP_FRAME_COUNT)))
+    if max_keyframes <= 0:
+        cap.release()
+        raise ValueError("max_keyframes must be greater than zero")
+
+    rotation_deg %= 360
+    if rotation_deg not in {0, 90, 180, 270}:
+        cap.release()
+        raise ValueError("rotation_deg must be 0, 90, 180, or 270")
+
     keyframes: List[VideoKeyframe] = []
     last_keyframe_img: Optional[np.ndarray] = None
     last_selected_frame_idx = -min_frame_stride
     frame_idx = 0
+    window_count = min(max_keyframes, frame_count) if frame_count else 0
+    current_window = -1
+    best_candidate: Optional[Tuple[int, np.ndarray, float, bool]] = None
 
     while True:
         ret, frame = cap.read()
         if not ret:
             break
 
-        frames_since_last = frame_idx - last_selected_frame_idx
-        if frames_since_last >= min_frame_stride:
+        if rotation_deg == 90:
+            frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+        elif rotation_deg == 180:
+            frame = cv2.rotate(frame, cv2.ROTATE_180)
+        elif rotation_deg == 270:
+            frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+
+        if window_count > 1:
             sharpness = compute_laplacian_sharpness(frame)
             exposure_ok, _ = evaluate_exposure_quality(frame)
+            window_index = min(
+                window_count - 1,
+                int(frame_idx * window_count / max(1, frame_count)),
+            )
 
-            motion_ok = True
-            if last_keyframe_img is not None:
-                motion_delta = compute_visual_motion_delta(last_keyframe_img, frame)
-                if motion_delta < min_motion_delta and frames_since_last < max_frame_stride:
-                    motion_ok = False
-
-            # Select frame if sharp and has motion, or forced by max stride
-            is_sharp_candidate = exposure_ok and (sharpness >= blur_threshold)
-            is_forced_candidate = frames_since_last >= max_frame_stride
-
-            if (is_sharp_candidate and motion_ok) or is_forced_candidate:
+            if window_index != current_window and best_candidate is not None:
+                selected_idx, selected_frame, selected_sharpness, selected_exposure = best_candidate
                 keyframe_id = len(keyframes)
-                timestamp = float(frame_idx / fps)
                 img_path = output_dir / f"frame_{keyframe_id:06d}.jpg"
-                cv2.imwrite(str(img_path), frame, [cv2.IMWRITE_JPEG_QUALITY, 95])
-
-                keyframe_record = VideoKeyframe(
+                cv2.imwrite(str(img_path), selected_frame, [cv2.IMWRITE_JPEG_QUALITY, 95])
+                keyframes.append(VideoKeyframe(
                     keyframe_id=keyframe_id,
-                    frame_index=frame_idx,
-                    timestamp=timestamp,
+                    frame_index=selected_idx,
+                    timestamp=float(selected_idx / fps),
                     image_path=str(img_path.resolve()),
-                    sharpness_score=sharpness,
-                    width=int(frame.shape[1]),
-                    height=int(frame.shape[0]),
-                    selection_reason="sharpness_stride" if is_sharp_candidate else "forced_stride",
-                )
-                keyframes.append(keyframe_record)
-                last_keyframe_img = frame
-                last_selected_frame_idx = frame_idx
+                    sharpness_score=selected_sharpness,
+                    width=int(selected_frame.shape[1]),
+                    height=int(selected_frame.shape[0]),
+                    selection_reason=(
+                        "sharpest_in_window"
+                        if selected_exposure and selected_sharpness >= blur_threshold
+                        else "forced_window"
+                    ),
+                ))
+                last_keyframe_img = selected_frame
+                last_selected_frame_idx = selected_idx
+                best_candidate = None
 
-                if len(keyframes) >= max_keyframes:
-                    break
+            current_window = window_index
+            candidate_score = sharpness if exposure_ok else sharpness * 0.1
+            previous_score = -1.0
+            if best_candidate is not None:
+                previous_score = best_candidate[2] if best_candidate[3] else best_candidate[2] * 0.1
+            # Keep frame zero as a deterministic trajectory anchor; later windows optimize
+            # sharpness because they do not have an externally meaningful start boundary.
+            if candidate_score > previous_score and not (
+                window_index == 0 and best_candidate is not None
+            ):
+                best_candidate = (frame_idx, frame.copy(), sharpness, exposure_ok)
+        else:
+            frames_since_last = frame_idx - last_selected_frame_idx
+            if frames_since_last >= min_frame_stride:
+                sharpness = compute_laplacian_sharpness(frame)
+                exposure_ok, _ = evaluate_exposure_quality(frame)
+                motion_ok = (
+                    last_keyframe_img is None
+                    or compute_visual_motion_delta(last_keyframe_img, frame) >= min_motion_delta
+                    or frames_since_last >= max_frame_stride
+                )
+                if exposure_ok and motion_ok and (
+                    sharpness >= blur_threshold or frames_since_last >= max_frame_stride
+                ):
+                    keyframe_id = len(keyframes)
+                    img_path = output_dir / f"frame_{keyframe_id:06d}.jpg"
+                    cv2.imwrite(str(img_path), frame, [cv2.IMWRITE_JPEG_QUALITY, 95])
+                    keyframes.append(VideoKeyframe(
+                        keyframe_id=keyframe_id,
+                        frame_index=frame_idx,
+                        timestamp=float(frame_idx / fps),
+                        image_path=str(img_path.resolve()),
+                        sharpness_score=sharpness,
+                        width=int(frame.shape[1]),
+                        height=int(frame.shape[0]),
+                        selection_reason=(
+                            "sharpness_stride" if sharpness >= blur_threshold else "forced_stride"
+                        ),
+                    ))
+                    last_keyframe_img = frame
+                    last_selected_frame_idx = frame_idx
+
+                    if len(keyframes) >= max_keyframes:
+                        break
 
         frame_idx += 1
 
     cap.release()
+
+    if best_candidate is not None and len(keyframes) < max_keyframes:
+        selected_idx, selected_frame, selected_sharpness, selected_exposure = best_candidate
+        keyframe_id = len(keyframes)
+        img_path = output_dir / f"frame_{keyframe_id:06d}.jpg"
+        cv2.imwrite(str(img_path), selected_frame, [cv2.IMWRITE_JPEG_QUALITY, 95])
+        keyframes.append(VideoKeyframe(
+            keyframe_id=keyframe_id,
+            frame_index=selected_idx,
+            timestamp=float(selected_idx / fps),
+            image_path=str(img_path.resolve()),
+            sharpness_score=selected_sharpness,
+            width=int(selected_frame.shape[1]),
+            height=int(selected_frame.shape[0]),
+            selection_reason=(
+                "sharpest_in_window"
+                if selected_exposure and selected_sharpness >= blur_threshold
+                else "forced_window"
+            ),
+        ))
 
     # Write manifest JSON
     manifest_data = {
