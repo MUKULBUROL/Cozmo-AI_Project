@@ -496,41 +496,50 @@ def run_video_pipeline(
     # ---------------------------------------------------------
     t0 = time.time()
     structure_dir = output_dir / "structure"
-    struct_config = StructuralConfig(
-        scan_id=capture_id,
-        ply_path=str(recon_result.point_cloud_file),
-        output_dir=str(structure_dir),
-        distance_threshold_m=0.04,
-        min_wall_inliers=400,
-        min_floor_inliers=400,
-    )
-    structure_result = extract_structure(struct_config)
-
-    # Stage 3: Room Polygon
     geometry_dir = output_dir / "floorplan_geometry"
-    stage3_summary = run_stage3_pipeline(
-        scan_id=capture_id,
-        structure_json_path=structure_dir / "structure.json",
-        walls_ply_path=structure_dir / "walls.ply",
-        output_dir=geometry_dir,
-        max_wall_rmse_m=0.20,
-        min_wall_confidence=0.08,
-        min_wall_inliers=300,
-        max_corner_extension_m=1.00,
-        max_point_to_segment_m=1.00,
-    )
-
-    # Stage 4: Measurements with video uncertainty
     measurements_dir = output_dir / "measurements"
-    measurements_summary = compute_room_measurements(
-        scan_id=capture_id,
-        stage3_geometry_dir=geometry_dir,
-        stage2_structure_json_path=structure_dir / "structure.json",
-        output_dir=measurements_dir,
-        scale_uncertainty_rel=scale_estimate.relative_scale_uncertainty,
-        depth_uncertainty_m=0.05,
-        pose_uncertainty_m=0.03,
-    )
+    structure_result: Dict[str, Any] = {}
+    stage3_summary: Dict[str, Any] = {}
+    measurements_summary: Dict[str, Any] = {}
+    geometry_limitation: Optional[str] = None
+
+    try:
+        struct_config = StructuralConfig(
+            scan_id=capture_id,
+            ply_path=str(recon_result.point_cloud_file),
+            output_dir=str(structure_dir),
+            distance_threshold_m=0.04,
+            min_wall_inliers=400,
+            min_floor_inliers=400,
+        )
+        structure_result = extract_structure(struct_config)
+
+        # Stage 3: Room Polygon
+        stage3_summary = run_stage3_pipeline(
+            scan_id=capture_id,
+            structure_json_path=structure_dir / "structure.json",
+            walls_ply_path=structure_dir / "walls.ply",
+            output_dir=geometry_dir,
+            max_wall_rmse_m=0.20,
+            min_wall_confidence=0.08,
+            min_wall_inliers=300,
+            max_corner_extension_m=1.00,
+            max_point_to_segment_m=1.00,
+        )
+
+        # Stage 4: Measurements with video uncertainty
+        measurements_summary = compute_room_measurements(
+            scan_id=capture_id,
+            stage3_geometry_dir=geometry_dir,
+            stage2_structure_json_path=structure_dir / "structure.json",
+            output_dir=measurements_dir,
+            scale_uncertainty_rel=scale_estimate.relative_scale_uncertainty,
+            depth_uncertainty_m=0.05,
+            pose_uncertainty_m=0.03,
+        )
+    except Exception as e:
+        geometry_limitation = str(e)
+
     timings["geometry_processing_seconds"] = round(time.time() - t0, 3)
 
     # ---------------------------------------------------------
@@ -593,6 +602,7 @@ def run_video_pipeline(
         "perimeter_m": stage3_summary.get("perimeter_m") or measurements_summary.get("room_dimensions", {}).get("perimeter", {}).get("value", 0.0),
         "overall_status": "GOOD" if (sfm_report.status == VideoReconstructionStatus.GOOD and scale_estimate.status == "GOOD") else "PROVISIONAL",
         "benchmark_accuracy": "NOT VERIFIED (pending laser/tape ground truth)",
+        "geometry_limitation": geometry_limitation,
         "multiroom": multiroom_summary if run_multiroom else {"status": "NOT_REQUESTED"},
         "timings": timings,
     }

@@ -73,6 +73,7 @@ def unproject_metric_depth_map(
     cy: float,
     valid_mask: Optional[np.ndarray] = None,
     stride: int = 2,
+    max_depth_m: float = 8.0,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Vectorized pinhole unprojection of 2D metric depth into 3D camera coordinates.
 
@@ -86,9 +87,25 @@ def unproject_metric_depth_map(
         fx, fy, cx, cy: Camera intrinsics in pixels.
         valid_mask: Optional boolean mask selecting valid pixels.
         stride: Subsampling stride to manage memory and point density.
+        max_depth_m: Maximum acceptable metric depth in meters (default: 8.0m).
 
     Returns:
         Tuple of (points_cam: (N, 3) float32 array, valid_uv: (N, 2) int32 array).
+
+    Assumptions:
+        Depth values are positive and measured along the optical z-axis in meters.
+
+    Units / Coordinates:
+        Input depth in meters, output camera points in meters (X right, Y down, Z forward).
+
+    Failure Conditions:
+        Returns empty (0, 3) and (0, 2) arrays if no pixels pass depth bounds and validity mask.
+
+    Dependencies:
+        numpy.
+
+    Debugging Clues:
+        Check depth_m min/max before unprojection if unprojected cloud has zero points.
     """
     h, w = depth_m.shape
 
@@ -97,9 +114,9 @@ def unproject_metric_depth_map(
 
     sub_depth = depth_m[v_idx, u_idx]
     if valid_mask is not None:
-        sub_valid = valid_mask[v_idx, u_idx] & np.isfinite(sub_depth) & (sub_depth > 0.1)
+        sub_valid = valid_mask[v_idx, u_idx] & np.isfinite(sub_depth) & (sub_depth > 0.1) & (sub_depth <= max_depth_m)
     else:
-        sub_valid = np.isfinite(sub_depth) & (sub_depth > 0.1)
+        sub_valid = np.isfinite(sub_depth) & (sub_depth > 0.1) & (sub_depth <= max_depth_m)
 
     if not np.any(sub_valid):
         return np.empty((0, 3), dtype=np.float32), np.empty((0, 2), dtype=np.int32)
@@ -129,6 +146,7 @@ def fuse_video_metric_pointcloud(
     voxel_size_m: float = 0.03,
     nb_neighbors: int = 20,
     std_ratio: float = 2.0,
+    max_depth_m: float = 8.0,
 ) -> Tuple[ReconstructionResult, o3d.geometry.PointCloud]:
     """Unprojects and fuses multi-view metric depth into a clean metric 3D point cloud.
 
@@ -182,7 +200,9 @@ def fuse_video_metric_pointcloud(
         depth = depth_maps[kf_id]
         mask = depth_masks.get(kf_id, None)
 
-        pts_cam, uvs = unproject_metric_depth_map(depth, fx, fy, cx, cy, valid_mask=mask, stride=3)
+        pts_cam, uvs = unproject_metric_depth_map(
+            depth, fx, fy, cx, cy, valid_mask=mask, stride=3, max_depth_m=max_depth_m
+        )
         if len(pts_cam) == 0:
             continue
 
