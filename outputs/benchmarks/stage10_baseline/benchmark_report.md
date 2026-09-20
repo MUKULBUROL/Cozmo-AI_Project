@@ -1,6 +1,6 @@
 # Stage 10 — Frozen System Benchmark & Systematic Evaluation Report
 
-**Baseline Commit:** `ed9a4fcced2d62111542bc0dc631ee5d20fc3d05`
+**Baseline Commit:** `3cb70b562ae8a82bf13fed96cd8bde6f2d05eab1`
 
 *(Note: Stage 9 baseline commit hash updated from pre-rewrite 98aea6f... to 639c240d... due to repository Git history cleanup; source tree remained byte-for-byte identical)*
 
