@@ -23,11 +23,12 @@
 7. Important dependencies:
     json, math, pathlib, shapely.geometry, backend.app.models.output, backend.app.models.floorplan.
 
-8. What is most likely to break:
-    Polygon self-intersection causing Shapely topological validation errors.
-
-9. What a developer should inspect first:
-    Inspect overlap_violations count and connections list in property.json.
+8. Assumptions:
+    Every room is already expressed in one Y-up global metric frame before topology validation.
+9. Failure modes:
+    Polygon self-intersection, excessive room overlap, or malformed opening coordinates.
+10. First debugging points:
+    Inspect overlap_violations, capture-tier provenance, uncertainty policy, and connections.
 """
 
 import json
@@ -283,11 +284,24 @@ def assemble_property_plan_output(
     dim_rooms: List[DimensionedRoom] = []
     total_area_val = 0.0
     is_video = capture_tier == CaptureTier.VIDEO
-    wall_uncertainty_m = 0.10 if is_video else 0.03
-    linear_confidence = 0.70 if is_video else 0.95
-    relative_uncertainty = 0.10 if is_video else 0.05
-    wall_method = "video_metric_depth_ransac_wall" if is_video else "lidar_ransac_wall"
-    ceiling_method = "video_metric_depth_floor_ceiling_separation" if is_video else "lidar_floor_ceiling_separation"
+    is_photo = capture_tier == CaptureTier.PHOTO
+    wall_uncertainty_m = 0.15 if is_photo else (0.10 if is_video else 0.03)
+    linear_confidence = 0.60 if is_photo else (0.70 if is_video else 0.95)
+    relative_uncertainty = 0.15 if is_photo else (0.10 if is_video else 0.05)
+    wall_method = (
+        "photo_metric_depth_ransac_wall"
+        if is_photo
+        else ("video_metric_depth_ransac_wall" if is_video else "lidar_ransac_wall")
+    )
+    ceiling_method = (
+        "photo_metric_depth_floor_ceiling_separation"
+        if is_photo
+        else (
+            "video_metric_depth_floor_ceiling_separation"
+            if is_video
+            else "lidar_floor_ceiling_separation"
+        )
+    )
 
     for r in rooms:
         total_area_val += r.area_sqm
