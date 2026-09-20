@@ -100,6 +100,9 @@ def compute_room_measurements(
     mc_samples: int = 1000,
     random_seed: int = 42,
     confidence_level: float = 0.95,
+    scale_uncertainty_rel: float = 0.0,
+    pose_uncertainty_m: float = 0.0,
+    depth_uncertainty_m: float = 0.0,
 ) -> Dict[str, Any]:
     """Executes the full Stage 4 measurement and uncertainty computation workflow.
 
@@ -270,6 +273,9 @@ def compute_room_measurements(
             corner_b_inferred=inf_2,
             corner_extension_m=max_edge_ext,
             confidence_level=confidence_level,
+            scale_uncertainty_rel=scale_uncertainty_rel,
+            pose_uncertainty_m=pose_uncertainty_m,
+            depth_uncertainty_m=depth_uncertainty_m,
         )
 
         edge_conf = derive_wall_confidence(
@@ -332,6 +338,7 @@ def compute_room_measurements(
         num_samples=mc_samples,
         random_seed=random_seed,
         confidence_level=confidence_level,
+        scale_uncertainty_rel=scale_uncertainty_rel,
     )
 
     # Perimeter

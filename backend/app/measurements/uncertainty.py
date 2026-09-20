@@ -96,11 +96,15 @@ def calculate_wall_length_uncertainty(
     corner_b_inferred: bool = False,
     corner_extension_m: float = 0.0,
     confidence_level: float = 0.95,
+    scale_uncertainty_rel: float = 0.0,
+    pose_uncertainty_m: float = 0.0,
+    depth_uncertainty_m: float = 0.0,
 ) -> Tuple[float, float, Dict[str, Any]]:
     """Calculates defensible uncertainty interval and component breakdown for a wall edge.
 
     Purpose:
-        Combines wall plane fitting variance with positional uncertainties of start/end corners
+        Combines wall plane fitting variance with positional uncertainties of start/end corners,
+        global metric scale uncertainty, visual pose drift, and depth model uncertainty
         to construct a calibrated 95% confidence interval.
 
     Parameters:
@@ -112,6 +116,9 @@ def calculate_wall_length_uncertainty(
         corner_b_inferred: Whether end corner was geometrically inferred.
         corner_extension_m: Extrapolated gap extension at corners.
         confidence_level: Desired coverage probability (default 0.95 -> k=1.96).
+        scale_uncertainty_rel: Relative global scale uncertainty (sigma_s / s).
+        pose_uncertainty_m: Camera trajectory uncertainty in meters.
+        depth_uncertainty_m: Monocular depth model residual uncertainty in meters.
 
     Returns:
         Tuple of (lower_bound_m, upper_bound_m, uncertainty_components_dict).
@@ -128,11 +135,17 @@ def calculate_wall_length_uncertainty(
     # Gaussian coverage multiplier (k=1.96 for 95%, k=1.0 for 68%)
     k = 1.96 if abs(confidence_level - 0.95) < 0.02 else 1.0
 
+    # Scale uncertainty in physical meters
+    sigma_scale_m = nominal_length_m * max(0.0, scale_uncertainty_rel)
+
     # Total 1-sigma length uncertainty
     sigma_length = math.sqrt(
         (corner_a_uncertainty_m ** 2) +
         (corner_b_uncertainty_m ** 2) +
-        (wall_rmse_m ** 2)
+        (wall_rmse_m ** 2) +
+        (sigma_scale_m ** 2) +
+        (pose_uncertainty_m ** 2) +
+        (depth_uncertainty_m ** 2)
     )
 
     margin_of_error = k * sigma_length
@@ -146,6 +159,10 @@ def calculate_wall_length_uncertainty(
         "corner_a_inferred": corner_a_inferred,
         "corner_b_inferred": corner_b_inferred,
         "corner_extension_m": round(corner_extension_m, 4),
+        "scale_uncertainty_rel": round(scale_uncertainty_rel, 4),
+        "scale_uncertainty_m": round(sigma_scale_m, 4),
+        "pose_uncertainty_m": round(pose_uncertainty_m, 4),
+        "depth_uncertainty_m": round(depth_uncertainty_m, 4),
         "total_sigma_m": round(sigma_length, 4),
         "margin_of_error_m": round(margin_of_error, 4),
         "coverage_k": k,
@@ -160,12 +177,14 @@ def monte_carlo_area_and_perimeter_uncertainty(
     num_samples: int = 1000,
     random_seed: int = 42,
     confidence_level: float = 0.95,
+    scale_uncertainty_rel: float = 0.0,
 ) -> Dict[str, Any]:
     """Estimates floor area and perimeter uncertainty via deterministic Monte Carlo perturbation.
 
     Purpose:
         Provides defensible sensitivity intervals for non-linear polygon area and perimeter
-        by perturbing vertex coordinates within their physical uncertainty ellipses.
+        by perturbing vertex coordinates within their physical uncertainty ellipses and
+        scaling by global scale uncertainty.
 
     Parameters:
         vertices: List of ordered (x, z) coordinates defining the closed room polygon (unclosed).
@@ -173,6 +192,7 @@ def monte_carlo_area_and_perimeter_uncertainty(
         num_samples: Number of Monte Carlo stochastic iterations (default 1000).
         random_seed: Fixed random seed for complete deterministic reproducibility.
         confidence_level: Target coverage level (default 0.95).
+        scale_uncertainty_rel: Relative global scale uncertainty (sigma_s / s).
 
     Returns:
         Dictionary containing nominal values, standard deviations, and [lower, upper] intervals
@@ -209,11 +229,15 @@ def monte_carlo_area_and_perimeter_uncertainty(
     noise = rng.normal(loc=0.0, scale=1.0, size=(num_samples, n_pts, 2))
     perturbations = noise * sigma_coord[np.newaxis, :, np.newaxis]
 
+    # Global scale perturbation factor
+    scale_factors = rng.normal(loc=1.0, scale=max(0.0, scale_uncertainty_rel), size=(num_samples,))
+
     simulated_areas: List[float] = []
     simulated_perimeters: List[float] = []
 
     for s in range(num_samples):
-        perturbed_pts = pts_arr + perturbations[s]
+        s_factor = max(0.1, float(scale_factors[s]))
+        perturbed_pts = (pts_arr + perturbations[s]) * s_factor
         p = Polygon(perturbed_pts)
         if not p.is_valid:
             p = p.buffer(0)

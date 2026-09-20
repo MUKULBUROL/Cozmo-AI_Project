@@ -14,7 +14,7 @@
 4. Outputs:
    - Dense metric depth map (meters, float32) matching keyframe resolution.
    - Binary quality mask (uint8, 0 or 1) indicating trustworthy depth pixels.
-   - Summary statistics in `depth_stats.json`.
+   - Summary statistics and visualization outputs.
 
 5. Coordinate convention:
    Camera coordinate system: Z positive outward along optical axis.
@@ -26,7 +26,7 @@
    torch, transformers, cv2, numpy, pathlib, PIL.
 
 8. Assumptions:
-   Indoor residential scene where structural surfaces lie within 0.2m to 6.0m of camera.
+   Indoor residential scene where structural surfaces lie within 0.2m to 8.0m of camera.
 
 9. Main failure modes:
    - Specular reflections, glass, mirrors, or high contrast glare producing non-physical depth.
@@ -47,35 +47,67 @@ import torch
 from PIL import Image
 
 _DEPTH_MODEL = None
-_IMAGE_PROCESSOR = None
 
 
-def get_metric_depth_model(model_id: str = "depth-anything/Depth-Anything-V2-Metric-Indoor-Small-hf"):
-    """Loads and caches the pretrained metric depth model on CPU.
+class DepthAnythingV2Wrapper:
+    """Wrapper around HuggingFace Depth-Anything-V2-Metric model providing standard infer_image API."""
+
+    def __init__(self, model_id: str = "depth-anything/Depth-Anything-V2-Metric-Indoor-Small-hf", device: str = "cpu"):
+        from transformers import AutoImageProcessor, AutoModelForDepthEstimation
+        self.device = device
+        self.processor = AutoImageProcessor.from_pretrained(model_id)
+        self.model = AutoModelForDepthEstimation.from_pretrained(model_id)
+        self.model.to(device)
+        self.model.eval()
+
+    def infer_image(self, rgb_image: np.ndarray, input_size: int = 518) -> np.ndarray:
+        """Runs metric depth inference on an RGB image array."""
+        orig_h, orig_w = rgb_image.shape[:2]
+        inputs = self.processor(images=rgb_image, return_tensors="pt")
+        inputs = {k: v.to(self.device) for k, v in inputs.items()}
+
+        with torch.no_grad():
+            outputs = self.model(**inputs)
+            pred = outputs.predicted_depth
+
+        # Interpolate predicted depth back to original image resolution
+        pred_full = torch.nn.functional.interpolate(
+            pred.unsqueeze(1),
+            size=(orig_h, orig_w),
+            mode="bicubic",
+            align_corners=False,
+        ).squeeze().cpu().numpy().astype(np.float32)
+
+        return pred_full
+
+
+def get_metric_depth_model(
+    checkpoint_path: Optional[str] = None,
+    device: str = "cpu",
+) -> DepthAnythingV2Wrapper:
+    """Loads and caches the pretrained Depth Anything V2 metric model.
 
     Purpose:
         Maintains single in-memory instance of model to prevent redundant weights loading.
 
     Parameters:
-        model_id: Hugging Face model identifier.
+        checkpoint_path: Unused (maintained for backwards signature compatibility).
+        device: 'cpu' or 'cuda'.
 
     Returns:
-        Tuple of (model, image_processor).
+        DepthAnythingV2Wrapper in eval mode.
     """
-    global _DEPTH_MODEL, _IMAGE_PROCESSOR
-    if _DEPTH_MODEL is None or _IMAGE_PROCESSOR is None:
-        from transformers import AutoImageProcessor, AutoModelForDepthEstimation
-        _IMAGE_PROCESSOR = AutoImageProcessor.from_pretrained(model_id)
-        _DEPTH_MODEL = AutoModelForDepthEstimation.from_pretrained(model_id)
-        _DEPTH_MODEL.eval()
-    return _DEPTH_MODEL, _IMAGE_PROCESSOR
+    global _DEPTH_MODEL
+    if _DEPTH_MODEL is None:
+        _DEPTH_MODEL = DepthAnythingV2Wrapper(device=device)
+    return _DEPTH_MODEL
 
 
 def compute_depth_quality_mask(
     depth_m: np.ndarray,
     min_depth_m: float = 0.20,
-    max_depth_m: float = 6.00,
-    max_gradient_ratio: float = 0.15,
+    max_depth_m: float = 8.00,
+    max_gradient_ratio: float = 0.20,
 ) -> np.ndarray:
     """Creates a binary quality mask rejecting invalid, extreme, or edge-discontinuous depth.
 
@@ -90,11 +122,7 @@ def compute_depth_quality_mask(
 
     Returns:
         2D boolean array (True where depth is high quality).
-
-    Assumptions:
-        Structural walls and floors produce smooth, continuous depth within valid indoor bounds.
     """
-    # Finite and valid range mask
     range_mask = np.isfinite(depth_m) & (depth_m >= min_depth_m) & (depth_m <= max_depth_m)
 
     # Gradient edge discontinuity mask
@@ -102,7 +130,6 @@ def compute_depth_quality_mask(
     grad_y = cv2.Sobel(depth_m, cv2.CV_32F, 0, 1, ksize=3)
     grad_mag = np.sqrt(grad_x**2 + grad_y**2)
 
-    # Discontinuity threshold proportional to local depth
     rel_grad = grad_mag / np.maximum(depth_m, 0.1)
     smooth_mask = rel_grad < max_gradient_ratio
 
@@ -113,7 +140,8 @@ def predict_metric_depth(
     image_path: Path,
     output_depth_dir: Optional[Path] = None,
     min_depth_m: float = 0.20,
-    max_depth_m: float = 6.00,
+    max_depth_m: float = 8.00,
+    input_size: int = 518,
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Predicts dense metric depth in meters for a keyframe image.
 
@@ -125,38 +153,21 @@ def predict_metric_depth(
         output_depth_dir: Optional directory to save raw .npy and normalized PNG preview.
         min_depth_m: Minimum allowed indoor depth in meters.
         max_depth_m: Maximum allowed indoor depth in meters.
+        input_size: Nominal network evaluation size.
 
     Returns:
         Tuple of (depth_meters: np.ndarray, quality_mask: np.ndarray).
-
-    Assumptions:
-        Image is an RGB frame from an indoor walkthrough.
-
-    Dependencies:
-        torch, transformers, get_metric_depth_model, compute_depth_quality_mask.
     """
     image_path = Path(image_path)
-    model, processor = get_metric_depth_model()
+    model = get_metric_depth_model()
 
-    pil_img = Image.open(str(image_path)).convert("RGB")
-    orig_w, orig_h = pil_img.size
+    bgr = cv2.imread(str(image_path))
+    if bgr is None:
+        raise ValueError(f"Failed to read image at {image_path}")
+    rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 
-    inputs = processor(images=pil_img, return_tensors="pt")
+    pred_depth = model.infer_image(rgb, input_size=input_size).astype(np.float32)
 
-    with torch.no_grad():
-        outputs = model(**inputs)
-        # Predicted depth is in meters
-        pred_depth = outputs.predicted_depth
-
-    # Interpolate predicted depth to original image resolution
-    pred_depth = torch.nn.functional.interpolate(
-        pred_depth.unsqueeze(1),
-        size=(orig_h, orig_w),
-        mode="bicubic",
-        align_corners=False,
-    ).squeeze().cpu().numpy().astype(np.float32)
-
-    # Generate confidence quality mask
     quality_mask = compute_depth_quality_mask(
         pred_depth,
         min_depth_m=min_depth_m,
