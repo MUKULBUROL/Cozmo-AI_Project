@@ -1,83 +1,94 @@
-# COZMO AI — Spatial Intelligence & Architectural Reconstruction Platform
+# COZMO
 
-> Autonomous computer vision and spatial intelligence platform converting consumer iPhone captures (LiDAR, Video, Photo) into centimeter-accurate 2D/3D floor plans, forensic defect annotations, automated contractor repair scopes, and CAD/BIM exports with honest measurement uncertainty.
+COZMO reconstructs floor plans and property measurements from:
 
----
+- LiDAR captures
+- handheld video
+- room photos
 
-## 1. What COZMO Does
+It generates:
 
-- **Multi-Tier Reconstruction**: Ingests raw iPhone LiDAR sensor archives (dToF depth + ARKit poses), monocular 60 FPS video walkthroughs, or multi-view photo sets.
-- **Deterministic Metric Geometry**: Extracts 2D boundary polygons, wall lengths, opening spans (doors/windows), and ceiling heights with sub-centimeter mathematical determinism.
-- **Forensic Damage Intelligence**: Detects surface defects (water damage, mold, drywall cracks, impact holes) via YOLOv8s and projects them to 3D wall coordinates to generate automated insurance/restoration repair scopes.
-- **Multi-Room Stitching & Drift SLAM**: Optimizes multi-room topological layouts using closed-loop pose-graph SLAM with Huber robust loss.
-- **Multi-Format Architectural Exports**: Produces schema-compliant JSON, scalable interactive SVG, publication-ready multi-page PDF inspection reports, and Release-12 DXF CAD drawings.
-- **Absolute Honesty & Benchmark Integrity**: Missing physical ground truth strictly yields `PENDING_GT` / `NOT_EVALUABLE`. Zero synthetic hallucinations or fake passes.
-
----
-
-## 2. System Requirements
-
-- **Operating System**: Linux (Ubuntu 22.04+ recommended) or Windows 11 with WSL2.
-- **Python**: Python 3.10, 3.11, or 3.12.
-- **Node.js**: Node.js 18+ or 20+ (LTS recommended) and npm.
-- **C++ Build Tools**: CMake, C++ compiler, and COLMAP (optional for video SfM).
+- interactive floor plans
+- room measurements
+- openings
+- damage findings
+- repair scope
+- JSON / SVG / PDF / DXF exports
 
 ---
 
-## 3. Installation & Setup
+## Quick Start
+
+### 1. Start Backend API
+```bash
+python3 -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+Health Check: `http://localhost:8000/api/health`
+
+### 2. Start Frontend Workspace
+```bash
+cd frontend
+npm run dev
+```
+Open in browser:
+```
+http://localhost:3000
+```
+
+### 3. Evaluator Workflow
+1. Click **New Capture**
+2. Choose **LiDAR**, **Video**, or **Photos**
+3. Upload the supported capture
+4. Wait for processing
+5. Review the property plan
+6. Export the result
+
+---
+
+## Installation & Setup
 
 ```bash
-# 1. Clone repository
+# Clone repository
 git clone https://github.com/MUKULBUROL/Cozmo-AI_Project.git
 cd Cozmo-AI_Project
 
-# 2. Install Python dependencies
-pip install -r requirements.txt
-# or: pip install fastapi uvicorn reportlab shapely open3d pytest
+# Setup Python environment
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -e .
 
-# 3. Install Frontend dependencies
+# Setup Frontend dependencies
 cd frontend
-npm install
+npm ci
 cd ..
 ```
 
 ---
 
-## 4. Starting the Application
+## Supported Inputs
 
-### Backend API (FastAPI)
-```bash
-uvicorn backend.app.api.main:app --host 0.0.0.0 --port 8000 --reload
-```
-API Health Check: `http://localhost:8000/api/health`
-
-### Frontend Workspace (Next.js)
-```bash
-cd frontend
-npm run dev
-```
-Interactive Workspace: `http://localhost:3000`
+| Capture Type | Recommended Hardware / Format | Description |
+|---|---|---|
+| **LiDAR** | iPhone Pro (12 Pro–16 Pro) ZIP archive | Direct metric depth frames with odometry poses |
+| **Video** | Handheld 60 FPS MP4 / MOV | Monocular walkthrough with keyframe feature tracking |
+| **Photos** | 2–8 overlapping JPG/PNG photos | Multi-view perspective room images |
 
 ---
 
-## 5. Evaluator Interactive Flow
+## Deliverable Outputs
 
-1. Open `http://localhost:3000` in your web browser.
-2. Click **New Capture** in the header.
-3. Select the capture tier (**LiDAR**, **Video**, or **Photo**).
-4. Upload a sample capture package (e.g., `sample data/single_scan_floor_only.zip`).
-5. Observe live processing steps and transition to the result workspace (`/property/{id}`).
-6. Interact with the 2D SVG floor plan (zoom, pan, select walls and damage markers).
-7. Review dimensions, uncertainty intervals, opening schedules, and repair line items in the **Inspector Panel**.
-8. Open the **Export** menu in the header and download:
-   - **JSON**: Property schema hierarchy
-   - **SVG**: Vector architectural floor plan
-   - **PDF**: Multi-page inspection & repair report
-   - **DXF**: Layered CAD vector drawing
+| Format | Deliverable | Description |
+|---|---|---|
+| **JSON** | Property JSON (`.json`) | Machine-readable schema with rooms, walls, openings, damages, and 95% intervals |
+| **SVG** | Vector Floor Plan (`.svg`) | Standalone 2D vector architectural drawing with metric coordinates |
+| **PDF** | Inspection Report (`.pdf`) | Multi-page report with cover card, dimension schedules, and repair scope |
+| **DXF** | CAD Drawing (`.dxf`) | Release-12 layered CAD format (`WALLS`, `OPENINGS`, `DIMENSIONS`, `DAMAGE`) |
 
 ---
 
-## 6. CLI Tier Commands (One-Command-Per-Capture)
+## CLI Usage (One-Command Workflows)
+
+Run individual reconstruction pipelines from the terminal:
 
 ### LiDAR Reconstruction
 ```bash
@@ -106,14 +117,54 @@ python3 scripts/analyze_damage.py --fixture-set "data/damage_dev/SYNTHETIC_DEVEL
 
 ---
 
-## 7. Official Benchmark Suite
+## Project Structure
 
-Run the complete final validation and gate assessment suite:
+```
+CozmoAIProject/
+├── README.md
+├── pyproject.toml
+├── .gitignore
+│
+├── backend/
+│   ├── app/
+│   │   ├── api/             # FastAPI REST endpoints & job queue
+│   │   ├── benchmark/       # Accuracy metrics & gate evaluators
+│   │   ├── damage/          # Defect inference & 3D wall projection
+│   │   ├── export/          # JSON, SVG, PDF, and DXF exporters
+│   │   ├── geometry/        # Polygon extraction, RANSAC, & SLAM
+│   │   ├── measurements/    # Wall dimensions, openings, & confidence
+│   │   ├── models/          # Domain schemas & data contracts
+│   │   └── pipelines/       # LiDAR, Video, and Photo orchestrators
+│   └── tests/               # Pytest suite (196 automated tests)
+│
+├── frontend/
+│   ├── package.json
+│   ├── .env.example
+│   ├── src/
+│   │   ├── app/             # Next.js App Router pages
+│   │   ├── components/      # UI, FloorPlan canvas, & Inspector
+│   │   ├── domain/          # View models & contract adapters
+│   │   ├── geometry/        # SVG projection & label collision
+│   │   └── lib/             # API client & export handlers
+│   └── tests/               # Frontend Node test suite (59 unit tests)
+│
+├── scripts/                 # CLI pipelines & benchmark runners
+├── docs/                    # Architecture, reports, & specifications
+├── benchmark/               # Benchmark suites, manifest, & results
+├── outputs/                 # Benchmark summaries & fix-loop evidence
+└── data/                    # Development fixtures & ground-truth schemas
+```
+
+---
+
+## Benchmark Suite
+
+Run the final benchmark and gate evaluation suite:
 ```bash
 python3 scripts/run_final_benchmark.py
 ```
 
-Benchmark artifacts generated in:
+Generated benchmark artifacts:
 - `benchmark/results/metrics.json`
 - `benchmark/results/gate_results.json`
 - `benchmark/results/summary.csv`
@@ -121,18 +172,7 @@ Benchmark artifacts generated in:
 
 ---
 
-## 8. Export Formats Overview
-
-| Format | Content & Specifications | Primary Use Case |
-|---|---|---|
-| **JSON** | Full property schema: rooms, walls, openings, damages, line items | Machine-readable API integrations & downstream BIM databases |
-| **SVG** | Vector 2D floor plan with metric coordinates, dimensions, swings | Web viewers, interactive plan embedding, print prep |
-| **PDF** | Formatted inspection report with cover card, tables, damage logs, disclaimers | Client/contractor deliverable, insurance adjuster review |
-| **DXF** | Release-12 layered CAD format (`WALLS`, `OPENINGS`, `DIMENSIONS`, `DAMAGE`) | AutoCAD, Revit, SketchUp drafting and remodeling |
-
----
-
-## 9. Key Architectural Documentation
+## Key Documentation
 
 - [Compliance Matrix](file:///docs/COMPLIANCE_MATRIX.md)
 - [Final Benchmark Report](file:///docs/FINAL_BENCHMARK_REPORT.md)
@@ -140,11 +180,12 @@ Benchmark artifacts generated in:
 - [Capture Protocol Guide](file:///docs/CAPTURE_PROTOCOL.md)
 - [One-Command Workflow](file:///docs/ONE_COMMAND_WORKFLOW.md)
 - [Stage 11 Fix Loop Bundle](file:///docs/FIX_LOOP_BUNDLE.md)
+- [Final Repository Audit](file:///docs/FINAL_REPOSITORY_AUDIT.md)
 
 ---
 
-## 10. Known Limitations & Absolute Honesty Statement
+## Known Limitations & Absolute Honesty Statement
 
-1. **Independent Physical Ground Truth**: Certified laser disto / steel tape measurements were not bundled in the initial raw sample scans. All dependent physical accuracy gates are marked `NOT_EVALUABLE` / `PENDING_GT`.
-2. **Incumbent Scanner Benchmarking**: Awaiting parallel iPhone scans from commercial applications; structure prepared under `benchmark/incumbent/`.
+1. **Independent Physical Ground Truth**: Certified laser disto / steel tape measurements were not bundled in the initial raw sample scans. All dependent physical accuracy gates are strictly marked `NOT_EVALUABLE` / `PENDING_GT`.
+2. **Incumbent Scanner Benchmarking**: Awaiting parallel iPhone scans from commercial applications; evaluation structure is configured under `benchmark/incumbent/`.
 3. **Monocular Video Scale**: Unscaled SfM point clouds require external metric scale anchors (IMU or known object reference) for absolute metric scaling.
