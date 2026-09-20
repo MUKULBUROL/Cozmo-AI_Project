@@ -75,11 +75,17 @@ class DamageClass(str, Enum):
     WATER_STAIN = "water_stain"
     CRACK_STRUCTURAL = "crack_structural"
     CRACK_COSMETIC = "crack_cosmetic"
+    SURFACE_CRACK = "surface_crack"
     MOLD = "mold"
+    MOLD_LIKE_DISCOLORATION = "mold_like_discoloration"
+    HOLE_OR_MISSING_MATERIAL = "hole_or_missing_material"
     IMPACT = "impact"
     FIRE_SMOKE = "fire_smoke"
+    BURN_OR_CHAR = "burn_or_char"
+    SURFACE_BREAKAGE = "surface_breakage"
     CORROSION = "corrosion"
     SURFACE_PEELING = "surface_peeling"
+    OTHER_VISIBLE_DAMAGE = "other_visible_damage"
 
 
 class DamageRegion(BaseModel):
@@ -87,11 +93,17 @@ class DamageRegion(BaseModel):
     damage_id: str
     surface_id: str = Field(..., description="Key of the associated wall, ceiling, or floor")
     damage_class: DamageClass
-    extent_area: Measurement[float] = Field(..., description="Metric surface area of damage (m2)")
+    extent_area: Optional[Measurement[float]] = Field(default=None, description="Metric surface area of damage (m2)")
+    extent_length: Optional[Measurement[float]] = Field(default=None, description="Metric linear length of crack (m)")
     polygon_on_surface: Optional[List[Point2D]] = Field(default=None, description="2D polygon relative to surface plane")
     concealed_damage_flag: bool = Field(False, description="Flag for concealed damage inside/behind surface")
     concealed_trigger_rule: Optional[str] = Field(None, description="Rule triggering concealed-damage flag")
     scope_line_items: List[str] = Field(default_factory=list, description="Remediation scope items (e.g. 'Drywall replacement 4x8')")
+    status: str = Field("ACCEPTED", description="Geometric and validation status (ACCEPTED, PROVISIONAL, etc.)")
+    confidence: float = Field(0.85, ge=0.0, le=1.0, description="Confidence in damage observation and extent")
+    supporting_images: List[str] = Field(default_factory=list, description="Frame identifiers observing this damage")
+    concealed_flags: List[Dict[str, Any]] = Field(default_factory=list, description="Structured concealed damage risk flags")
+    detailed_scope_items: List[Dict[str, Any]] = Field(default_factory=list, description="Structured repair scope line items")
 
 
 class DimensionedOpening(BaseModel):
@@ -140,3 +152,7 @@ class PropertyPlanOutput(BaseModel):
     capture_metadata: Dict[str, Any] = Field(default_factory=dict)
     reconstruction_method: str
     stitching_residual_meters: Optional[float] = None
+    damage_regions: List[DamageRegion] = Field(default_factory=list, description="All property damage regions")
+    concealed_damage_flags: List[Dict[str, Any]] = Field(default_factory=list, description="Whole-property concealed damage risk flags")
+    scope_line_items: List[Dict[str, Any]] = Field(default_factory=list, description="Whole-property repair scope line items")
+

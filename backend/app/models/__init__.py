@@ -46,6 +46,16 @@ from .room_polygon import (
     RoomPolygonData,
     Stage3PolygonResult,
 )
+from .damage import (
+    DamageStatus,
+    DamageQualityStatus,
+    DamageQualityGate,
+    DamageFrame,
+    DamageObservation2D,
+    ConcealedDamageFlag,
+    ScopeLineItem,
+    DamageRegion3D,
+)
 
 __all__ = [
     "CaptureTier",
@@ -82,4 +92,13 @@ __all__ = [
     "CandidateCornerRecord",
     "RoomPolygonData",
     "Stage3PolygonResult",
+    "DamageStatus",
+    "DamageQualityStatus",
+    "DamageQualityGate",
+    "DamageFrame",
+    "DamageObservation2D",
+    "ConcealedDamageFlag",
+    "ScopeLineItem",
+    "DamageRegion3D",
 ]
+
