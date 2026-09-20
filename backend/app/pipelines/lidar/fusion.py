@@ -20,6 +20,7 @@ def fuse_scan_frames(
     max_frames: Optional[int] = None,
     point_subsample_step: int = 1,
     progress_callback: Optional[Callable[[int, int, int], None]] = None,
+    custom_poses: Optional[Dict[int, Pose6D]] = None,
 ) -> Tuple[np.ndarray, np.ndarray, List[Pose6D], Dict[str, Any]]:
     """Streams and fuses multi-frame depth maps into a shared world-coordinate point cloud.
 
@@ -32,6 +33,7 @@ def fuse_scan_frames(
         max_frames: Optional limit on processed frames.
         point_subsample_step: Intra-frame point stride (e.g. 1 = all valid pixels, 2 = 1/4th).
         progress_callback: Callback(processed_count, total_frames, current_points).
+        custom_poses: Optional mapping of frame_id -> Pose6D (used by Stage 6 drift-corrected reconstruction).
 
     Returns:
         fused_points: (N, 3) float32 array in metric world coordinates.
@@ -56,6 +58,9 @@ def fuse_scan_frames(
     for frame_id, ts, depth_mm, confidence, pose, intrinsics in loader.stream_frames(
         frame_stride=frame_stride, max_frames=max_frames
     ):
+        if custom_poses and frame_id in custom_poses:
+            pose = custom_poses[frame_id]
+
         frames_processed += 1
         H, W = depth_mm.shape
         total_depth_pixels_considered += H * W

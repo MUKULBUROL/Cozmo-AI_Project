@@ -115,16 +115,16 @@ def detect_loop_candidates(
 
                 # Optional bounding box overlap check if point clouds are present
                 if keyframes[i].local_pcd is not None and keyframes[j].local_pcd is not None:
-                    # Check if bounding boxes in world space overlap
-                    pcd_i_world = keyframes[i].local_pcd.clone().transform(keyframes[i].matrix)
-                    pcd_j_world = keyframes[j].local_pcd.clone().transform(keyframes[j].matrix)
+                    import copy
+                    pcd_i_world = copy.deepcopy(keyframes[i].local_pcd).transform(keyframes[i].matrix)
+                    pcd_j_world = copy.deepcopy(keyframes[j].local_pcd).transform(keyframes[j].matrix)
                     box_i = pcd_i_world.get_axis_aligned_bounding_box()
                     box_j = pcd_j_world.get_axis_aligned_bounding_box()
 
                     min_i, max_i = box_i.get_min_bound(), box_i.get_max_bound()
                     min_j, max_j = box_j.get_min_bound(), box_j.get_max_bound()
 
-                    overlap = np.all(min_i <= max_j) and np.all(min_j <= max_i)
+                    overlap = bool(np.all(min_i <= max_j) and np.all(min_j <= max_i))
                     if overlap:
                         reasons.append("point_cloud_bounding_overlap")
 

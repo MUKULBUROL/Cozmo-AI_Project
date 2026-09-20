@@ -197,29 +197,77 @@ def select_registration_keyframes(
         raise ValueError("Cannot select keyframes from an empty scan")
 
     keyframes: List[KeyframeNode] = []
+    import io
+    from PIL import Image
+
+    # Step 1: Scan odometry records in memory (takes ~2 milliseconds)
+    selected_records: List[Dict[str, Any]] = []
     last_pos: Optional[np.ndarray] = None
     last_quat: Optional[Tuple[float, float, float, float]] = None
     last_frame_idx: int = -999999
 
-    # Stream frames with stride 2 for fast evaluation
-    for frame_id, ts, depth_mm, conf, pose, intrinsics in loader.stream_frames(frame_stride=2):
-        current_pos = np.array([pose.x, pose.y, pose.z], dtype=np.float64)
-        current_quat = (pose.qx, pose.qy, pose.qz, pose.qw)
+    for r in loader.odometry_records:
+        frame_id = int(r["frame"])
+        pos = np.array([float(r["x"]), float(r["y"]), float(r["z"])], dtype=np.float64)
+        quat = (float(r["qx"]), float(r["qy"]), float(r["qz"]), float(r["qw"]))
 
-        is_keyframe = False
-        if len(keyframes) == 0:
-            is_keyframe = True
+        is_kf = False
+        if len(selected_records) == 0:
+            is_kf = True
         else:
-            trans_dist = float(np.linalg.norm(current_pos - last_pos))
-            rot_deg = compute_relative_rotation_deg(last_quat, current_quat)
+            trans_dist = float(np.linalg.norm(pos - last_pos))
+            rot_deg = compute_relative_rotation_deg(last_quat, quat)
             frame_gap = frame_id - last_frame_idx
 
             if trans_dist >= min_translation_m or rot_deg >= min_rotation_deg or frame_gap >= max_frame_gap:
-                is_keyframe = True
+                is_kf = True
 
-        if is_keyframe:
-            pcd = None
-            if load_point_clouds:
+        if is_kf:
+            selected_records.append(r)
+            last_pos = pos
+            last_quat = quat
+            last_frame_idx = frame_id
+
+    # Always ensure final frame is included
+    final_record = loader.odometry_records[-1]
+    final_id = int(final_record["frame"])
+    if selected_records and int(selected_records[-1]["frame"]) != final_id:
+        if final_id - int(selected_records[-1]["frame"]) > 10:
+            selected_records.append(final_record)
+
+    # Step 2: Load depth point clouds only for selected keyframes
+    keyframes: List[KeyframeNode] = []
+    for node_idx, r in enumerate(selected_records):
+        frame_id = int(r["frame"])
+        ts = float(r["timestamp"])
+        intrinsics = loader.get_scaled_intrinsics(r)
+        pose = Pose6D(
+            timestamp=ts,
+            frame_index=frame_id,
+            x=float(r["x"]),
+            y=float(r["y"]),
+            z=float(r["z"]),
+            qx=float(r["qx"]),
+            qy=float(r["qy"]),
+            qz=float(r["qz"]),
+            qw=float(r["qw"]),
+            intrinsics=intrinsics,
+        )
+        T = pose_to_matrix(pose)
+
+        pcd = None
+        if load_point_clouds:
+            depth_path = f"{loader.scan_id}/depth/{r['frame']}.png"
+            conf_path = f"{loader.scan_id}/confidence/{r['frame']}.png"
+            if depth_path in loader.namelist and conf_path in loader.namelist:
+                depth_bytes = loader.zf.read(depth_path)
+                depth_img = Image.open(io.BytesIO(depth_bytes))
+                depth_mm = np.array(depth_img, dtype=np.uint16)
+
+                conf_bytes = loader.zf.read(conf_path)
+                conf_img = Image.open(io.BytesIO(conf_bytes))
+                conf = np.array(conf_img, dtype=np.uint8)
+
                 pcd = extract_local_point_cloud(
                     depth_mm=depth_mm,
                     confidence=conf,
@@ -228,49 +276,15 @@ def select_registration_keyframes(
                     estimate_normals=True,
                 )
 
-            T = pose_to_matrix(pose)
-            node = KeyframeNode(
-                node_id=len(keyframes),
-                frame_id=frame_id,
-                timestamp=ts,
-                pose=pose,
-                matrix=T,
-                intrinsics=intrinsics,
-                local_pcd=pcd,
-            )
-            keyframes.append(node)
-            last_pos = current_pos
-            last_quat = current_quat
-            last_frame_idx = frame_id
-
-    # Always ensure the final frame is a keyframe to evaluate closure
-    if keyframes and keyframes[-1].frame_id != loader.odometry_records[-1]["frame"]:
-        final_record = loader.odometry_records[-1]
-        final_id = int(final_record["frame"])
-        # Only add if sufficiently distant from last keyframe
-        if final_id - keyframes[-1].frame_id > 10:
-            # Load final frame data if point clouds requested
-            final_pose = Pose6D(
-                timestamp=float(final_record["timestamp"]),
-                frame_index=final_id,
-                x=float(final_record["x"]),
-                y=float(final_record["y"]),
-                z=float(final_record["z"]),
-                qx=float(final_record["qx"]),
-                qy=float(final_record["qy"]),
-                qz=float(final_record["qz"]),
-                qw=float(final_record["qw"]),
-            )
-            T = pose_to_matrix(final_pose)
-            node = KeyframeNode(
-                node_id=len(keyframes),
-                frame_id=final_id,
-                timestamp=final_pose.timestamp,
-                pose=final_pose,
-                matrix=T,
-                intrinsics=loader.get_scaled_intrinsics(final_record),
-                local_pcd=None,
-            )
-            keyframes.append(node)
+        node = KeyframeNode(
+            node_id=node_idx,
+            frame_id=frame_id,
+            timestamp=ts,
+            pose=pose,
+            matrix=T,
+            intrinsics=intrinsics,
+            local_pcd=pcd,
+        )
+        keyframes.append(node)
 
     return keyframes
