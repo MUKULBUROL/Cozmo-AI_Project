@@ -1,0 +1,340 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 500" width="980" height="500" style="background:#0f172a; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;">
+  <defs>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <!-- Header -->
+  <text x="40" y="40" fill="#f8fafc" font-size="20" font-weight="bold">STAGE 11 VIDEO REGISTRATION TIMELINE</text>
+  <text x="40" y="65" fill="#94a3b8" font-size="13">Capture: c7d28f72c6 | Registered: 31/40 (77.5%) | Largest Tracking Gap: 21.1s | Components: 2</text>
+  <!-- Legend -->
+  <circle cx="50" cy="95" r="7" fill="#22c55e"/>
+  <text x="65" y="99" fill="#e2e8f0" font-size="12">Registered (✅)</text>
+  <circle cx="190" cy="95" r="7" fill="#ef4444"/>
+  <text x="205" y="99" fill="#e2e8f0" font-size="12">Unregistered (❌)</text>
+  <rect x="330" y="88" width="14" height="14" rx="2" fill="#3b82f6"/>
+  <text x="352" y="99" fill="#e2e8f0" font-size="12">Graph Component Inlier</text>
+  <g id="kf_0" transform="translate(40, 120)">
+    <rect width="88" height="65" rx="6" fill="#450a0a" stroke="#ef4444" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF00</text>
+    <text x="80" y="17" fill="#ef4444" font-size="10" font-weight="bold" text-anchor="end">❌ UNREG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=0.0s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=17</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=214</text>
+  </g>
+  <g id="kf_1" transform="translate(134, 120)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF01</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=9.1s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=169</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=1263</text>
+  </g>
+  <g id="kf_2" transform="translate(228, 120)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF02</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=12.9s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=161</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=1078</text>
+  </g>
+  <g id="kf_3" transform="translate(322, 120)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF03</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=19.2s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=138</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=1974</text>
+  </g>
+  <g id="kf_4" transform="translate(416, 120)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF04</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=23.6s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=52</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=353</text>
+  </g>
+  <g id="kf_5" transform="translate(510, 120)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF05</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=28.4s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=155</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=753</text>
+  </g>
+  <g id="kf_6" transform="translate(604, 120)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF06</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=34.9s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=181</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=1551</text>
+  </g>
+  <g id="kf_7" transform="translate(698, 120)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF07</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=40.9s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=131</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=403</text>
+  </g>
+  <g id="kf_8" transform="translate(792, 120)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF08</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=46.3s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=203</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=903</text>
+  </g>
+  <g id="kf_9" transform="translate(886, 120)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF09</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=51.9s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=90</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=815</text>
+  </g>
+  <g id="kf_10" transform="translate(40, 195)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF10</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=56.2s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=228</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=1961</text>
+  </g>
+  <g id="kf_11" transform="translate(134, 195)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF11</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=62.8s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=85</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=1223</text>
+  </g>
+  <g id="kf_12" transform="translate(228, 195)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF12</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=64.9s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=175</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=1641</text>
+  </g>
+  <g id="kf_13" transform="translate(322, 195)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF13</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=72.6s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=201</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=1003</text>
+  </g>
+  <g id="kf_14" transform="translate(416, 195)">
+    <rect width="88" height="65" rx="6" fill="#450a0a" stroke="#ef4444" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF14</text>
+    <text x="80" y="17" fill="#ef4444" font-size="10" font-weight="bold" text-anchor="end">❌ UNREG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=78.2s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=41</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=192</text>
+  </g>
+  <g id="kf_15" transform="translate(510, 195)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF15</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=85.9s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=136</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=656</text>
+  </g>
+  <g id="kf_16" transform="translate(604, 195)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF16</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=88.9s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=205</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=2463</text>
+  </g>
+  <g id="kf_17" transform="translate(698, 195)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF17</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=94.2s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=153</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=2014</text>
+  </g>
+  <g id="kf_18" transform="translate(792, 195)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF18</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=101.1s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=124</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=564</text>
+  </g>
+  <g id="kf_19" transform="translate(886, 195)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF19</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=106.0s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=290</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=1890</text>
+  </g>
+  <g id="kf_20" transform="translate(40, 270)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF20</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=112.8s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=141</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=1981</text>
+  </g>
+  <g id="kf_21" transform="translate(134, 270)">
+    <rect width="88" height="65" rx="6" fill="#450a0a" stroke="#ef4444" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF21</text>
+    <text x="80" y="17" fill="#ef4444" font-size="10" font-weight="bold" text-anchor="end">❌ UNREG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=115.1s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=92</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=0</text>
+  </g>
+  <g id="kf_22" transform="translate(228, 270)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF22</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=122.3s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=149</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=1181</text>
+  </g>
+  <g id="kf_23" transform="translate(322, 270)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF23</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=127.0s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=158</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=947</text>
+  </g>
+  <g id="kf_24" transform="translate(416, 270)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF24</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=132.4s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=31</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=305</text>
+  </g>
+  <g id="kf_25" transform="translate(510, 270)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF25</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=136.6s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=180</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=517</text>
+  </g>
+  <g id="kf_26" transform="translate(604, 270)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF26</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=144.0s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=65</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=1764</text>
+  </g>
+  <g id="kf_27" transform="translate(698, 270)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF27</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=147.5s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=66</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=1198</text>
+  </g>
+  <g id="kf_28" transform="translate(792, 270)">
+    <rect width="88" height="65" rx="6" fill="#450a0a" stroke="#ef4444" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF28</text>
+    <text x="80" y="17" fill="#ef4444" font-size="10" font-weight="bold" text-anchor="end">❌ UNREG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=154.0s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=172</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=70</text>
+  </g>
+  <g id="kf_29" transform="translate(886, 270)">
+    <rect width="88" height="65" rx="6" fill="#450a0a" stroke="#ef4444" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF29</text>
+    <text x="80" y="17" fill="#ef4444" font-size="10" font-weight="bold" text-anchor="end">❌ UNREG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=157.3s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=64</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=34</text>
+  </g>
+  <g id="kf_30" transform="translate(40, 345)">
+    <rect width="88" height="65" rx="6" fill="#450a0a" stroke="#ef4444" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF30</text>
+    <text x="80" y="17" fill="#ef4444" font-size="10" font-weight="bold" text-anchor="end">❌ UNREG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=163.6s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=63</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=137</text>
+  </g>
+  <g id="kf_31" transform="translate(134, 345)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF31</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=168.6s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=56</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=687</text>
+  </g>
+  <g id="kf_32" transform="translate(228, 345)">
+    <rect width="88" height="65" rx="6" fill="#450a0a" stroke="#ef4444" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF32</text>
+    <text x="80" y="17" fill="#ef4444" font-size="10" font-weight="bold" text-anchor="end">❌ UNREG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=174.9s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=42</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=283</text>
+  </g>
+  <g id="kf_33" transform="translate(322, 345)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF33</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=179.3s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=47</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=131</text>
+  </g>
+  <g id="kf_34" transform="translate(416, 345)">
+    <rect width="88" height="65" rx="6" fill="#450a0a" stroke="#ef4444" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF34</text>
+    <text x="80" y="17" fill="#ef4444" font-size="10" font-weight="bold" text-anchor="end">❌ UNREG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=187.7s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=40</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=147</text>
+  </g>
+  <g id="kf_35" transform="translate(510, 345)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF35</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=190.6s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=192</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=1804</text>
+  </g>
+  <g id="kf_36" transform="translate(604, 345)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF36</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=196.1s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=94</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=907</text>
+  </g>
+  <g id="kf_37" transform="translate(698, 345)">
+    <rect width="88" height="65" rx="6" fill="#450a0a" stroke="#ef4444" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF37</text>
+    <text x="80" y="17" fill="#ef4444" font-size="10" font-weight="bold" text-anchor="end">❌ UNREG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=201.6s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=30</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=143</text>
+  </g>
+  <g id="kf_38" transform="translate(792, 345)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF38</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=207.3s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=96</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=1444</text>
+  </g>
+  <g id="kf_39" transform="translate(886, 345)">
+    <rect width="88" height="65" rx="6" fill="#14532d" stroke="#22c55e" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="8" y="18" fill="#f8fafc" font-size="12" font-weight="bold">KF39</text>
+    <text x="80" y="17" fill="#22c55e" font-size="10" font-weight="bold" text-anchor="end">✅ REG</text>
+    <text x="8" y="34" fill="#94a3b8" font-size="10">t=213.6s</text>
+    <text x="8" y="47" fill="#cbd5e1" font-size="9">sharp=85</text>
+    <text x="8" y="58" fill="#60a5fa" font-size="9">inliers=466</text>
+  </g>
+  <rect x="40" y="430" width="900" height="50" rx="6" fill="#1e293b" stroke="#334155"/>
+  <text x="56" y="452" fill="#f8fafc" font-size="12" font-weight="bold">Root Cause Analysis:</text>
+  <text x="56" y="470" fill="#94a3b8" font-size="11">Disconnected visual match graph: 30 of 39 consecutive frame transitions have 0 inliers due to multi-second window jumps.</text>
+</svg>

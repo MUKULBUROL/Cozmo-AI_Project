@@ -1,0 +1,86 @@
+{
+  "capture_id": "damage_synthetic_fixtures",
+  "tier": "damage",
+  "status": "WORKING",
+  "measurements": [
+    {
+      "measurement_id": "dev_water_stain_01_area",
+      "room_id": "dev_damage_fixture",
+      "type": "damage_area",
+      "predicted_value": 1.15,
+      "reference_value": 1.2,
+      "unit": "m2",
+      "absolute_error": 0.05,
+      "relative_error": 0.0417,
+      "evidence_level": "SYNTHETIC_GROUND_TRUTH",
+      "status": "EVALUATED",
+      "uncertainty_lower": null,
+      "uncertainty_upper": null,
+      "details": {
+        "class": "water_stain",
+        "target_surface": "wall"
+      }
+    },
+    {
+      "measurement_id": "dev_crack_01_length",
+      "room_id": "dev_damage_fixture",
+      "type": "damage_length",
+      "predicted_value": 1.48,
+      "reference_value": 1.5,
+      "unit": "m",
+      "absolute_error": 0.02,
+      "relative_error": 0.0133,
+      "evidence_level": "SYNTHETIC_GROUND_TRUTH",
+      "status": "EVALUATED",
+      "uncertainty_lower": null,
+      "uncertainty_upper": null,
+      "details": {
+        "class": "surface_crack",
+        "target_surface": "wall"
+      }
+    },
+    {
+      "measurement_id": "dev_hole_01_area",
+      "room_id": "dev_damage_fixture",
+      "type": "damage_area",
+      "predicted_value": 0.34,
+      "reference_value": 0.35,
+      "unit": "m2",
+      "absolute_error": 0.01,
+      "relative_error": 0.0286,
+      "evidence_level": "SYNTHETIC_GROUND_TRUTH",
+      "status": "EVALUATED",
+      "uncertainty_lower": null,
+      "uncertainty_upper": null,
+      "details": {
+        "class": "hole_or_missing_material",
+        "target_surface": "wall"
+      }
+    },
+    {
+      "measurement_id": "dev_mold_01_area",
+      "room_id": "dev_damage_fixture",
+      "type": "damage_area",
+      "predicted_value": 0.58,
+      "reference_value": 0.6,
+      "unit": "m2",
+      "absolute_error": 0.02,
+      "relative_error": 0.0333,
+      "evidence_level": "SYNTHETIC_GROUND_TRUTH",
+      "status": "EVALUATED",
+      "uncertainty_lower": null,
+      "uncertainty_upper": null,
+      "details": {
+        "class": "mold_like_discoloration",
+        "target_surface": "ceiling"
+      }
+    }
+  ],
+  "failures": [],
+  "runtime": 4.4,
+  "coverage": 1.0,
+  "gates": [],
+  "details": {
+    "fixture_count": 4
+  }
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "tier_a": "lidar",
+    "tier_b": "video",
+    "disclaimer": "CROSS-TIER AGREEMENT, NOT GROUND-TRUTH ACCURACY",
+    "shared_dimensions_count": 0,
+    "unmatched_a_count": 9,
+    "unmatched_b_count": 0,
+    "room_count_a": 1,
+    "room_count_b": 1,
+    "statistics": {
+      "count": 0,
+      "mean": null,
+      "median": null,
+      "rmse": null,
+      "std": null,
+      "min": null,
+      "max": null
+    },
+    "matched_measurements": []
+  },
+  {
+    "tier_a": "lidar",
+    "tier_b": "photo",
+    "disclaimer": "CROSS-TIER AGREEMENT, NOT GROUND-TRUTH ACCURACY",
+    "shared_dimensions_count": 0,
+    "unmatched_a_count": 9,
+    "unmatched_b_count": 0,
+    "room_count_a": 1,
+    "room_count_b": 1,
+    "statistics": {
+      "count": 0,
+      "mean": null,
+      "median": null,
+      "rmse": null,
+      "std": null,
+      "min": null,
+      "max": null
+    },
+    "matched_measurements": []
+  },
+  {
+    "tier_a": "video",
+    "tier_b": "photo",
+    "disclaimer": "CROSS-TIER AGREEMENT, NOT GROUND-TRUTH ACCURACY",
+    "shared_dimensions_count": 0,
+    "unmatched_a_count": 0,
+    "unmatched_b_count": 0,
+    "room_count_a": 1,
+    "room_count_b": 1,
+    "statistics": {
+      "count": 0,
+      "mean": null,
+      "median": null,
+      "rmse": null,
+      "std": null,
+      "min": null,
+      "max": null
+    },
+    "matched_measurements": []
+  }
+]
