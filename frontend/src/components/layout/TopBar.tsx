@@ -1,13 +1,10 @@
 /**
  * @file TopBar.tsx
- * @purpose Workspace top navigation bar showing branding, property breadcrumb, tier, and status.
- * @stage Frontend Stage 2 (Spatial Pro Product UI + Property Workspace)
+ * @purpose Workspace top navigation bar showing branding, property title, tier, status, and capture ID.
+ * @stage Frontend Final Polish — Simplified Evaluator UX.
  * @inputs title (string), tier (ReconstructionTier), status (ReconstructionStatus), captureId (string).
  * @outputs Accessible header bar matching Spatial Pro aesthetic.
  * @dependencies ../../domain/types, ../ui/StatusBadge, ../ui/TierBadge, next/link
- * @assumptions Fixed height (52px), crisp border-bottom.
- * @failureModes None.
- * @firstDebuggingPoints Check property title and badge prop propagation.
  */
 
 import React from 'react';
@@ -38,7 +35,7 @@ export function TopBar({ title, tier, status, captureId }: TopBarProps) {
         zIndex: 20,
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
         <Link
           href="/"
           style={{
@@ -81,19 +78,20 @@ export function TopBar({ title, tier, status, captureId }: TopBarProps) {
         <span style={{ color: 'var(--border-strong)', fontSize: '14px' }}>/</span>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span
+          <h1
             style={{
-              fontSize: '13px',
+              fontSize: '14px',
               fontWeight: 600,
               color: 'var(--text-primary)',
+              margin: 0,
             }}
           >
             {title}
-          </span>
+          </h1>
           <span
             className="mono"
             style={{
-              fontSize: '12px',
+              fontSize: '11.5px',
               color: 'var(--text-muted)',
             }}
           >

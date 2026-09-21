@@ -1,0 +1,37 @@
+{
+  "property_id": "PROPERTY_MULTIROOM_TEMPLATE_01",
+  "property_name": "Multi-Room Residential Benchmark Property",
+  "surveyor": "Independent Land Surveyors Ltd",
+  "timestamp": "2026-09-20T11:00:00Z",
+  "total_footprint_gross_m2": 88.50,
+  "rooms": [
+    "room_living",
+    "room_hallway",
+    "room_bedroom_1",
+    "room_bedroom_2",
+    "room_bathroom"
+  ],
+  "adjacency_edges": [
+    {
+      "from_room": "room_living",
+      "to_room": "room_hallway",
+      "connected_via": "passage"
+    },
+    {
+      "from_room": "room_hallway",
+      "to_room": "room_bedroom_1",
+      "connected_via": "door"
+    },
+    {
+      "from_room": "room_hallway",
+      "to_room": "room_bedroom_2",
+      "connected_via": "door"
+    },
+    {
+      "from_room": "room_hallway",
+      "to_room": "room_bathroom",
+      "connected_via": "door"
+    }
+  ],
+  "notes": "TEMPLATE: Multi-room connectivity and overall gross footprint ground-truth baseline."
+}

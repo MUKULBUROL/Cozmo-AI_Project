@@ -1,0 +1,120 @@
+{
+  "evaluated_at": "2026-09-20T23:17:24Z",
+  "total_gates": 9,
+  "passes": 3,
+  "fails": 0,
+  "not_evaluable": 6,
+  "gates": [
+    {
+      "gate_id": "GATE_OPENING_WIDTH",
+      "description": "Absolute opening width error <= 2 cm (0.02m) on >= 85% of openings.",
+      "result": "NOT_EVALUABLE",
+      "numerator": null,
+      "denominator": null,
+      "threshold": "error <= 0.02m on >= 85% of openings",
+      "evidence_level": "NOT_EVALUABLE",
+      "reasons": [
+        "Independent physical ground-truth openings absent in sample dataset.",
+        "Cannot evaluate gate without independent physical opening audit."
+      ]
+    },
+    {
+      "gate_id": "GATE_CEILING_HEIGHT",
+      "description": "Absolute ceiling-height error <= 1.5 cm (0.015m) per room.",
+      "result": "NOT_EVALUABLE",
+      "numerator": null,
+      "denominator": null,
+      "threshold": "error <= 0.015m per room",
+      "evidence_level": "NOT_EVALUABLE",
+      "reasons": [
+        "Independent physical ceiling height measurements absent in sample dataset."
+      ]
+    },
+    {
+      "gate_id": "GATE_REPEATABILITY",
+      "description": "Same-room same-tier wall agreement within 1 cm OR 0.5% per wall across independent scans.",
+      "result": "PASS",
+      "numerator": 1.0,
+      "denominator": 1.0,
+      "threshold": "<= 0.01m or <= 0.5%",
+      "evidence_level": "INTERNAL_CONSISTENCY",
+      "reasons": [
+        "Inter-scan agreement: 1/1 walls passed."
+      ]
+    },
+    {
+      "gate_id": "GATE_VIDEO_WALL_LENGTH",
+      "description": "Video tier wall-length relative error target approximately \u00b13% where physical GT exists.",
+      "result": "NOT_EVALUABLE",
+      "numerator": null,
+      "denominator": null,
+      "threshold": "approx \u00b13% (0.03)",
+      "evidence_level": "NOT_EVALUABLE",
+      "reasons": [
+        "Physical ground truth absent for video wall dimension validation."
+      ]
+    },
+    {
+      "gate_id": "GATE_PHOTO_WALL_LENGTH",
+      "description": "Photo tier wall-length relative error target approximately \u00b18% where physical GT exists.",
+      "result": "NOT_EVALUABLE",
+      "numerator": null,
+      "denominator": null,
+      "threshold": "approx \u00b18% (0.08)",
+      "evidence_level": "NOT_EVALUABLE",
+      "reasons": [
+        "Physical ground truth absent for photo wall dimension validation."
+      ]
+    },
+    {
+      "gate_id": "GATE_PHOTO_PROPERTY_FOOTPRINT",
+      "description": "Photo whole-property footprint relative error target approximately \u00b18% with calibrated uncertainty.",
+      "result": "NOT_EVALUABLE",
+      "numerator": null,
+      "denominator": null,
+      "threshold": "approx \u00b18% (0.08)",
+      "evidence_level": "NOT_EVALUABLE",
+      "reasons": [
+        "Physical ground truth absent for whole-property footprint evaluation."
+      ]
+    },
+    {
+      "gate_id": "GATE_DRIFT_ABLATION",
+      "description": "Drift correction and ablation must exist; raw odometry 'poses as-is' is unacceptable.",
+      "result": "PASS",
+      "numerator": 1.0,
+      "denominator": 1.0,
+      "threshold": "Ablation manifest & pose graph optimization implemented",
+      "evidence_level": "INTERNAL_CONSISTENCY",
+      "reasons": [
+        "Multi-room loop closure, pose graph optimization, and drift ablation study verified in Stage 6/6.1.",
+        "Verified 96.4% reduction in loop-closure residuals (loop-closure residual improved from 0.0906m to 0.0033m across 5 accepted loop constraints; endpoint gap 0.389m -> 0.448m)."
+      ]
+    },
+    {
+      "gate_id": "GATE_INCUMBENT_COMPARISON",
+      "description": "Dimension-by-dimension comparison against incumbent app; beat or tie on >= 70% shared dimensions.",
+      "result": "NOT_EVALUABLE",
+      "numerator": null,
+      "denominator": null,
+      "threshold": "beat/tie >= 70% (0.70)",
+      "evidence_level": "NOT_EVALUABLE",
+      "reasons": [
+        "No incumbent benchmark measurements provided in benchmark inputs."
+      ]
+    },
+    {
+      "gate_id": "GATE_DAMAGE_EXTENT",
+      "description": "Metric damage extent measurement and repair scope generation on synthetic fixtures.",
+      "result": "PASS",
+      "numerator": 4.0,
+      "denominator": 4.0,
+      "threshold": "Synthetic fixture extent validation & scope generation",
+      "evidence_level": "SYNTHETIC_GROUND_TRUTH",
+      "reasons": [
+        "Evaluated against synthetic/staged fixtures. Mean area rel error: 3.5%, Mean crack length rel error: 1.3%. Repair scope successfully generated.",
+        "NOTE: Sample dataset contains NO certified real damage annotations."
+      ]
+    }
+  ]
+}

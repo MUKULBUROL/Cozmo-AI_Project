@@ -1,13 +1,9 @@
 /**
  * @file MeasurementStatus.tsx
  * @purpose Subdued, transparent disclosure informing users that physical accuracy is not ground-truth validated.
- * @stage Frontend Stage 2 (Spatial Pro Product UI + Property Workspace)
+ * @stage Frontend Final Polish — Simplified Evaluator UX.
  * @inputs customMessage (optional).
  * @outputs Accessible informational banner rendered in inspector and measurement tabs.
- * @dependencies None
- * @assumptions Ground-truth benchmarks have not established cm-level real-world calibration. Transparency is mandatory.
- * @failureModes None (static informational UI).
- * @firstDebuggingPoints Verify component is visible on property inspector and measurement views.
  */
 
 import React from 'react';
@@ -19,12 +15,12 @@ interface MeasurementStatusProps {
 export function MeasurementStatus({ customMessage }: MeasurementStatusProps) {
   const message =
     customMessage ||
-    'Physical accuracy has not yet been validated against independent laser/tape ground truth.';
+    'Measurements have not yet been independently verified with laser/tape ground truth.';
 
   return (
     <div
       role="note"
-      aria-label="Accuracy disclaimer"
+      aria-label="Accuracy note"
       style={{
         display: 'flex',
         alignItems: 'flex-start',
@@ -56,7 +52,7 @@ export function MeasurementStatus({ customMessage }: MeasurementStatusProps) {
       </svg>
       <div>
         <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '2px' }}>
-          Accuracy Notice
+          Accuracy note
         </div>
         <div>{message}</div>
       </div>

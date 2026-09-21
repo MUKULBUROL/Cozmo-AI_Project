@@ -29,7 +29,46 @@ import { computePolygonCentroid, computeDimensionLabelPosition } from '../geomet
  * Standard ground-truth accuracy disclaimer text required across all measurement surfaces.
  */
 export const ACCURACY_DISCLAIMER_TEXT =
-  'Physical accuracy has not yet been validated against independent laser/tape ground truth.';
+  'Measurements have not yet been independently verified with laser/tape ground truth.';
+
+/**
+ * Formats canonical backend damage class strings into clean, human-readable Title Case labels.
+ * 
+ * @param damageClass - Raw or enum damage class string (e.g. 'crack_structural', 'water_stain').
+ * @returns Formatted human-friendly label (e.g. 'Structural Crack', 'Water Stain').
+ */
+export function formatDamageLabel(damageClass: string): string {
+  if (!damageClass) return 'Damage Finding';
+  const lower = damageClass.toLowerCase().trim();
+  switch (lower) {
+    case 'crack_structural':
+    case 'structural_crack':
+      return 'Structural Crack';
+    case 'water_stain':
+    case 'water_damage':
+      return 'Water Stain';
+    case 'surface_crack':
+    case 'drywall_crack':
+      return 'Surface Crack';
+    case 'mold_like_discoloration':
+    case 'mold':
+      return 'Mold Discoloration';
+    case 'hole_or_missing_material':
+    case 'hole':
+    case 'impact':
+      return 'Hole / Missing Material';
+    case 'other_visible_damage':
+    case 'defect':
+      return 'Visible Defect';
+    default:
+      return lower
+        .replace(/_/g, ' ')
+        .split(' ')
+        .filter(Boolean)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+  }
+}
 
 /**
  * Maps raw backend value objects to normalized ValueWithConfidence models.
