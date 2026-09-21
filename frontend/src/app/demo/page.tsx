@@ -496,14 +496,14 @@ pip install -e .`}
                   Run reconstruction from a folder of overlapping room still photos:
                 </p>
                 <CommandBlock
-                  code={`python3 scripts/reconstruct_photos.py --input "data/photo_dev/sample_room" --capture-id photo_rec_01`}
+                  code={`python3 scripts/reconstruct_photos.py --input "data/photo_dev/single_room" --capture-id photo_rec_01`}
                 />
 
                 <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '8px', lineHeight: 1.5 }}>
-                  <strong>Expected input structure:</strong> 2–8 still images per room (e.g. <code>photos/room_01/image1.jpg</code>, <code>image2.jpg</code>, <code>image3.jpg</code>).
+                  <strong>Expected input structure:</strong> 2–8 still images per room (e.g. <code>photos/room_01/image_01.jpg</code>, <code>image_02.jpg</code>, <code>image_03.jpg</code>).
                 </div>
                 <div className="callout-box" style={{ marginTop: '8px' }}>
-                  <strong>Data Integrity Note:</strong> Real photo inputs are clearly distinguished from development photo sets extracted from supplied video. Development sets extracted from video are explicitly labeled.
+                  <strong>Data Integrity Note:</strong> Real photo inputs are clearly distinguished from development photo sets. This sample dataset is a DEVELOPMENT photo set derived from video, NOT an assessor-provided genuine still-photo capture.
                 </div>
               </div>
 
@@ -533,18 +533,18 @@ pip install -e .`}
                     <tbody>
                       <tr>
                         <td><strong>Point Cloud</strong></td>
-                        <td className="mono" style={{ fontSize: '12px' }}>outputs/&lt;id&gt;/pointcloud.ply</td>
+                        <td className="mono" style={{ fontSize: '12px' }}>outputs/&lt;id&gt;/baseline_filtered.ply</td>
                         <td>Downsampled 3D metric point cloud</td>
                       </tr>
                       <tr>
                         <td><strong>Structural Planes</strong></td>
-                        <td className="mono" style={{ fontSize: '12px' }}>outputs/&lt;id&gt;/structures.json</td>
+                        <td className="mono" style={{ fontSize: '12px' }}>outputs/&lt;id&gt;/structure/structure.json</td>
                         <td>RANSAC floor, ceiling, and wall planes</td>
                       </tr>
                       <tr>
                         <td><strong>Measurements</strong></td>
-                        <td className="mono" style={{ fontSize: '12px' }}>outputs/&lt;id&gt;/measurements.json</td>
-                        <td>Wall lengths and 95% confidence intervals</td>
+                        <td className="mono" style={{ fontSize: '12px' }}>outputs/&lt;id&gt;/measurements/measurements.json</td>
+                        <td>Wall lengths and estimated uncertainty intervals</td>
                       </tr>
                       <tr>
                         <td><strong>Property JSON</strong></td>
@@ -558,7 +558,7 @@ pip install -e .`}
                       </tr>
                       <tr>
                         <td><strong>Benchmark Artifacts</strong></td>
-                        <td className="mono" style={{ fontSize: '12px' }}>benchmark/results/metrics.json</td>
+                        <td className="mono" style={{ fontSize: '12px' }}>outputs/benchmarks/stage10_baseline/metrics.json</td>
                         <td>Computed accuracy metrics and challenge gate summaries</td>
                       </tr>
                     </tbody>
@@ -1226,7 +1226,7 @@ npm run dev`}
                     3. Room Photo Set
                   </div>
                   <div style={{ fontSize: '12.5px', color: 'var(--text-secondary)' }}>
-                    Run <code>python3 scripts/reconstruct_photos.py --input &quot;data/photo_dev/sample_room&quot; --capture-id photo_rec_01</code> and check resulting 2D room polygon.
+                    Run <code>python3 scripts/reconstruct_photos.py --input &quot;data/photo_dev/single_room&quot; --capture-id photo_rec_01</code> and check resulting 2D room polygon.
                   </div>
                 </div>
 

@@ -33,7 +33,7 @@ python3 scripts/reconstruct_video.py --archive "sample data/single_room.zip" --s
 ### Photo Multi-View Reconstruction (Tier 3)
 Extracts multi-view keyframe clusters, estimates metric scale priors, and traces rectilinear room boundaries:
 ```bash
-python3 scripts/reconstruct_photos.py --input "data/photo_dev/sample_room" --capture-id photo_rec_01
+python3 scripts/reconstruct_photos.py --input "data/photo_dev/single_room" --capture-id photo_rec_01
 ```
 **Outputs**:
 - `outputs/photo_rec_01/room_polygon.json`: Scaled 2D room boundary polygon with uncertainty bounds.

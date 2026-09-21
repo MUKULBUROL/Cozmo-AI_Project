@@ -84,20 +84,20 @@ RGB frames
 ### Step 5 — Photo Reconstruction Demo
 Run reconstruction from a folder of overlapping room still photos:
 ```bash
-python3 scripts/reconstruct_photos.py --input "data/photo_dev/sample_room" --capture-id photo_rec_01
+python3 scripts/reconstruct_photos.py --input "data/photo_dev/single_room" --capture-id photo_rec_01
 ```
-*Expected input structure*: 2–8 still images per room (e.g. `photos/room_01/image1.jpg`, `image2.jpg`, `image3.jpg`).
-*Data Integrity Note*: Real photo inputs are clearly distinguished from development photo sets extracted from supplied video. Development sets extracted from video are explicitly labeled.
+*Expected input structure*: 2–8 still images per room (e.g. `photos/room_01/image_01.jpg`, `image_02.jpg`, `image_03.jpg`).
+*Data Integrity Note*: Real photo inputs are clearly distinguished from development photo sets. This sample dataset is a DEVELOPMENT photo set derived from video, NOT an assessor-provided genuine still-photo capture.
 
 ### Step 6 — Backend Outputs
 | Output Category | Path Pattern | Description |
 |---|---|---|
-| **Point Cloud** | `outputs/<id>/pointcloud.ply` | Downsampled 3D metric point cloud |
-| **Structural Planes** | `outputs/<id>/structures.json` | RANSAC floor, ceiling, and wall planes |
-| **Measurements** | `outputs/<id>/measurements.json` | Wall lengths and 95% confidence intervals |
+| **Point Cloud** | `outputs/<id>/baseline_filtered.ply` | Downsampled 3D metric point cloud |
+| **Structural Planes** | `outputs/<id>/structure/structure.json` | RANSAC floor, ceiling, and wall planes |
+| **Measurements** | `outputs/<id>/measurements/measurements.json` | Wall lengths and estimated uncertainty intervals |
 | **Property JSON** | `outputs/<id>/property/property.json` | Complete schema with rooms, walls, openings |
 | **Diagnostic SVG** | `outputs/<id>/property/drift_ablation.svg` | Trajectory comparison and pose graph loop residuals |
-| **Benchmark Artifacts** | `benchmark/results/metrics.json` | Computed accuracy metrics and challenge gate summaries |
+| **Benchmark Artifacts** | `outputs/benchmarks/stage10_baseline/metrics.json` | Computed accuracy metrics and challenge gate summaries |
 
 ---
 

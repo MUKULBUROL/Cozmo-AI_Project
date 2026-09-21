@@ -109,7 +109,7 @@ python3 scripts/reconstruct_video.py --archive "sample data/single_room.zip" --s
 
 ### Photo Reconstruction
 ```bash
-python3 scripts/reconstruct_photos.py --input "data/photo_dev/sample_room" --capture-id photo_rec_01
+python3 scripts/reconstruct_photos.py --input "data/photo_dev/single_room" --capture-id photo_rec_01
 ```
 
 ### Multi-Room Property Pipeline & Exports
@@ -119,7 +119,7 @@ python3 scripts/reconstruct_property.py --scan c7d28f72c6 --archive "sample data
 
 ### Forensic Damage & Scope Analysis
 ```bash
-python3 scripts/analyze_damage.py --fixture-set "data/damage_dev/SYNTHETIC_DEVELOPMENT_DAMAGE_SET.json"
+python3 scripts/analyze_damage.py --capture-id c00a170fe1
 ```
 
 ---
