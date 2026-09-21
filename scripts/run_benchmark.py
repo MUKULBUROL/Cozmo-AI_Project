@@ -57,7 +57,12 @@ import os
 import subprocess
 import sys
 import time
+from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from backend.app.benchmark.damage_metrics import evaluate_damage_benchmarks
 from backend.app.benchmark.gate_evaluator import evaluate_challenge_gates

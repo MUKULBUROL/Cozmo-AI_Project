@@ -40,7 +40,7 @@ class OpenVocabularyOpeningDetector:
 
     def __init__(
         self,
-        model_name: str = "yolov8s-worldv2.pt",
+        model_name: str = "weights/yolov8s-worldv2.pt",
         weights_path: Optional[str] = None,
         device: str = "cpu",
         classes: Optional[List[str]] = None,
@@ -72,8 +72,20 @@ class OpenVocabularyOpeningDetector:
 
         self.device = device
         self.classes = classes or ["door", "open doorway", "doorway", "window"]
-        selected_weights = weights_path or model_name
-        self.model = YOLOWorld(selected_weights)
+        REPO_ROOT = Path(__file__).resolve().parents[3]
+        selected = Path(weights_path or model_name)
+        if not selected.is_absolute() or not selected.exists():
+            candidates = [
+                selected,
+                REPO_ROOT / selected,
+                REPO_ROOT / "weights" / selected.name,
+                Path("weights") / selected.name,
+            ]
+            for cand in candidates:
+                if cand.exists():
+                    selected = cand
+                    break
+        self.model = YOLOWorld(str(selected))
         self.model.set_classes(self.classes)
 
     def detect(

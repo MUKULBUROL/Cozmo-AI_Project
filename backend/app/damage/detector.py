@@ -27,7 +27,7 @@
    pathlib, typing, numpy, ultralytics.YOLOWorld, backend.app.models.output.DamageClass.
 
 8. Assumptions:
-   - YOLO-World checkpoint `yolov8s-worldv2.pt` is cached locally in repository root or weights/.
+   - YOLO-World checkpoint `yolov8s-worldv2.pt` is cached locally in weights/.
    - CPU inference is fully supported with batch size 1.
    - Fallback programmatic detection is supported for deterministic unit testing without neural weights.
 
@@ -82,7 +82,7 @@ class OpenVocabularyDamageDetector:
 
     def __init__(
         self,
-        weights_path: str = "yolov8s-worldv2.pt",
+        weights_path: str = "weights/yolov8s-worldv2.pt",
         device: str = "cpu",
         taxonomy: Optional[Dict[str, DamageClass]] = None,
     ):
@@ -116,12 +116,19 @@ class OpenVocabularyDamageDetector:
 
         try:
             from ultralytics import YOLOWorld
+            REPO_ROOT = Path(__file__).resolve().parents[3]
             p = Path(weights_path)
-            if not p.is_absolute() and not p.exists():
-                # Check root or weights
-                alt_p = Path(__file__).resolve().parents[3] / weights_path
-                if alt_p.exists():
-                    p = alt_p
+            if not p.is_absolute() or not p.exists():
+                candidates = [
+                    p,
+                    REPO_ROOT / p,
+                    REPO_ROOT / "weights" / p.name,
+                    Path("weights") / p.name,
+                ]
+                for cand in candidates:
+                    if cand.exists():
+                        p = cand
+                        break
             if p.exists():
                 self.model = YOLOWorld(str(p))
                 self.model.set_classes(self.prompt_classes)

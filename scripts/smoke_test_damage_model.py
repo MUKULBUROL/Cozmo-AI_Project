@@ -24,15 +24,20 @@
    time, os, psutil, numpy, PIL, backend.app.damage.*.
 
 8. Assumptions:
-   - yolov8s-worldv2.pt exists locally.
+   - weights/yolov8s-worldv2.pt exists locally.
 """
 
 import time
 import os
+import sys
 import psutil
 from pathlib import Path
 import numpy as np
 from PIL import Image
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from backend.app.damage.detector import OpenVocabularyDamageDetector
 from backend.app.damage.segmenter import DamageMaskSegmenter
@@ -43,7 +48,7 @@ def run_smoke_test():
     t0 = time.time()
     mem0 = proc.memory_info().rss / 1024 / 1024
 
-    det = OpenVocabularyDamageDetector(weights_path="yolov8s-worldv2.pt", device="cpu")
+    det = OpenVocabularyDamageDetector(weights_path="weights/yolov8s-worldv2.pt", device="cpu")
     seg = DamageMaskSegmenter()
 
     img_paths = [
@@ -57,7 +62,7 @@ def run_smoke_test():
     print("STAGE 9 MODEL SMOKE TEST REPORT (Step 31)")
     print("=" * 60)
     print("Model:            YOLO-World (Open-Vocabulary)")
-    print("Checkpoint:       yolov8s-worldv2.pt (25.9 MB)")
+    print("Checkpoint:       weights/yolov8s-worldv2.pt (25.9 MB)")
     print("Device:           CPU (AMD Ryzen 5 5500U)")
     print(f"Classes requested: {len(det.prompt_classes)} damage classes")
     print(f"Initial Memory:   {mem0:.1f} MB")

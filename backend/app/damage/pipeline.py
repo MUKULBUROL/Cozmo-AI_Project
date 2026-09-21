@@ -78,7 +78,7 @@ class DamageAssessmentPipeline:
     def __init__(
         self,
         workspace_root: str = ".",
-        weights_path: str = "yolov8s-worldv2.pt",
+        weights_path: str = "weights/yolov8s-worldv2.pt",
         conf_threshold: float = 0.08,
         use_neural_detector: bool = True,
     ):

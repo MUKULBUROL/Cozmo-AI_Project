@@ -65,13 +65,19 @@ def _write_opening_attempt(
     """
     openings_dir = output_dir / "openings"
     openings_dir.mkdir(parents=True, exist_ok=True)
-    local_weights = Path("yolov8s-worldv2.pt")
+    repo_root = Path(__file__).resolve().parents[4]
+    candidates = [
+        repo_root / "weights" / "yolov8s-worldv2.pt",
+        Path("weights/yolov8s-worldv2.pt"),
+        Path("yolov8s-worldv2.pt"),
+    ]
+    local_weights_exists = any(c.exists() for c in candidates)
     reasons = []
     if not polygon_valid:
         reasons.append("metric_room_polygon_unavailable")
     if importlib.util.find_spec("ultralytics") is None:
         reasons.append("shared_stage5_detector_dependency_unavailable")
-    if not local_weights.exists():
+    if not local_weights_exists:
         reasons.append("local_stage5_detector_weights_unavailable_no_download_attempted")
     report = {
         "status": "NOT_EVALUABLE" if reasons else "PROVISIONAL",

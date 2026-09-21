@@ -71,7 +71,7 @@ def run_opening_pipeline(
     scan_id: str,
     dataset_root: str = "sample data",
     outputs_root: str = "outputs",
-    model_weights_path: str = "yolov8s-worldv2.pt",
+    model_weights_path: str = "weights/yolov8s-worldv2.pt",
     max_keyframes: int = 45,
     min_translation_m: float = 0.20,
     min_rotation_deg: float = 12.0,

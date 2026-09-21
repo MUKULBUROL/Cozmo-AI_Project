@@ -4,11 +4,11 @@
     "archive": "sample data/single_room.zip",
     "source_sha256": "0805f742d378e4bda480fef6e5839304364807bb7b77bb459983003727e9699c",
     "fresh_a": {
-      "capture_id": "cap_64ad06ea",
+      "capture_id": "cap_84f1d591",
       "status": "COMPLETE",
-      "processing_time_s": 10.73,
-      "output_dir": "/home/devcontainers/Projects/Active/CosmoAIProject/runtime/captures/cap_64ad06ea/outputs",
-      "result_url": "http://localhost:3000/property/cap_64ad06ea",
+      "processing_time_s": 15.71,
+      "output_dir": "/home/devcontainers/Projects/Active/CosmoAIProject/runtime/captures/cap_84f1d591/outputs",
+      "result_url": "http://localhost:3000/property/cap_84f1d591",
       "exports": {
         "json": {
           "status_code": 200,
@@ -22,7 +22,7 @@
         },
         "pdf": {
           "status_code": 200,
-          "bytes": 39965,
+          "bytes": 39967,
           "ok": true
         },
         "dxf": {
@@ -33,11 +33,11 @@
       }
     },
     "fresh_b": {
-      "capture_id": "cap_e6912464",
+      "capture_id": "cap_b584d9a0",
       "status": "COMPLETE",
-      "processing_time_s": 10.74,
-      "output_dir": "/home/devcontainers/Projects/Active/CosmoAIProject/runtime/captures/cap_e6912464/outputs",
-      "result_url": "http://localhost:3000/property/cap_e6912464",
+      "processing_time_s": 15.13,
+      "output_dir": "/home/devcontainers/Projects/Active/CosmoAIProject/runtime/captures/cap_b584d9a0/outputs",
+      "result_url": "http://localhost:3000/property/cap_b584d9a0",
       "exports": {
         "json": {
           "status_code": 200,
@@ -67,11 +67,11 @@
     "archive": "sample data/single_scan_floor_only.zip",
     "source_sha256": "f822287268297d2adab49deff8e0ee5f50f05304b450d8d47d0b5eb476aa74d4",
     "fresh_a": {
-      "capture_id": "cap_35a7221d",
+      "capture_id": "cap_c4062e97",
       "status": "COMPLETE",
-      "processing_time_s": 54.25,
-      "output_dir": "/home/devcontainers/Projects/Active/CosmoAIProject/runtime/captures/cap_35a7221d/outputs",
-      "result_url": "http://localhost:3000/property/cap_35a7221d",
+      "processing_time_s": 65.66,
+      "output_dir": "/home/devcontainers/Projects/Active/CosmoAIProject/runtime/captures/cap_c4062e97/outputs",
+      "result_url": "http://localhost:3000/property/cap_c4062e97",
       "exports": {
         "json": {
           "status_code": 200,
@@ -96,11 +96,11 @@
       }
     },
     "fresh_b": {
-      "capture_id": "cap_6feb2fbc",
+      "capture_id": "cap_65844855",
       "status": "COMPLETE",
-      "processing_time_s": 54.53,
-      "output_dir": "/home/devcontainers/Projects/Active/CosmoAIProject/runtime/captures/cap_6feb2fbc/outputs",
-      "result_url": "http://localhost:3000/property/cap_6feb2fbc",
+      "processing_time_s": 65.6,
+      "output_dir": "/home/devcontainers/Projects/Active/CosmoAIProject/runtime/captures/cap_65844855/outputs",
+      "result_url": "http://localhost:3000/property/cap_65844855",
       "exports": {
         "json": {
           "status_code": 200,
@@ -114,7 +114,7 @@
         },
         "pdf": {
           "status_code": 200,
-          "bytes": 43318,
+          "bytes": 43317,
           "ok": true
         },
         "dxf": {
@@ -130,11 +130,11 @@
     "archive": "sample data/single_scan_with_ceiling.zip",
     "source_sha256": "4bfbeb11ee21b114c46ad43cf0c9602d8ada827397f4e8b3c70dd827d0191379",
     "fresh_a": {
-      "capture_id": "cap_55543ec5",
+      "capture_id": "cap_1ba37fcd",
       "status": "COMPLETE",
-      "processing_time_s": 117.1,
-      "output_dir": "/home/devcontainers/Projects/Active/CosmoAIProject/runtime/captures/cap_55543ec5/outputs",
-      "result_url": "http://localhost:3000/property/cap_55543ec5",
+      "processing_time_s": 141.3,
+      "output_dir": "/home/devcontainers/Projects/Active/CosmoAIProject/runtime/captures/cap_1ba37fcd/outputs",
+      "result_url": "http://localhost:3000/property/cap_1ba37fcd",
       "exports": {
         "json": {
           "status_code": 200,
@@ -148,7 +148,7 @@
         },
         "pdf": {
           "status_code": 200,
-          "bytes": 42017,
+          "bytes": 42020,
           "ok": true
         },
         "dxf": {
@@ -159,11 +159,11 @@
       }
     },
     "fresh_b": {
-      "capture_id": "cap_d195696a",
+      "capture_id": "cap_8fe1f872",
       "status": "COMPLETE",
-      "processing_time_s": 116.84,
-      "output_dir": "/home/devcontainers/Projects/Active/CosmoAIProject/runtime/captures/cap_d195696a/outputs",
-      "result_url": "http://localhost:3000/property/cap_d195696a",
+      "processing_time_s": 136.65,
+      "output_dir": "/home/devcontainers/Projects/Active/CosmoAIProject/runtime/captures/cap_8fe1f872/outputs",
+      "result_url": "http://localhost:3000/property/cap_8fe1f872",
       "exports": {
         "json": {
           "status_code": 200,
@@ -177,7 +177,7 @@
         },
         "pdf": {
           "status_code": 200,
-          "bytes": 42022,
+          "bytes": 42019,
           "ok": true
         },
         "dxf": {

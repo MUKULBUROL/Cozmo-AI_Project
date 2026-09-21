@@ -31,6 +31,11 @@ import argparse
 import json
 import os
 import sys
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from backend.app.perception.pipeline import run_opening_pipeline
 
@@ -62,7 +67,7 @@ def main() -> None:
     parser.add_argument("--scan", type=str, required=True, help="Scan identifier (e.g., c00a170fe1)")
     parser.add_argument("--dataset-root", type=str, default="sample data/single_room", help="Root directory of scan data")
     parser.add_argument("--outputs-root", type=str, default="outputs", help="Root directory for outputs")
-    parser.add_argument("--weights", type=str, default="yolov8s-worldv2.pt", help="Path to YOLO-World weights")
+    parser.add_argument("--weights", type=str, default="weights/yolov8s-worldv2.pt", help="Path to YOLO-World weights")
     parser.add_argument("--max-keyframes", type=int, default=45, help="Maximum keyframes to extract")
     parser.add_argument("--headless", action="store_true", help="Run without graphical display (default)")
 
