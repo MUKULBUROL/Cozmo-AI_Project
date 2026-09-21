@@ -13,8 +13,14 @@
 """
 
 import argparse
+import sys
+import os
 import json
 from pathlib import Path
+
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
 
 from backend.app.pipelines.photo.ingestion import discover_photo_files
 from backend.app.pipelines.photo.pipeline import run_photo_room_pipeline
