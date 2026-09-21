@@ -1,7 +1,7 @@
 Gate ID,Requirement,Target Threshold,Result,Evidence Level,Reasons
 GATE_OPENING_WIDTH,Absolute opening width error <= 2 cm (0.02m) on >= 85% of openings.,error <= 0.02m on >= 85% of openings,NOT_EVALUABLE,NOT_EVALUABLE,Independent physical ground-truth openings absent in sample dataset.; Cannot evaluate gate without independent physical opening audit.
 GATE_CEILING_HEIGHT,Absolute ceiling-height error <= 1.5 cm (0.015m) per room.,error <= 0.015m per room,NOT_EVALUABLE,NOT_EVALUABLE,Independent physical ceiling height measurements absent in sample dataset.
-GATE_REPEATABILITY,Same-room same-tier wall agreement within 1 cm OR 0.5% per wall across independent scans.,<= 0.01m or <= 0.5%,PASS,INTERNAL_CONSISTENCY,Inter-scan agreement: 1/1 walls passed.
+GATE_REPEATABILITY,Same-room same-tier wall agreement within 1 cm OR 0.5% per wall across independent scans.,<= 0.01m or <= 0.5%,NOT_EVALUABLE,NOT_EVALUABLE,Independent repeat physical scans do not exist in current sample dataset.; Processing the same raw capture twice does not constitute repeatability.
 GATE_VIDEO_WALL_LENGTH,Video tier wall-length relative error target approximately ±3% where physical GT exists.,approx ±3% (0.03),NOT_EVALUABLE,NOT_EVALUABLE,Physical ground truth absent for video wall dimension validation.
 GATE_PHOTO_WALL_LENGTH,Photo tier wall-length relative error target approximately ±8% where physical GT exists.,approx ±8% (0.08),NOT_EVALUABLE,NOT_EVALUABLE,Physical ground truth absent for photo wall dimension validation.
 GATE_PHOTO_PROPERTY_FOOTPRINT,Photo whole-property footprint relative error target approximately ±8% with calibrated uncertainty.,approx ±8% (0.08),NOT_EVALUABLE,NOT_EVALUABLE,Physical ground truth absent for whole-property footprint evaluation.

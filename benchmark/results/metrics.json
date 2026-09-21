@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-09-20T23:17:24Z",
-  "baseline_commit": "3cb70b562ae8a82bf13fed96cd8bde6f2d05eab1",
-  "runtime_seconds": 0.003,
+  "timestamp": "2026-09-21T06:35:40Z",
+  "baseline_commit": "5ccbec2c5048aa8ee9379253814447a3bec9db7c",
+  "runtime_seconds": 0.004,
   "physical_ground_truth_status": "GROUND_TRUTH_NOT_AVAILABLE",
   "lidar": {
     "measurements_count": 9,
@@ -159,41 +159,17 @@
     "repeatability": {
       "tier": "lidar",
       "capture_a": "single_scan_floor_only",
-      "capture_b": "single_scan_with_ceiling",
-      "status": "EVALUATED",
-      "wall_differences": [
-        {
-          "measurement_id": "rep_lidar_3",
-          "room_id": "room_01",
-          "type": "wall_length",
-          "predicted_value": 0.076,
-          "reference_value": 0.076,
-          "unit": "m",
-          "absolute_error": 0.0,
-          "relative_error": 0.0,
-          "evidence_level": "INTERNAL_CONSISTENCY",
-          "status": "EVALUATED",
-          "uncertainty_lower": null,
-          "uncertainty_upper": null,
-          "details": {
-            "candidate_a": "wall_02",
-            "candidate_b": "wall_02"
-          }
-        }
+      "capture_b": null,
+      "status": "REPEATABILITY_NOT_EVALUABLE",
+      "wall_differences": [],
+      "walls_within_gate_count": 0,
+      "total_compared_walls": 0,
+      "gate_pass_ratio": null,
+      "summary_statistics": {},
+      "reasons": [
+        "Independent repeat physical scans do not exist in current sample dataset.",
+        "Processing the same raw capture twice does not constitute repeatability."
       ],
-      "walls_within_gate_count": 1,
-      "total_compared_walls": 1,
-      "gate_pass_ratio": 1.0,
-      "summary_statistics": {
-        "count": 1,
-        "mean": 0.0,
-        "median": 0.0,
-        "rmse": 0.0,
-        "std": 0.0,
-        "min": 0.0,
-        "max": 0.0
-      },
-      "reasons": [],
       "note": "REPEATABILITY EVALUATES INTER-SCAN STABILITY, NOT PHYSICAL ACCURACY. REPEATABILITY DOES NOT MEASURE ABSOLUTE BIAS."
     }
   },

@@ -134,6 +134,10 @@ def load_incumbent_measurements(csv_path: Optional[str]) -> List[IncumbentRecord
     if not csv_path or not os.path.exists(csv_path):
         return []
 
+    # Template Safety Guard: Never consume template files as real incumbent benchmark captures
+    if os.path.basename(csv_path).lower().startswith("template") or "template" in os.path.basename(csv_path).lower():
+        return []
+
     records: List[IncumbentRecord] = []
     with open(csv_path, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
