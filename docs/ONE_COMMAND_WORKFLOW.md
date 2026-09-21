@@ -57,7 +57,7 @@ python3 scripts/reconstruct_property.py --scan c7d28f72c6 --archive "sample data
 ### Forensic Damage & Automated Scope Analysis
 Executes YOLOv8s semantic damage detection, 3D wall projection, concealed cavity rule evaluation, and repair scope itemization:
 ```bash
-python3 scripts/analyze_damage.py --fixture-set "data/damage_dev/SYNTHETIC_DEVELOPMENT_DAMAGE_SET.json"
+python3 scripts/analyze_damage.py --capture-id c00a170fe1
 ```
 **Outputs**:
 - `outputs/damage_analysis/damage_detections.json`: Localized defect bounding boxes with classifications.

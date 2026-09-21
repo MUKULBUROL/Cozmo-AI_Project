@@ -155,6 +155,15 @@ def load_ground_truth_contract(ground_truth_dir: Optional[str] = None) -> Ground
             source_dir=ground_truth_dir,
         )
 
+    # Template Safety Guard: Never consume template folders as certified physical ground truth
+    dir_norm = os.path.normpath(ground_truth_dir).lower()
+    if os.path.basename(dir_norm) == "templates" or dir_norm.endswith("ground_truth/templates"):
+        return GroundTruthContract(
+            status="GROUND_TRUTH_NOT_AVAILABLE",
+            has_ground_truth=False,
+            source_dir=ground_truth_dir,
+        )
+
     measurements: List[GroundTruthRecord] = []
     openings: List[GroundTruthRecord] = []
     damage: List[GroundTruthRecord] = []

@@ -1,4 +1,7 @@
 {
+  "is_template": true,
+  "status": "TEMPLATE_EXAMPLE_DO_NOT_USE_AS_FINAL_GT",
+  "warning": "TEMPLATE / EXAMPLE ONLY - DO NOT USE AS FINAL GROUND TRUTH",
   "property_id": "PROPERTY_TEMPLATE_01",
   "room_id": "room_01",
   "room_name": "Living Room / Benchmark Chamber",

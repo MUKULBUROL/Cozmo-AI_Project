@@ -52,6 +52,10 @@ from typing import Dict, Any, Optional, List
 import numpy as np
 import open3d as o3d
 
+REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
+
 from backend.app.pipelines.lidar.loader import LiDARScanLoader
 from backend.app.pipelines.lidar.fusion import fuse_scan_frames
 from backend.app.geometry.structural_extraction import extract_structure, StructuralConfig

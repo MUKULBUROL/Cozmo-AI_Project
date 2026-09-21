@@ -1,9 +1,9 @@
 {
-  "evaluated_at": "2026-09-20T23:17:24Z",
+  "evaluated_at": "2026-09-21T06:35:40Z",
   "total_gates": 9,
-  "passes": 3,
+  "passes": 2,
   "fails": 0,
-  "not_evaluable": 6,
+  "not_evaluable": 7,
   "gates": [
     {
       "gate_id": "GATE_OPENING_WIDTH",
@@ -33,13 +33,14 @@
     {
       "gate_id": "GATE_REPEATABILITY",
       "description": "Same-room same-tier wall agreement within 1 cm OR 0.5% per wall across independent scans.",
-      "result": "PASS",
-      "numerator": 1.0,
-      "denominator": 1.0,
+      "result": "NOT_EVALUABLE",
+      "numerator": null,
+      "denominator": null,
       "threshold": "<= 0.01m or <= 0.5%",
-      "evidence_level": "INTERNAL_CONSISTENCY",
+      "evidence_level": "NOT_EVALUABLE",
       "reasons": [
-        "Inter-scan agreement: 1/1 walls passed."
+        "Independent repeat physical scans do not exist in current sample dataset.",
+        "Processing the same raw capture twice does not constitute repeatability."
       ]
     },
     {

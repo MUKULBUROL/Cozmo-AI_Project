@@ -207,11 +207,15 @@ def run_final_benchmark(
     ]
 
     # Repeatability
+    # NOTE: Genuine physical repeatability strictly requires two independent acquisitions
+    # of the same physical room with separate corresponding wall measurements.
+    # Because distinct repeat acquisitions are not yet present in sample dataset,
+    # evaluate_repeatability safely reports REPEATABILITY_NOT_EVALUABLE.
     repeatability_res = evaluate_repeatability(
         capture_a_name="single_scan_floor_only",
-        capture_b_name="single_scan_with_ceiling",
+        capture_b_name=None,
         candidates_a=lidar_candidates,
-        candidates_b=lidar_candidates,
+        candidates_b=None,
         tier="lidar",
     )
 
@@ -457,20 +461,17 @@ def generate_final_report_markdown(
         "- **Gate Status**: `NOT_EVALUABLE` (Pending calibrated vertical laser disto GT).",
         "",
         "## 8. Repeatability Benchmark",
-        "- **Challenge Target**: Same-room same-tier wall agreement within 1.0 cm or 0.5% per wall.",
-        "- **Evaluation Pair**: `single_scan_floor_only` vs `single_scan_with_ceiling` (same physical room).",
-        "- **Results**:",
-        "  - Compared Walls: 4",
-        "  - Max Absolute Difference: 0.4 cm (0.004m)",
-        "  - Max Relative Difference: 0.08%",
-        "  - Passing Walls: 4/4 (100.0%)",
-        "- **Gate Status**: `PASS` (Repeatability is capture-vs-capture consistency, distinct from physical GT accuracy).",
+        "- **Challenge Target**: Same-room same-tier wall agreement within 1.0 cm or 0.5% per wall across independent scans.",
+        "- **Evaluation Status**: `NOT_EVALUABLE` / `PENDING_REPEAT_CAPTURE`.",
+        "- **Reason**: Genuine physical repeatability requires two independent acquisitions of the same physical room with real wall correspondences. Replaying identical or single-scan candidates does not constitute physical repeatability.",
+        "- **Gate Status**: `NOT_EVALUABLE` (Awaiting dual independent repeat captures per Room A protocol).",
         "",
-        "## 9. Multi-Room Adjacency & Footprint",
-        "- **Topological Connectivity**: Evaluated on multi-room graph topology (5 zones: Living, Hallway, Bed 1, Bed 2, Bath).",
-        "- **Adjacency Graph**: 4/4 correct edges, 0 missing edges, 0 false edges -> `VALID_CONNECTED_GRAPH`.",
+        "## 9. Multi-Room Adjacency & Footprint (Development Evidence)",
+        "- **Topological Connectivity**: Evaluated on multi-room graph topology fixture (5 zones: Living, Hallway, Bed 1, Bed 2, Bath).",
+        "- **Evidence Source**: `DEVELOPMENT EVIDENCE` (Synthetic / staged multi-room topology test fixture; not physical property survey).",
+        "- **Adjacency Graph**: 4/4 correct edges, 0 missing edges, 0 false edges -> `VALID_CONNECTED_GRAPH (DEVELOPMENT)`.",
         "- **Impossible Room Overlap**: 0.00 m² (0.0% overlap area).",
-        "- **Footprint Status**: Pass for topological consistency; physical gross footprint accuracy `PENDING_GT`.",
+        "- **Physical Property Footprint Accuracy**: `PENDING_GT` / `NOT_EVALUABLE` (Physical field property survey required).",
         "",
         "## 10. Drift Correction & Ablation Summary",
         "- **Pose-Graph SLAM Optimization**: Incorporates closed-loop pose graph optimization with Huber robust loss.",
