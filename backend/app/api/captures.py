@@ -328,6 +328,7 @@ def _get_capture_result_payload(capture_id: str) -> dict:
 
 
 @router.get("/{capture_id}/exports/json")
+@router.get("/{capture_id}/export/json")
 async def export_json_endpoint(capture_id: str):
     """Retrieve or download machine-readable property JSON export.
 
@@ -351,6 +352,7 @@ async def export_json_endpoint(capture_id: str):
 
 
 @router.get("/{capture_id}/exports/svg")
+@router.get("/{capture_id}/export/svg")
 async def export_svg_endpoint(capture_id: str):
     """Retrieve or download architectural vector floor plan SVG export.
 
@@ -374,6 +376,7 @@ async def export_svg_endpoint(capture_id: str):
 
 
 @router.get("/{capture_id}/exports/pdf")
+@router.get("/{capture_id}/export/pdf")
 async def export_pdf_endpoint(capture_id: str):
     """Retrieve or download multi-page property reconstruction PDF report.
 
@@ -397,6 +400,7 @@ async def export_pdf_endpoint(capture_id: str):
 
 
 @router.get("/{capture_id}/exports/dxf")
+@router.get("/{capture_id}/export/dxf")
 async def export_dxf_endpoint(capture_id: str):
     """Retrieve or download standard CAD 2D DXF floor plan export.
 
