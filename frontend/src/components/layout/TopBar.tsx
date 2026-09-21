@@ -1,6 +1,6 @@
 /**
  * @file TopBar.tsx
- * @purpose Workspace top navigation bar showing branding, property title, tier, status, and capture ID.
+ * @purpose Workspace top navigation bar showing branding, property title, tier, status, evaluator guide link, and capture ID.
  * @stage Frontend Final Polish — Simplified Evaluator UX.
  * @inputs title (string), tier (ReconstructionTier), status (ReconstructionStatus), captureId (string).
  * @outputs Accessible header bar matching Spatial Pro aesthetic.
@@ -100,7 +100,22 @@ export function TopBar({ title, tier, status, captureId }: TopBarProps) {
         </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <Link
+          href="/demo"
+          style={{
+            fontSize: '12px',
+            fontWeight: 500,
+            color: 'var(--text-secondary)',
+            padding: '4px 10px',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--border)',
+            backgroundColor: 'var(--surface-subtle)',
+            transition: 'color 0.15s ease, border-color 0.15s ease',
+          }}
+        >
+          Evaluator Guide
+        </Link>
         <TierBadge tier={tier} />
         <StatusBadge status={status} />
       </div>
