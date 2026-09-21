@@ -16,6 +16,7 @@
 
 import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { PropertyViewModel, RoomViewModel, Point2D } from '../../domain/types';
+import { formatDamageLabel } from '../../domain/adapters';
 import { computeViewBox } from '../../geometry/viewbox';
 import { pointsToSvgPath } from '../../geometry/polygon';
 import {
@@ -439,31 +440,69 @@ export function FloorPlanCanvas({
             room.damages.map((dmg) => {
               const hostWall = room.walls.find((w) => w.id === dmg.hostSurfaceId);
               const pos = hostWall ? hostWall.labelPoint : room.center;
+              const markerRadius = dmg.metricArea
+                ? Math.max(0.16, Math.min(0.35, Math.sqrt(dmg.metricArea.value / Math.PI) * 0.35))
+                : 0.20;
+              const labelText = formatDamageLabel(dmg.damageClass);
+              const pillHeight = 0.16;
+              const pillWidth = Math.max(0.70, labelText.length * 0.052 + 0.16);
+              const labelY = pos.y - markerRadius - 0.12;
 
               return (
-                <g key={dmg.id}>
+                <g key={dmg.id} className="damage-marker-group">
+                  {/* Outer dashed perimeter circle */}
                   <circle
                     cx={pos.x}
                     cy={pos.y}
-                    r={dmg.metricArea ? Math.sqrt(dmg.metricArea.value / Math.PI) * 0.4 : 0.25}
+                    r={markerRadius}
                     fill="var(--damage-fill)"
                     stroke="var(--damage-stroke)"
                     strokeWidth="0.02"
                     strokeDasharray="0.04 0.02"
                   />
+                  {/* Center origin dot */}
+                  <circle
+                    cx={pos.x}
+                    cy={pos.y}
+                    r={0.035}
+                    fill="var(--damage-stroke)"
+                  />
+                  {/* Offset connector line to label pill */}
+                  <line
+                    x1={pos.x}
+                    y1={pos.y - markerRadius}
+                    x2={pos.x}
+                    y2={labelY + pillHeight / 2}
+                    stroke="var(--damage-stroke)"
+                    strokeWidth="0.012"
+                    strokeDasharray="0.02 0.01"
+                    opacity={0.8}
+                  />
+                  {/* Damage label pill background */}
+                  <rect
+                    x={pos.x - pillWidth / 2}
+                    y={labelY - pillHeight / 2}
+                    width={pillWidth}
+                    height={pillHeight}
+                    rx={0.04}
+                    fill="var(--surface)"
+                    stroke="var(--damage-stroke)"
+                    strokeWidth="0.015"
+                  />
+                  {/* Human-readable label text */}
                   <text
                     x={pos.x}
-                    y={pos.y}
+                    y={labelY}
                     textAnchor="middle"
                     dominantBaseline="central"
                     style={{
-                      fontSize: '0.11px',
-                      fontWeight: 700,
+                      fontSize: '0.082px',
+                      fontWeight: 600,
                       fill: 'var(--danger-text)',
                       pointerEvents: 'none',
                     }}
                   >
-                    {dmg.damageClass.replace('_', ' ').toUpperCase()}
+                    {labelText}
                   </text>
                 </g>
               );

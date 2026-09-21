@@ -11,6 +11,7 @@
 
 import React, { useState } from 'react';
 import { PropertyViewModel, RoomViewModel } from '../../domain/types';
+import { formatDamageLabel } from '../../domain/adapters';
 import { StatusBadge } from '../ui/StatusBadge';
 import { MeasurementStatus } from '../ui/MeasurementStatus';
 
@@ -571,8 +572,8 @@ export function InspectorPanel({
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--danger-text)', textTransform: 'capitalize' }}>
-                    {dmg.damageClass.replace('_', ' ')}
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--danger-text)' }}>
+                    {formatDamageLabel(dmg.damageClass)}
                   </span>
                   <span className="mono" style={{ fontSize: '11px', color: 'var(--danger-text)' }}>
                     {(dmg.confidence * 100).toFixed(0)}% confidence

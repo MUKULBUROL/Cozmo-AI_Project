@@ -16,6 +16,7 @@ import { fileURLToPath } from 'node:url';
 import {
   adaptBackendProperty,
   normalizeStatus,
+  formatDamageLabel,
   ACCURACY_DISCLAIMER_TEXT,
 } from '../src/domain/adapters.ts';
 
@@ -70,4 +71,15 @@ test('normalizeStatus preserves truthfulness across all tiers', () => {
   assert.equal(normalizeStatus('NOT_EVALUABLE', 'video'), 'NOT_EVALUABLE');
   assert.equal(normalizeStatus('COMPLETE', 'lidar', 'c7d28f72c6'), 'COMPLETE');
   assert.equal(normalizeStatus('provisional', 'lidar', 'c00a170fe1'), 'PROVISIONAL');
+});
+
+test('formatDamageLabel maps canonical defect names to human-readable Title Case labels', () => {
+  assert.equal(formatDamageLabel('crack_structural'), 'Structural Crack');
+  assert.equal(formatDamageLabel('water_stain'), 'Water Stain');
+  assert.equal(formatDamageLabel('surface_crack'), 'Surface Crack');
+  assert.equal(formatDamageLabel('mold_like_discoloration'), 'Mold Discoloration');
+  assert.equal(formatDamageLabel('hole_or_missing_material'), 'Hole / Missing Material');
+  assert.equal(formatDamageLabel('other_visible_damage'), 'Visible Defect');
+  assert.equal(formatDamageLabel('impact'), 'Hole / Missing Material');
+  assert.equal(formatDamageLabel('custom_damage_type'), 'Custom Damage Type');
 });

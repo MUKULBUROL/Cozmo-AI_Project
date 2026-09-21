@@ -119,36 +119,23 @@ export default function HomePage() {
                 fontSize: '15px',
                 color: 'var(--text-secondary)',
                 lineHeight: 1.55,
-                marginBottom: '24px',
+                marginBottom: '16px',
               }}
             >
               Upload LiDAR, video, or room photos to generate interactive 2D floor plans, room dimensions, doorway openings, defect scopes, and CAD/PDF exports.
             </p>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
-              <Link
-                href="/new"
-                id="new-capture-btn-hero"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '10px 20px',
-                  borderRadius: 'var(--radius-sm)',
-                  backgroundColor: 'var(--primary)',
-                  color: 'var(--text-on-primary)',
-                  fontSize: '14px',
-                  fontWeight: 600,
-                  textDecoration: 'none',
-                  boxShadow: 'var(--shadow-sm)',
-                }}
-              >
-                <span>+</span>
-                <span>New Capture</span>
-              </Link>
-              <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
-                Supports LiDAR ZIP, handheld MP4 video, or photo archives
-              </span>
+            <div
+              style={{
+                fontSize: '13px',
+                color: 'var(--text-muted)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <span style={{ color: 'var(--primary)', fontWeight: 600 }}>•</span>
+              <span>Supports LiDAR ZIP, handheld MP4 video, or photo archives.</span>
             </div>
           </div>
         </div>
