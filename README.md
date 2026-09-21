@@ -17,6 +17,13 @@ It generates:
 
 ---
 
+## Evaluator Demonstration
+
+- **Web Guide**: [http://localhost:3000/demo](http://localhost:3000/demo)
+- **Documentation**: [docs/EVALUATOR_DEMONSTRATION.md](docs/EVALUATOR_DEMONSTRATION.md)
+
+---
+
 ## Quick Start
 
 ### 1. Start Backend API
