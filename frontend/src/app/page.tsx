@@ -59,26 +59,44 @@ export default function HomePage() {
           </span>
         </div>
 
-        <Link
-          href="/new"
-          id="new-capture-btn-header"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '8px 16px',
-            borderRadius: 'var(--radius-sm)',
-            backgroundColor: 'var(--primary)',
-            color: 'var(--text-on-primary)',
-            fontSize: '13px',
-            fontWeight: 600,
-            textDecoration: 'none',
-            transition: 'background-color 0.15s ease',
-          }}
-        >
-          <span>+</span>
-          <span>New Capture</span>
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <Link
+            href="/demo"
+            style={{
+              fontSize: '13px',
+              fontWeight: 500,
+              color: 'var(--text-secondary)',
+              padding: '6px 12px',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid var(--border)',
+              backgroundColor: 'var(--surface)',
+              transition: 'color 0.15s ease, border-color 0.15s ease',
+            }}
+          >
+            Evaluator Guide
+          </Link>
+
+          <Link
+            href="/new"
+            id="new-capture-btn-header"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 16px',
+              borderRadius: 'var(--radius-sm)',
+              backgroundColor: 'var(--primary)',
+              color: 'var(--text-on-primary)',
+              fontSize: '13px',
+              fontWeight: 600,
+              textDecoration: 'none',
+              transition: 'background-color 0.15s ease',
+            }}
+          >
+            <span>+</span>
+            <span>New Capture</span>
+          </Link>
+        </div>
       </header>
 
       {/* Main Hero Container */}
